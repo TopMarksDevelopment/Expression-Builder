@@ -7,7 +7,7 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
     <PackageId>TopMarksDevelopment.ExpressionBuilder.Operations.Between</PackageId>
-    <version>0.1.0-beta</version>
+    <version>0.2.0-beta</version>
     <title>Expression Builder - Operation: Between</title>
     <Authors>Glenn Marks</Authors>
     <Company>Top Marks Development</Company>
