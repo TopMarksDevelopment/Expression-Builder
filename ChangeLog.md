@@ -1,4 +1,4 @@
-<!-- 
+<!--
 Guiding Principles
 - Changelogs are for humans, not machines.
 - There should be an entry for every single version.
@@ -20,8 +20,33 @@ Types of changes
  -->
 
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
-## 0.1.0-beta
+> ❗ Whilst in the beta phase, breaking changes will happen between "minor" releases. Because of this, patches and new features will happen at between "patch" releases.
+
+## [0.2.0-beta] - 2024-02-28
+
+<small>[Compare to previous release][comp:0.2.0-beta]</small>
+
+### Breaking Changes
+
+-   Moved the `Connector` and `Matches` enumerators from `TopMarksDevelopment.ExpressionBuilder.Api` to `TopMarksDevelopment.ExpressionBuilder`, for easier access
+
+### Fixes
+
+- Removed duplicated methods that we in both the `TopMarksDevelopment.ExpressionBuilder.Api` and `TopMarksDevelopment.ExpressionBuilder` namespaces. Preventing you from using an extension method if you use both namespaces
+
+### Changes
+
+- Added GitHub `FUNDING.yml` to hopefully get some support/funding 😜
+- (Non-user facing) Updated the GitHub workflows to use the current versions of `checkout` and `setup-dotnet`
+
+
+## [0.1.0-beta] - 2024-02-28
 
 **Initial release**
+
+[0.2.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v0.2.0-beta
+[comp:0.2.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v0.2.0-beta...v0.1.0-beta
+[0.1.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v0.1.0-beta

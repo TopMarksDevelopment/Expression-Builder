@@ -28,11 +28,12 @@ public static class ExpressionExtensions
         this Expression? left,
         Expression right,
         Connector connector
-    ) => left == null 
-        ? right 
-        : connector == Connector.And
-            ? Expression.AndAlso(left, right)
-            : Expression.OrElse(left, right);
+    ) =>
+        left == null
+            ? right
+            : connector == Connector.And
+                ? Expression.AndAlso(left, right)
+                : Expression.OrElse(left, right);
 
     public static Expression JoinExpression(
         this Expression? left,
@@ -45,22 +46,20 @@ public static class ExpressionExtensions
                 ? Expression.OrElse(left, right)
                 : Expression.AndAlso(left, right);
 
-    public static Expression ToTrimLowerStringExpression(this Expression member)
-        => Expression.Call(
-            Expression.Call(
-                member.ToStringExpression(), 
-                H.TrimMethod
-            ),
+    public static Expression ToTrimLowerStringExpression(
+        this Expression member
+    ) =>
+        Expression.Call(
+            Expression.Call(member.ToStringExpression(), H.TrimMethod),
             H.ToLowerMethod
         );
 
-    public static Expression ToTrimLowerStringConstant<TPropertyType>(this TPropertyType? item)
-        => Expression.Constant(
-            item?.ToString()?.ToLower().Trim()
-        );
+    public static Expression ToTrimLowerStringConstant<TPropertyType>(
+        this TPropertyType? item
+    ) => Expression.Constant(item?.ToString()?.ToLower().Trim());
 
-    public static Expression ToStringExpression(this Expression expression)
-        => expression.Type == typeof(string)
+    public static Expression ToStringExpression(this Expression expression) =>
+        expression.Type == typeof(string)
             ? expression
             : Expression.Call(
                 expression,

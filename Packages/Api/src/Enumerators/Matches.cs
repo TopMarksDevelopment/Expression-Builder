@@ -1,4 +1,4 @@
-namespace TopMarksDevelopment.ExpressionBuilder.Api;
+namespace TopMarksDevelopment.ExpressionBuilder;
 
 public enum Matches
 {
