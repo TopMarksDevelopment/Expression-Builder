@@ -1,6 +1,8 @@
 # Expression Builder
 
-If you're looking for a library that can help you easily build lambda expressions, look no further than the **Expression Builder** package. With this library you can quickly create a filter that can be applied to lists and database queries; even dynamically. Plus, it's packed with some great features too!
+[![An icon showing the status of the most recent completed test run](https://github.com/TopMarksDevelopment/Expression-Builder/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/TopMarksDevelopment/Expression-Builder/actions/workflows/build-and-test.yml)
+
+If you're looking for a library to help you easily build lambda expressions, look no further than the **Expression Builder** package. With this library you can quickly create a filter that can be applied to lists and database queries; even dynamically. Plus, it's packed with some great features too!
 
 ## Contents
 
@@ -16,7 +18,7 @@ If you're looking for a library that can help you easily build lambda expression
     -   [`SmartSearch`](#smartsearch)
     -   [Serialization](#serialization)
 -   [Built-in operations](#built-in-operations)
--   You can checkout these too:
+-   You can check these too:
     -   [Changelog](./ChangeLog.md)
     -   [License](./LICENSE.md)
 
@@ -28,7 +30,7 @@ The Expression Builder offers a wide range of features, including:
 -   The ability to save queries for later re-execution by serializing them to JSON strings or a `byte[]` (for compact storage).
 -   Method support, referred to as "manipulators". So, you can do `x => x.Name.Replace(" ", "")`!
 -   Built-in null checks
--   The ability to handle complex expressions, including `IEnumerable<>` properties and groups (i.e `(x || y) && z`).
+-   The ability to handle complex expressions, including `IEnumerable<>` properties and groups (i.e. `(x || y) && z`).
 -   The ability to reference properties in two ways: by property expression (`x => x.Name`) or by string, such as "Name" (when following these [conventions](#conventions-reference-by-strings)).
 -   The ability to build queries in two ways: by using the `Add` method or by using the extension methods for each operation (i.e. `.Equal(...)`), which can both be chained together or added statement by statement.
 -   A variety of [built-in operations](#built-in-operations), including the powerful [`SmartSearch`](#smartsearch) method
@@ -51,7 +53,7 @@ If you find any errors or realise there's a missing feature, feel free to leave 
 If you opt to add filters using `string` references you must follow these conventions to reference properties, child properties or properties of item arrays.
 
 -   A property can be referenced by its name alone (so `Id`, `Name`, `Gender`, etc.)
--   One to one relationships need only a dot to separate them. This means a persons "Birth Country" is referenced simply by `Birth.Country` - again, with correctly referenced names
+-   One-to-one relationships need only a dot to separate them. This means a persons' "Birth Country" is referenced simply by `Birth.Country` - again, with correctly referenced names
 -   A collection can also be referenced by placing `[]` after the name. So, a person (with multiple contact points) can have their "Contacts Type" referenced by `Contacts[].Type`
 -   Manipulators must be applied to the `options` property
 
@@ -112,7 +114,7 @@ public class Company {
 
 We can use the main class of this package directly, the `Filter<TClass>` class.
 
-_These examples use the string notation on both the fluent API and `Add` notion, though you can always use the built in `named` method calls_
+_These examples use the string notation on both the fluent API and `Add` notion, though you can always use the built-in `named` method calls_
 
 ```CSharp
 // Chain calls to build your query
@@ -138,7 +140,7 @@ var people = People.Where(filter);
 
 If you find yourself needing the same operation but with different terms you can save repeating lines thanks to list matching. Just pass an array of the type and it will query all those terms - on one line!
 
-Lets say we want to find a "Bright Blue Bicycle"! Simple, split the term and filter by it.
+Let's say we want to find a "Bright Blue Bicycle"! Simple, split the term and filter by it.
 
 ```CSharp
 var filter = new Filter<Products>();
@@ -161,7 +163,7 @@ filter.Contains("Name", termArr, options, Connector.And);
 
 ### Complex expressions
 
-Complex expressions are handled basically by grouping up filter statements, like in the example below.
+Complex expressions are handled by grouping filter statements, like in the example below.
 
 _Here we are using the fluent API with property expressions on a filter class:_
 
@@ -184,7 +186,7 @@ filter
     .Or()
     .Equal(p => p.Birth.Country, "USA");
 
-// Now lets apply the filter to our DB Context
+// Now let's apply the filter to our DB Context
 var people = myDbContext.People.Where(filter);
 ```
 
@@ -205,7 +207,7 @@ You can also filter directly from your enumerable to simplify and improve the re
 -   Call `.ToFilterable()` on your `IEnumerable`
 -   Or query the DB context fluently after calling `.AsFilterable()` on your `IQueryable`
 
-After this you will have access to a bunch of new methods!
+After this, you will have access to a bunch of new methods!
 
 _This example uses the fluent API and (mostly) property expressions_
 
@@ -234,7 +236,7 @@ This package also includes a handy method called `SmartSearch`. This allows you 
 
 -   A term inside quotes (i.e. `"Blue"`) will search for this exact term; meaning it's not buried inside a word (so, `Steelblue` will not be included)
 -   A term with a leading hyphen (i.e. `-bright`) will exclude anything containing this term. You can also enclose the term in quotes to exclude an exact word/set of words (i.e. `-"bright"`)
--   Otherwise it will search if it contains that term
+-   Otherwise, it will search if it contains that term
 
 > ⚠ A single value will be treated as a single term (regardless of spaces) - it must be parsed. Use `SmartSearch.SplitTerm(string input)` to parse a string (see the example)
 
@@ -257,7 +259,7 @@ var filteredPeople =
 
 You can serialize an expression, getting two different outputs:
 
--   a JSON string (for a human friendly version)
+-   a JSON string (for a human-friendly version)
 -   a `byte[]` (for more compact storage on disk or a DB)
 
 #### JSON serialisation
