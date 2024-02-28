@@ -1,5 +1,6 @@
-using ExpressionBuilder.Tests;
 using ExpressionBuilder.Tests.Models;
+
+namespace ExpressionBuilder.Tests.Base;
 
 public class Tests
 {
@@ -8,5 +9,5 @@ public class Tests
     [InlineData(typeof(StockLocation))]
     [InlineData(typeof(Category))]
     public void ImplementationTest(Type type) =>
-        Assert.True(type.GetInterface(nameof(IItemable)) != null);
+        Assert.NotNull(type.GetInterface(nameof(IItemable)));
 }
