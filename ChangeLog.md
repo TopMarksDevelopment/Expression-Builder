@@ -48,5 +48,5 @@ All notable changes to this project will be documented in this file.
 **Initial release**
 
 [0.2.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v0.2.0-beta
-[comp:0.2.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v0.2.0-beta...v0.1.0-beta
+[comp:0.2.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v0.1.0-beta...v0.2.0-beta
 [0.1.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v0.1.0-beta
