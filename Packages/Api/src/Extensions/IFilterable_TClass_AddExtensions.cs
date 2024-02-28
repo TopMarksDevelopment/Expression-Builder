@@ -1,7 +1,8 @@
-namespace TopMarksDevelopment.ExpressionBuilder.Api;
+namespace TopMarksDevelopment.ExpressionBuilder;
 
 using System;
 using System.Linq.Expressions;
+using TopMarksDevelopment.ExpressionBuilder.Api;
 
 public static partial class IFilterable_TClass_AddExtensions
 {
@@ -49,6 +50,34 @@ public static partial class IFilterable_TClass_AddExtensions
         this IFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         IOperation operation,
+        TPropertyType?[] value,
+        IFilterStatementOptions? options
+    )
+        where TClass : class => filter.Add(
+            propertyExpression,
+            operation,
+            value,
+            options
+        );
+
+    public static IFilterableConnection<TClass> Add<TClass, TPropertyType>(
+        this IFilterable<TClass> filter,
+        Expression<Func<TClass, TPropertyType?>> propertyExpression,
+        IOperation operation,
+        TPropertyType? value,
+        IFilterStatementOptions? options
+    )
+        where TClass : class => filter.Add(
+            propertyExpression,
+            operation,
+            [value],
+            options
+        );
+
+    public static IFilterableConnection<TClass> Add<TClass, TPropertyType>(
+        this IFilterable<TClass> filter,
+        Expression<Func<TClass, TPropertyType?>> propertyExpression,
+        IOperation operation,
         TPropertyType?[] value
     )
         where TClass : class => filter.Add(
@@ -98,60 +127,6 @@ public static partial class IFilterable_TClass_AddExtensions
             [value],
             null,
             connector
-        );
-
-    public static IFilterable<TClass> Add<TClass, TPropertyType>(
-        this IFilterable<TClass> filter,
-        Expression<Func<TClass, TPropertyType?>> propertyExpression,
-        IOperation operation,
-        Connector connector
-    )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            operation,
-            [],
-            null,
-            connector
-        );
-
-    public static IFilterable<TClass> Add<TClass, TPropertyType>(
-        this IFilterable<TClass> filter,
-        Expression<Func<TClass, TPropertyType?>> propertyExpression,
-        IOperation operation,
-        IFilterStatementOptions? options,
-        Connector connector
-    ) where TClass : class =>
-        filter.Add(
-            propertyExpression,
-            operation,
-            [],
-            options,
-            connector
-        );
-
-    public static IFilterableConnection<TClass> Add<TClass, TPropertyType>(
-        this IFilterable<TClass> filter,
-        Expression<Func<TClass, TPropertyType?>> propertyExpression,
-        IOperation operation,
-        IFilterStatementOptions? options
-    ) where TClass : class =>
-        filter.Add(
-            propertyExpression,
-            operation,
-            [],
-            options
-        );
-
-    public static IFilterableConnection<TClass> Add<TClass, TPropertyType>(
-        this IFilterable<TClass> filter,
-        Expression<Func<TClass, TPropertyType?>> propertyExpression,
-        IOperation operation
-    ) where TClass : class =>
-        filter.Add(
-            propertyExpression,
-            operation,
-            [],
-            null
         );
 
     #endregion Expression<Func<,>> propertyExpression
@@ -198,6 +173,32 @@ public static partial class IFilterable_TClass_AddExtensions
         this IFilterable<TClass> filter,
         string propertyExpression,
         IOperation operation,
+        TPropertyType?[] value,
+        IFilterStatementOptions? options
+    ) where TClass : class  => filter.Add(
+            propertyExpression,
+            operation,
+            value,
+            options
+        );
+
+    public static IFilterableConnection<TClass> Add<TClass, TPropertyType>(
+        this IFilterable<TClass> filter,
+        string propertyExpression,
+        IOperation operation,
+        TPropertyType? value,
+        IFilterStatementOptions? options
+    ) where TClass : class  => filter.Add(
+            propertyExpression,
+            operation,
+            [value],
+            options
+        );
+
+    public static IFilterableConnection<TClass> Add<TClass, TPropertyType>(
+        this IFilterable<TClass> filter,
+        string propertyExpression,
+        IOperation operation,
         TPropertyType?[] value
     ) where TClass : class  => filter.Add(
             propertyExpression,
@@ -214,7 +215,8 @@ public static partial class IFilterable_TClass_AddExtensions
     ) where TClass : class  => filter.Add(
             propertyExpression,
             operation,
-            [value]
+            [value],
+            null
         );
 
     public static IFilterable<TClass> Add<TClass, TPropertyType>(
@@ -243,59 +245,6 @@ public static partial class IFilterable_TClass_AddExtensions
             [value],
             null,
             connector
-        );
-
-    public static IFilterable<TClass> Add<TClass, TPropertyType>(
-        this IFilterable<TClass> filter,
-        string propertyExpression,
-        IOperation operation,
-        Connector connector
-    ) where TClass : class  => filter.Add<TClass, TPropertyType>(
-            propertyExpression,
-            operation,
-            [],
-            null,
-            connector
-        );
-
-    public static IFilterable<TClass> Add<TClass, TPropertyType>(
-        this IFilterable<TClass> filter,
-        string propertyExpression,
-        IOperation operation,
-        IFilterStatementOptions? options,
-        Connector connector
-    ) where TClass : class  =>
-        filter.Add<TClass, TPropertyType>(
-            propertyExpression,
-            operation,
-            [],
-            options,
-            connector
-        );
-
-    public static IFilterableConnection<TClass> Add<TClass, TPropertyType>(
-        this IFilterable<TClass> filter,
-        string propertyExpression,
-        IOperation operation,
-        IFilterStatementOptions? options
-    ) where TClass : class  =>
-        filter.Add<TPropertyType>(
-            propertyExpression,
-            operation,
-            [],
-            options
-        );
-
-    public static IFilterableConnection<TClass> Add<TClass, TPropertyType>(
-        this IFilterable<TClass> filter,
-        string propertyExpression,
-        IOperation operation
-    ) where TClass : class  =>
-        filter.Add<TPropertyType>(
-            propertyExpression,
-            operation,
-            [],
-            null
         );
 
     #endregion string propertyExpression

@@ -1,7 +1,8 @@
-namespace TopMarksDevelopment.ExpressionBuilder.Api;
+namespace TopMarksDevelopment.ExpressionBuilder;
 
 using System;
 using System.Linq.Expressions;
+using TopMarksDevelopment.ExpressionBuilder.Api;
 
 public static partial class IQueryFilterableAddExtensions
 {
@@ -15,18 +16,11 @@ public static partial class IQueryFilterableAddExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
-        var f = filter.Add(
-            propertyExpression,
-            operation,
-            value,
-            options
-        );
+        where TClass : class
+    {
+        var f = filter.Add(propertyExpression, operation, value, options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IQueryFilterable Add<TClass, TPropertyType>(
@@ -37,13 +31,28 @@ public static partial class IQueryFilterableAddExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            operation,
-            [value],
-            options,
-            connector
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, operation, [value], options, connector);
+
+    public static IQueryFilterableConnection Add<TClass, TPropertyType>(
+        this IQueryFilterable filter,
+        Expression<Func<TClass, TPropertyType?>> propertyExpression,
+        IOperation operation,
+        TPropertyType?[] value,
+        IFilterStatementOptions? options
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, operation, value, options);
+
+    public static IQueryFilterableConnection Add<TClass, TPropertyType>(
+        this IQueryFilterable filter,
+        Expression<Func<TClass, TPropertyType?>> propertyExpression,
+        IOperation operation,
+        TPropertyType? value,
+        IFilterStatementOptions? options
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, operation, [value], options);
 
     public static IQueryFilterableConnection Add<TClass, TPropertyType>(
         this IQueryFilterable filter,
@@ -51,12 +60,8 @@ public static partial class IQueryFilterableAddExtensions
         IOperation operation,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            operation,
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, operation, value, null);
 
     public static IQueryFilterableConnection Add<TClass, TPropertyType>(
         this IQueryFilterable filter,
@@ -64,11 +69,8 @@ public static partial class IQueryFilterableAddExtensions
         IOperation operation,
         TPropertyType? value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            operation,
-            [value]
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, operation, [value], null);
 
     public static IQueryFilterable Add<TClass, TPropertyType>(
         this IQueryFilterable filter,
@@ -77,13 +79,8 @@ public static partial class IQueryFilterableAddExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            operation,
-            value,
-            null,
-            connector
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, operation, value, null, connector);
 
     public static IQueryFilterable Add<TClass, TPropertyType>(
         this IQueryFilterable filter,
@@ -92,67 +89,8 @@ public static partial class IQueryFilterableAddExtensions
         TPropertyType? value,
         Connector connector
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            operation,
-            [value],
-            null,
-            connector
-        );
-
-    public static IQueryFilterable Add<TClass, TPropertyType>(
-        this IQueryFilterable filter,
-        Expression<Func<TClass, TPropertyType?>> propertyExpression,
-        IOperation operation,
-        Connector connector
-    )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            operation,
-            [],
-            null,
-            connector
-        );
-
-    public static IQueryFilterable Add<TClass, TPropertyType>(
-        this IQueryFilterable filter,
-        Expression<Func<TClass, TPropertyType?>> propertyExpression,
-        IOperation operation,
-        IFilterStatementOptions? options,
-        Connector connector
-    ) where TClass : class =>
-        filter.Add(
-            propertyExpression,
-            operation,
-            [],
-            options,
-            connector
-        );
-
-    public static IQueryFilterableConnection Add<TClass, TPropertyType>(
-        this IQueryFilterable filter,
-        Expression<Func<TClass, TPropertyType?>> propertyExpression,
-        IOperation operation,
-        IFilterStatementOptions? options
-    ) where TClass : class =>
-        filter.Add(
-            propertyExpression,
-            operation,
-            [],
-            options
-        );
-
-    public static IQueryFilterableConnection Add<TClass, TPropertyType>(
-        this IQueryFilterable filter,
-        Expression<Func<TClass, TPropertyType?>> propertyExpression,
-        IOperation operation
-    ) where TClass : class =>
-        filter.Add(
-            propertyExpression,
-            operation,
-            [],
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, operation, [value], null, connector);
 
     #endregion Expression<Func<,>> propertyExpression
 
@@ -165,18 +103,11 @@ public static partial class IQueryFilterableAddExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ){
-        var f = filter.Add(
-            propertyExpression,
-            operation,
-            value,
-            options
-        );
+    )
+    {
+        var f = filter.Add(propertyExpression, operation, value, options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IQueryFilterable Add<TPropertyType>(
@@ -186,36 +117,37 @@ public static partial class IQueryFilterableAddExtensions
         TPropertyType? value,
         IFilterStatementOptions? options,
         Connector connector
-    ) => filter.Add(
-            propertyExpression,
-            operation,
-            [value],
-            options,
-            connector
-        );
+    ) => filter.Add(propertyExpression, operation, [value], options, connector);
+
+    public static IQueryFilterableConnection Add<TPropertyType>(
+        this IQueryFilterable filter,
+        string propertyExpression,
+        IOperation operation,
+        TPropertyType?[] value,
+        IFilterStatementOptions? options
+    ) => filter.Add(propertyExpression, operation, value, options);
+
+    public static IQueryFilterableConnection Add<TPropertyType>(
+        this IQueryFilterable filter,
+        string propertyExpression,
+        IOperation operation,
+        TPropertyType? value,
+        IFilterStatementOptions? options
+    ) => filter.Add(propertyExpression, operation, [value], options);
 
     public static IQueryFilterableConnection Add<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         IOperation operation,
         TPropertyType?[] value
-    ) => filter.Add(
-            propertyExpression,
-            operation,
-            value,
-            null
-        );
+    ) => filter.Add(propertyExpression, operation, value, null);
 
     public static IQueryFilterableConnection Add<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         IOperation operation,
         TPropertyType? value
-    ) => filter.Add(
-            propertyExpression,
-            operation,
-            [value]
-        );
+    ) => filter.Add(propertyExpression, operation, [value], null);
 
     public static IQueryFilterable Add<TPropertyType>(
         this IQueryFilterable filter,
@@ -223,13 +155,7 @@ public static partial class IQueryFilterableAddExtensions
         IOperation operation,
         TPropertyType?[] value,
         Connector connector
-    ) => filter.Add(
-            propertyExpression,
-            operation,
-            value,
-            null,
-            connector
-        );
+    ) => filter.Add(propertyExpression, operation, value, null, connector);
 
     public static IQueryFilterable Add<TPropertyType>(
         this IQueryFilterable filter,
@@ -237,66 +163,7 @@ public static partial class IQueryFilterableAddExtensions
         IOperation operation,
         TPropertyType? value,
         Connector connector
-    ) => filter.Add(
-            propertyExpression,
-            operation,
-            [value],
-            null,
-            connector
-        );
-
-    public static IQueryFilterable Add<TPropertyType>(
-        this IQueryFilterable filter,
-        string propertyExpression,
-        IOperation operation,
-        Connector connector
-    ) => filter.Add<TPropertyType>(
-            propertyExpression,
-            operation,
-            [],
-            null,
-            connector
-        );
-
-    public static IQueryFilterable Add<TPropertyType>(
-        this IQueryFilterable filter,
-        string propertyExpression,
-        IOperation operation,
-        IFilterStatementOptions? options,
-        Connector connector
-    ) =>
-        filter.Add<TPropertyType>(
-            propertyExpression,
-            operation,
-            [],
-            options,
-            connector
-        );
-
-    public static IQueryFilterableConnection Add<TPropertyType>(
-        this IQueryFilterable filter,
-        string propertyExpression,
-        IOperation operation,
-        IFilterStatementOptions? options
-    ) =>
-        filter.Add<TPropertyType>(
-            propertyExpression,
-            operation,
-            [],
-            options
-        );
-
-    public static IQueryFilterableConnection Add<TPropertyType>(
-        this IQueryFilterable filter,
-        string propertyExpression,
-        IOperation operation
-    ) =>
-        filter.Add<TPropertyType>(
-            propertyExpression,
-            operation,
-            [],
-            null
-        );
+    ) => filter.Add(propertyExpression, operation, [value], null, connector);
 
     #endregion string propertyExpression
 }
