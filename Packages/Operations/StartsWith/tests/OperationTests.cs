@@ -17,7 +17,7 @@ public class OperationTests
             () =>
                 new StartsWith()
                 {
-                    Match = Api.Matches.All
+                    Match = Matches.All
                 }.Validate(
                     new FilterStatement<string>(
                         "",
