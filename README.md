@@ -1,6 +1,8 @@
 # Expression Builder
 
-[![An icon showing the status of the most recent completed test run](https://github.com/TopMarksDevelopment/Expression-Builder/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/TopMarksDevelopment/Expression-Builder/actions/workflows/build-and-test.yml)
+[![Icon for GitHub actions workflow status](https://img.shields.io/github/actions/workflow/status/TopMarksDevelopment/Expression-Builder/build-and-test.yml?style=for-the-badge)](https://github.com/TopMarksDevelopment/Expression-Builder/actions/workflows/build-and-test.yml)
+[![Icon for NuGetVersion](https://img.shields.io/nuget/v/TopMarksDevelopment.ExpressionBuilder?style=for-the-badge)](https://www.nuget.org/packages/TopMarksDevelopment.ExpressionBuilder)
+[![Icon for NuGetVersion](https://img.shields.io/nuget/dt/TopMarksDevelopment.ExpressionBuilder?style=for-the-badge)](https://www.nuget.org/packages/TopMarksDevelopment.ExpressionBuilder)
 
 If you're looking for a library to help you easily build lambda expressions, look no further than the **Expression Builder** package. With this library you can quickly create a filter that can be applied to lists and database queries; even dynamically. Plus, it's packed with some great features too!
 
