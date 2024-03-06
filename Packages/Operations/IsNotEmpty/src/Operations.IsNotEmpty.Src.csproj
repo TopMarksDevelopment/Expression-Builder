@@ -11,13 +11,13 @@
     <title>Expression Builder - Operation: IsNotEmpty</title>
     <Authors>Glenn Marks</Authors>
     <Company>Top Marks Development</Company>
-    <licenseUrl>https://github.com/TopMarksDevelopment/ExpressionBuilder/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/TopMarksDevelopment/ExpressionBuilder/</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/TopMarksDevelopment/ExpressionBuilder/Assets/icon.png</iconUrl>
+    <licenseUrl>https://github.com/TopMarksDevelopment/Expression-Builder/blob/main/LICENSE.md</licenseUrl>
+    <projectUrl>https://github.com/TopMarksDevelopment/Expression-Builder/</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/TopMarksDevelopment/Expression-Builder/main/assets/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <Description>The "IsNotEmpty" operation for the "ExpressionBuilder" package. ExpressionBuilder allows you to easily build a filter that can be applied to lists and database queries (even dynamically). Packed with features, you can: easily convert API requests into expressions, save and re-run filters, have `NULL` checks done  automatically, build complex queries with groups and so much more!</Description>
     <summary>The "IsNotEmpty" operation for the "ExpressionBuilder" package. ExpressionBuilder allows you to easily build a filter that can be applied to lists and database queries (even dynamically). Packed with features, you can: easily convert API requests into expressions, save and re-run filters, have `NULL` checks done  automatically, build complex queries with groups and so much more!</summary>
-    <copyright>Top Marks Development Limited © 2023</copyright>
+    <copyright>Top Marks Development Limited © 2024</copyright>
     <language>en-GB</language>
     <PackageTags>Expression Builder Func LINQ Lambda Database IQuery LINQ SQL LINQ2SQL Queryable</PackageTags>
     <releaseNotes>
