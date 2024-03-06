@@ -1,8 +1,9 @@
-namespace TopMarksDevelopment.ExpressionBuilder.Operations;
+namespace TopMarksDevelopment.ExpressionBuilder;
 
 using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
+using TopMarksDevelopment.ExpressionBuilder.Operations;
 
 public static partial class IFilterable_TClass_IsNullExtensions
 {

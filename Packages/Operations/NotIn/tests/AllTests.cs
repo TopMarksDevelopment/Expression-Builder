@@ -2,7 +2,7 @@ namespace ExpressionBuilder.Tests;
 
 using System.Collections.Generic;
 using ExpressionBuilder.Tests.Models;
-using TopMarksDevelopment.ExpressionBuilder.Operations;
+using TopMarksDevelopment.ExpressionBuilder;
 
 public class AllTests
 {
