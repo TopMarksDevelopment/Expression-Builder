@@ -25,28 +25,45 @@ All notable changes to this project will be documented in this file.
 
 > ❗ Whilst in the beta phase, breaking changes will happen between "minor" releases. Because of this, patches and new features will happen at between "patch" releases.
 
+## [0.2.1-beta] - UNPUBLISHED
+
+<small>[Compare to previous release][comp:0.2.1-beta]</small>
+
+### Package: TopMarksDevelopment.ExpressionBuilder.Operations.* (All Operations)
+
+#### Changed
+
+-   Moved all extension methods from the `TopMarksDevelopment.ExpressionBuilder.Api` namespace to `TopMarksDevelopment.ExpressionBuilder`, for easier access _(not technically "breaking" as the main package is always required to operate)_
+
 ## [0.2.0-beta] - 2024-02-28
 
 <small>[Compare to previous release][comp:0.2.0-beta]</small>
 
-### Breaking Changes
+### Package: TopMarksDevelopment.ExpressionBuilder.Api
+
+#### Breaking Changes
 
 -   Moved the `Connector` and `Matches` enumerators from `TopMarksDevelopment.ExpressionBuilder.Api` to `TopMarksDevelopment.ExpressionBuilder`, for easier access
 
-### Fixes
+### Package: TopMarksDevelopment.ExpressionBuilder
 
-- Removed duplicated methods that we in both the `TopMarksDevelopment.ExpressionBuilder.Api` and `TopMarksDevelopment.ExpressionBuilder` namespaces. Preventing you from using an extension method if you use both namespaces
+#### Fixes
 
-### Changes
+-   Removed duplicated methods from `TopMarksDevelopment.ExpressionBuilder`, as they were already in the `TopMarksDevelopment.ExpressionBuilder.Api` namespace. This prevented you from using an `Add` extension method if you `use` both namespaces
 
-- Added GitHub `FUNDING.yml` to hopefully get some support/funding 😜
-- (Non-user facing) Updated the GitHub workflows to use the current versions of `checkout` and `setup-dotnet`
+### General changes (non-package related)
 
+#### Changes
+
+-   Added GitHub `FUNDING.yml` to hopefully get some support/funding 😜
+-   (Non-user facing) Updated the GitHub workflows to use the current versions of `checkout` and `setup-dotnet`
 
 ## [0.1.0-beta] - 2024-02-28
 
 **Initial release**
 
+[0.2.1-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v0.2.1-beta
+[comp:0.2.1-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v0.2.0-beta...v0.2.1-beta
 [0.2.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v0.2.0-beta
 [comp:0.2.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v0.1.0-beta...v0.2.0-beta
 [0.1.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v0.1.0-beta
