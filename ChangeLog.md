@@ -25,9 +25,19 @@ All notable changes to this project will be documented in this file.
 
 > ❗ Whilst in the beta phase, breaking changes will happen between "minor" releases. Because of this, patches and new features will happen at between "patch" releases.
 
-## [0.2.1-beta] - UNPUBLISHED
+## <!-- [0.2.1-beta] - -->UNPUBLISHED
 
-<small>[Compare to previous release][comp:0.2.1-beta]</small>
+<!-- <small>[Compare to previous release][comp:0.2.1-beta]</small> -->
+
+### Package: TopMarksDevelopment.ExpressionBuilder(* All)
+
+#### Fixed
+
+-   Fixed the paths for the icons and the links to GitHub source code
+
+#### Changed
+
+-   Updated the copyright year for NuGet packages and `License.md`
 
 ### Package: TopMarksDevelopment.ExpressionBuilder.Operations.* (All Operations)
 
