@@ -27,6 +27,16 @@ All notable changes to this project will be documented in this file.
 
 ## UNPUBLISHED
 
+### Package: TopMarksDevelopment.ExpressionBuilder(\* All)
+
+#### Fixed
+
+-   Actually fixed the paths for the icons and the links to GitHub source code
+
+#### Changed
+
+-   Compressed `icon.png` to reduce package size increase
+
 ### Package: TopMarksDevelopment.ExpressionBuilder.Operations.In
 
 #### Fixed
