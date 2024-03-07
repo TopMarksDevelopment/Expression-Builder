@@ -11,9 +11,12 @@
     <title>Expression Builder - Operation: DoesNotContain</title>
     <Authors>Glenn Marks</Authors>
     <Company>Top Marks Development</Company>
-    <licenseUrl>https://github.com/TopMarksDevelopment/Expression-Builder/blob/main/LICENSE.md</licenseUrl>
-    <projectUrl>https://github.com/TopMarksDevelopment/Expression-Builder/</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/TopMarksDevelopment/Expression-Builder/main/assets/icon.png</iconUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/TopMarksDevelopment/Expression-Builder/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/TopMarksDevelopment/Expression-Builder/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageIconUrl>https://raw.githubusercontent.com/TopMarksDevelopment/Expression-Builder/main/assets/icon.png</PackageIconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <Description>The "DoesNotContain" operation for the "ExpressionBuilder" package. ExpressionBuilder allows you to easily build a filter that can be applied to lists and database queries (even dynamically). Packed with features, you can: easily convert API requests into expressions, save and re-run filters, have `NULL` checks done  automatically, build complex queries with groups and so much more!</Description>
     <summary>The "DoesNotContain" operation for the "ExpressionBuilder" package. ExpressionBuilder allows you to easily build a filter that can be applied to lists and database queries (even dynamically). Packed with features, you can: easily convert API requests into expressions, save and re-run filters, have `NULL` checks done  automatically, build complex queries with groups and so much more!</summary>
@@ -33,6 +36,7 @@
   <ItemGroup>
     <None Include="../../../../README.md" Pack="true" PackagePath="\"/>
     <None Include="../../../../LICENSE.md" Pack="true" PackagePath="\"/>
+    <None Include="../../../../assets/icon.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>
