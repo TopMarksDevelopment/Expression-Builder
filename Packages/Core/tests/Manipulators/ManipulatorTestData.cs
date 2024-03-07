@@ -1,18 +1,13 @@
 namespace ExpressionBuilder.Tests;
 
-using System.Collections.Generic;
 using ExpressionBuilder.Tests.Models;
 using TopMarksDevelopment.ExpressionBuilder;
-using TopMarksDevelopment.ExpressionBuilder.Operations;
 
-public class AllManipulatorTests
+public class ManipulatorTestData : TheoryData<TestBuilder<Product>>
 {
     internal static Func<string, string>? ApplyReplacements = null;
 
-    internal static IEnumerable<object[]> GetAllMatchers() =>
-        [
-            [ReplaceTest],
-        ];
+    public ManipulatorTestData() => Add(ReplaceTest);
 
     static TestBuilder<Product> ReplaceTest =>
         new(

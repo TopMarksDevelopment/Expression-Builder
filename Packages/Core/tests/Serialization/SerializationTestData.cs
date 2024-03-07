@@ -1,16 +1,12 @@
-namespace ExpressionBuilder.Tests.Serialization;
+namespace ExpressionBuilder.Tests;
 
 using ExpressionBuilder.Tests.Models;
 using TopMarksDevelopment.ExpressionBuilder;
-using TopMarksDevelopment.ExpressionBuilder.Operations;
 
-public class SerializationTestData
+public class SerializationTestData : TheoryData<Filter<Category>>
 {
-    internal static IEnumerable<object[]> GetAll() =>
-        [
-            [ReplaceManipulator],
-            [ReplaceMethod],
-        ];
+    public SerializationTestData() =>
+        AddRange(ReplaceManipulator, ReplaceMethod, SkipNulls);
 
     static Filter<Category> ReplaceManipulator =>
         (Filter<Category>)
@@ -49,5 +45,15 @@ public class SerializationTestData
                 .And()
                 .Equal(x => x.Category!.Name.Replace(" ", ""), "Category2")
                 .CloseCollection<Category>()
+                .And();
+
+    static Filter<Category> SkipNulls =>
+        (Filter<Category>)
+            new Filter<Category>()
+                .Equal(
+                    x => x.Name,
+                    "Category 2",
+                    new FilterStatementOptions { SkipNullChecks = true }
+                )
                 .And();
 }

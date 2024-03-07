@@ -19,4 +19,3 @@ public class AllTests
             x => x.Between(x => x.Id, 1, 2)
         );
 }
-record XX(string S, string? T);

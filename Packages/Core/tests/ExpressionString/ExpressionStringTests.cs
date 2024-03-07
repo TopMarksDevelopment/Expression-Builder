@@ -1,16 +1,12 @@
 namespace ExpressionBuilder.Tests;
 
-using System.Collections.Generic;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
 [Collection("Matching Expressions to Strings")]
 public class ExpressionMatchStringTests
 {
-    public static IEnumerable<object[]> GetAll() =>
-        AllTests.GetAllStringMatchers();
-
     [Theory(DisplayName = "Factory")]
-    [MemberData(nameof(GetAll))]
+    [ClassData(typeof(ExpressionStringTestData))]
     internal void CheckFactoryStrings<T, T2>(ExpressionTestBuilder<T, T2> match)
         where T : class, IItemable
         where T2 : IFilterItem =>
@@ -20,7 +16,7 @@ public class ExpressionMatchStringTests
         );
 
     [Theory(DisplayName = "Filterable")]
-    [MemberData(nameof(GetAll))]
+    [ClassData(typeof(ExpressionStringTestData))]
     internal void CheckFilterableStrings<T, T2>(
         ExpressionTestBuilder<T, T2> match
     )
@@ -34,7 +30,7 @@ public class ExpressionMatchStringTests
         );
 
     [Theory(DisplayName = "QueryFilterable")]
-    [MemberData(nameof(GetAll))]
+    [ClassData(typeof(ExpressionStringTestData))]
     internal void CheckQueryableStrings<T, T2>(
         ExpressionTestBuilder<T, T2> match
     )
@@ -48,7 +44,7 @@ public class ExpressionMatchStringTests
         );
 
     [Theory(DisplayName = "Fluent")]
-    [MemberData(nameof(GetAll))]
+    [ClassData(typeof(ExpressionStringTestData))]
     internal void CheckFluentStrings<T, T2>(ExpressionTestBuilder<T, T2> match)
         where T : class, IItemable
         where T2 : IFilterItem =>
