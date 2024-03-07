@@ -20,7 +20,7 @@ public partial struct Equal : IOperation
         IFilterCollection<TPropertyType?> values,
         IEnumerable<IEntityManipulator>? manipulators
     ) =>
-        values.Count() > 1
+        values.Count > 1
             ? new In() { Match = Match }.Build(member, values, manipulators)
             : Expression.Equal(member, Expression.Constant(values.First()));
 

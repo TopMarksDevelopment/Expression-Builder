@@ -34,7 +34,7 @@ public struct In : IOperation
             containsMethod,
             Nullable.GetUnderlyingType(
                 containsMethod.ReflectedType!.GenericTypeArguments[0]
-            ) == null
+            ) == null || member.Type == typeof(TPropertyType?)
                 ? member
                 : Expression.Convert(member, typeof(TPropertyType?))
         );
