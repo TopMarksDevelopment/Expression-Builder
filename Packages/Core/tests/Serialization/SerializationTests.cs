@@ -1,4 +1,4 @@
-namespace ExpressionBuilder.Tests.Serialization;
+namespace ExpressionBuilder.Tests;
 
 using System.IO;
 using System.Text.Json;
@@ -9,11 +9,8 @@ using Xunit;
 [Collection("Serialization checks")]
 public class SerializationTests
 {
-    public static IEnumerable<object[]> All() =>
-        SerializationTestData.GetAll();
-    
     [Theory(DisplayName = "Multi Collection Test")]
-    [MemberData(nameof(All))]
+    [ClassData(typeof(SerializationTestData))]
     public void MultiCollectionTest(Filter<Category> filter)
     {
         var jsonString = JsonSerializer.Serialize(filter);
@@ -25,7 +22,7 @@ public class SerializationTests
     }
 
     [Theory(DisplayName = "Protobuf File Test")]
-    [MemberData(nameof(All))]
+    [ClassData(typeof(SerializationTestData))]
     public void ProtobufFileTest(Filter<Category> filter)
     {
         using (var file = File.Create("../../Test.dat"))
@@ -39,7 +36,7 @@ public class SerializationTests
     }
 
     [Theory(DisplayName = "Protobuf byte[] Test")]
-    [MemberData(nameof(All))]
+    [ClassData(typeof(SerializationTestData))]
     public void ProtobufByteArrayTest(Filter<Category> filter)
     {
         filter.SerializeTo(out var bytes);

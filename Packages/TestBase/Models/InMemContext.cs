@@ -2,16 +2,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpressionBuilder.Tests.Models;
 
-public class EbContext : DbContext
+public class EbContext(DbContextOptions<EbContext> options) : DbContext(options)
 {
     public DbSet<Category> Categories { get; set; } = null!;
     public DbSet<Product> Products { get; set; } = null!;
     public DbSet<Brand> Brands { get; set; } = null!;
     public DbSet<Supplier> Suppliers { get; set; } = null!;
     public DbSet<StockLocation> StockLocations { get; set; } = null!;
-
-    public EbContext(DbContextOptions<EbContext> options)
-        : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -39,18 +36,14 @@ public class EbContext : DbContext
         {
             e.HasOne(c => c.Category).WithMany();
 
-            e.HasMany(x => x.StockLocations)
-                .WithOne(x => x.Product);
+            e.HasMany(x => x.StockLocations).WithOne(x => x.Product);
 
-            e.HasOne(x => x.Brand)
-                .WithMany();
+            e.HasOne(x => x.Brand).WithMany();
         });
 
         builder.Entity<Brand>(e =>
         {
-
-            e.HasOne(x => x.Supplier)
-                .WithMany();
+            e.HasOne(x => x.Supplier).WithMany();
         });
     }
 }

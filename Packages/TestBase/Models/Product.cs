@@ -7,8 +7,8 @@ public class Product : IItemable
 {
     private Product()
     {
-        Categories = new HashSet<Category>();
-        StockLocations = new HashSet<StockLocation>();
+        Categories = [];
+        StockLocations = [];
     }
 
     public Product(
@@ -23,19 +23,18 @@ public class Product : IItemable
         OtherSearchField = searchData;
         CreatedAt = createdAt;
 
-        Categories = new HashSet<Category>();
-        StockLocations = 
-            new HashSet<StockLocation>
+        Categories = [];
+        StockLocations =
+        [
+            new()
             {
-                new()
-                {
-                    Id = id,
-                    Location = $"Location {id}",
-                    Quantity = id + 10,
-                    Product = this,
-                    CreatedAt = createdAt ?? ResultMatchSeed.CreatedDate
-                }
-            };
+                Id = id,
+                Location = $"Location {id}",
+                Quantity = id + 10,
+                Product = this,
+                CreatedAt = createdAt ?? ResultMatchSeed.CreatedDate
+            }
+        ];
     }
 
     public int Id { get; set; }
@@ -53,17 +52,4 @@ public class Product : IItemable
         get;
         internal set;
     }
-}
-
-public class Brand
-{
-    public int Id { get; set; }
-
-    public virtual int SupplierId { get; set; }
-    public virtual Supplier Supplier { get; set; } = null!;
-}
-
-public class Supplier
-{
-    public int Id { get; set; }
 }

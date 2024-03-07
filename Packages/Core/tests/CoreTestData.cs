@@ -1,21 +1,13 @@
 namespace ExpressionBuilder.Tests;
 
-using System.Collections.Generic;
 using ExpressionBuilder.Tests.Models;
 using TopMarksDevelopment.ExpressionBuilder;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
 
-public class AllTests
+internal class CoreTestData : TheoryData
 {
-    internal static DateTime? createdDate = new(2023, 10, 1, 10, 0, 10);
-    internal static DateTime? otherDate = createdDate.Value.AddMinutes(10);
-
     internal static string ApplyReplacements(string input) =>
         input
-            .Replace("new [] {", "[")
-            .Replace("}.", "].")
-            .Replace("[AllTests.createdDate", "[" + createdDate.ToString())
-            .Replace("AllTests.otherDate]", otherDate.ToString() + "]")
             .Replace(
                 "ResultMatchSeed.CreatedDate.Year",
                 ResultMatchSeed.CreatedDate.Year.ToString()
@@ -25,24 +17,24 @@ public class AllTests
                 ResultMatchSeed.CreatedDate.ToString()
             );
 
-    #region Match tests
-
-    public static IEnumerable<object[]> GetAllMatchers() =>
-        [
-            [DeepNullChecker],
-            [SimpleAddMethod],
-            [SimpleEqual],
-            [SimpleGroupEqual],
-            [SimpleEqualOrEqualCollectionAndEqual],
-            [SimpleNullCheck],
-            [VariousLevelNullChecks],
-            [ComplexCollection],
-            [NullableDateTimeCheck],
-            [DateTimeYearCheck],
-            [NullableDateTimeYearCheck],
-            [ReplaceMethodCheck],
-            [ReplaceManipulatorCheck]
-        ];
+    public CoreTestData() =>
+        AddRows(
+            [
+                [DeepNullChecker],
+                [SimpleAddMethod],
+                [SimpleEqual],
+                [SimpleGroupEqual],
+                [SimpleEqualOrEqualCollectionAndEqual],
+                [SimpleNullCheck],
+                [VariousLevelNullChecks],
+                [ComplexCollection],
+                [NullableDateTimeCheck],
+                [DateTimeYearCheck],
+                [NullableDateTimeYearCheck],
+                [ReplaceMethodCheck],
+                [ReplaceManipulatorCheck]
+            ]
+        );
 
     static TestBuilder<Product> DeepNullChecker =>
         new(
@@ -396,81 +388,4 @@ public class AllTests
                     }
                 )
         );
-
-    #endregion Match tests
-
-
-    public static IEnumerable<object[]> GetAllStringMatchers() =>
-        [
-            [CollectionExpressionMatchesString],
-            [PropertyChainExpressionMatchesString]
-        ];
-
-    static ExpressionTestBuilder<
-        Product,
-        FilterGroup
-    > CollectionExpressionMatchesString =>
-        new(
-            "Collections declared by string or expression should match",
-            "Categories[]",
-            x => x.OpenCollection("Categories").CloseCollection(),
-            x => x.OpenCollection(y => y.Categories).CloseCollection<Product>(),
-            x => x.OpenCollection(y => y.Categories).CloseCollection<Product>(),
-            x => x.OpenCollection(y => y.Categories).CloseCollection<Product>(),
-            x => x.ParentPropertyExpression!
-        );
-
-    static ExpressionTestBuilder<
-        Product,
-        FilterStatement<int>
-    > PropertyChainExpressionMatchesString =>
-        new(
-            "Property chains should match if called with expression notion",
-            "Category.Id",
-            x => x.Equal<Product, int>(x => x.Category!.Id, 2),
-            x => x.Equal(x => x.Category!.Id, 2),
-            x => x.Equal(x => x.Category!.Id, 2),
-            x => x.Equal(x => x.Category!.Id, 2),
-            x => x.PropertyId
-        );
-
-    #region OperationTests
-
-    public static IEnumerable<object[]> GetAllOperations() =>
-        [
-            [NullPropertyHasNullCheck],
-            [NonNullableHasNoNullCheck]
-        ];
-
-    static TestBuilder<Product> NullPropertyHasNullCheck =>
-        new(
-            "A null property should have null checks",
-            x =>
-                (x.CreatedAt != null)
-                && (
-                    new[] { createdDate, otherDate }.Contains(
-                        (DateTime?)x.CreatedAt.Value
-                    )
-                ),
-            x =>
-                x.Equal<Product, DateTime?>(
-                    x => x.CreatedAt,
-                    [createdDate, otherDate]
-                ),
-            x => x.Equal(x => x.CreatedAt, [createdDate, otherDate]),
-            x => x.Equal(x => x.CreatedAt, [createdDate, otherDate]),
-            x => x.Equal(x => x.CreatedAt, [createdDate, otherDate])
-        );
-
-    static TestBuilder<Product> NonNullableHasNoNullCheck =>
-        new(
-            "No Null Check On Non-Nullables",
-            x => (new[] { 1, 3 }.Contains(x.Id)),
-            x => x.In<Product, int>(x => x.Id, [1, 3]),
-            x => x.In(x => x.Id, [1, 3]),
-            x => x.In(x => x.Id, [1, 3]),
-            x => x.In(x => x.Id, [1, 3])
-        );
-
-    #endregion OperationTests
 }
