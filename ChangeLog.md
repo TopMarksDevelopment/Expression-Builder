@@ -23,13 +23,21 @@ Types of changes
 
 All notable changes to this project will be documented in this file.
 
-> ❗ Whilst in the beta phase, breaking changes will happen between "minor" releases. Because of this, patches and new features will happen at between "patch" releases.
+> ❗ Whilst in the beta phase, breaking changes will happen between "minor" releases. Because of this, patches and new features will happen between "patch" releases
+
+## UNPUBLISHED
+
+### Package: TopMarksDevelopment.ExpressionBuilder.Operations.In
+
+#### Fixed
+
+-   We no longer try to convert `members` to nullable types if they're already nullable
 
 ## [0.2.1-beta] - 2024-03-06
 
 <small>[Compare to previous release][comp:0.2.1-beta]</small>
 
-### Package: TopMarksDevelopment.ExpressionBuilder(* All)
+### Package: TopMarksDevelopment.ExpressionBuilder(\* All)
 
 #### Fixed
 
@@ -39,7 +47,7 @@ All notable changes to this project will be documented in this file.
 
 -   Updated the copyright year for NuGet packages and `License.md`
 
-### Package: TopMarksDevelopment.ExpressionBuilder.Operations.* (All Operations)
+### Package: TopMarksDevelopment.ExpressionBuilder.Operations.\* (All Operations)
 
 #### Changed
 
