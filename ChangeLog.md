@@ -25,7 +25,9 @@ All notable changes to this project will be documented in this file.
 
 > ❗ Whilst in the beta phase, breaking changes will happen between "minor" releases. Because of this, patches and new features will happen between "patch" releases
 
-## UNPUBLISHED
+## [0.3.0-beta] - 2024-04-25
+
+<small>[Compare to previous release][comp:0.3.0-beta]</small>
 
 ### Breaking Changes (Overview)
 
@@ -255,6 +257,8 @@ This needs to be revisited, read the [discussion](https://github.com/TopMarksDev
 
 **Initial release**
 
+[0.3.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v0.3.0-beta
+[comp:0.3.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v0.2.1-beta...v0.3.0-beta
 [0.2.1-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v0.2.1-beta
 [comp:0.2.1-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v0.2.0-beta...v0.2.1-beta
 [0.2.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v0.2.0-beta
