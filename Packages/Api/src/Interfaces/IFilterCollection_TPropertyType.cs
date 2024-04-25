@@ -6,12 +6,11 @@ public interface IFilterCollection<TPropertyType>
     : IFilterCollection,
         ICollection<TPropertyType?>
 {
-    //
-    // Summary:
-    //     Gets the number of elements contained in the System.Collections.Generic.ICollection`1.
-    //
-    //
-    // Returns:
-    //     The number of elements contained in the System.Collections.Generic.ICollection`1.
+    /// <summary>
+    /// Gets the number of elements contained in the collection.
+    /// </summary>
+    /// <returns>
+    /// The number of elements contained in the collection
+    /// </returns>
     new int Count { get; }
 }

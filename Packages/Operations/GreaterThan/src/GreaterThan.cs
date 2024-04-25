@@ -10,14 +10,17 @@ public struct GreaterThan : IOperation
 
     public readonly string Name => "GreaterThan";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new()
+        {
+            Match = Matches.All,
+            NullHandler = OperationNullHandler.NotNullAnd
+        };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
+        IFilterStatementOptions? options
     ) =>
         !values.Any()
             ? throw new ArgumentOutOfRangeException(
@@ -26,8 +29,12 @@ public struct GreaterThan : IOperation
             )
             : member.WorkOnValues(
                 values,
-                Match,
-                (m, v) => Expression.GreaterThan(m, Expression.Constant(v))
+                options?.Match ?? Defaults.Match,
+                (m, v) =>
+                    Expression.GreaterThan(
+                        m,
+                        Expression.Constant(options.ApplyManipulators(v))
+                    )
             );
 
     public readonly void Validate(IFilterStatement statement)

@@ -1,9 +1,5 @@
 namespace ExpressionBuilder.Tests;
 
-using ExpressionBuilder.Tests.Models;
-using TopMarksDevelopment.ExpressionBuilder;
-using TopMarksDevelopment.ExpressionBuilder.Operations;
-
 internal class CoreTestData : TheoryData
 {
     internal static string ApplyReplacements(string input) =>
@@ -196,7 +192,7 @@ internal class CoreTestData : TheoryData
                         (x.Category != null)
                         && (
                             x.Category.Products.Any(p =>
-                                (p.Name != null && p.Name == "Product 2")
+                                p.Name == "Product 2"
                                 || p.Id == 1
                                 || (
                                     p.Categories.Any(c =>
@@ -269,9 +265,7 @@ internal class CoreTestData : TheoryData
     internal static TestBuilder<Product> NullableDateTimeCheck =>
         new(
             "Nullable DateTime Check",
-            x =>
-                x.CreatedAt != null
-                && x.CreatedAt.Value == ResultMatchSeed.CreatedDate,
+            x => x.CreatedAt == ResultMatchSeed.CreatedDate,
             x =>
                 x.Equal<Product, DateTime?>(
                     y => y.CreatedAt,
@@ -336,7 +330,7 @@ internal class CoreTestData : TheoryData
     internal static TestBuilder<Product> ReplaceMethodCheck =>
         new(
             "String.Replace method Check",
-            x => x.Name != null && x.Name.Replace(" ", "") == "Product2",
+            x => x.Name.Replace(" ", "") == "Product2",
             x =>
                 x.Equal<Product, string>(
                     y => y.Name.Replace(" ", ""),
@@ -350,7 +344,7 @@ internal class CoreTestData : TheoryData
     internal static TestBuilder<Product> ReplaceManipulatorCheck =>
         new(
             "Replace manipulator Check",
-            x => x.Name != null && x.Name.Replace(" ", "") == "Product2",
+            x => x.Name.Replace(" ", "") == "Product2",
             x =>
                 x.Equal<Product, string>(
                     y => y.Name,

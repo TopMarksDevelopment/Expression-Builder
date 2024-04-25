@@ -45,31 +45,9 @@ public class FilterStatement<TPropertyType>
     public IFilterCollection<TPropertyType?> Values { get; set; } =
         new FilterCollection<TPropertyType?>();
 
+    [JsonConverter(typeof(FilterStatementOptionsJsonConverter))]
     [ProtoMember(6)]
-    List<ManipulatorInfo> ManipulatorInfo
-    {
-        get =>
-            Manipulators
-                .Select(x =>
-                    x is ExpressionMethodManipulator eMM
-                        ? new ManipulatorInfo(eMM)
-                        : new ManipulatorInfo(x.Name, x.Arguments)
-                )
-                .ToList();
-        set
-        {
-            List<IEntityManipulator> manipulators = [];
-
-            var i = TypeTracker.ManipulatorTypes;
-            foreach (var item in value)
-                manipulators.Add(SerializerBase.FindManipulator(item, ref i));
-
-            Manipulators = manipulators;
-        }
-    }
-
-    [JsonConverter(typeof(IEntityManipulatorJsonConverter))]
-    public IEnumerable<IEntityManipulator> Manipulators { get; set; } = [];
+    public IFilterStatementOptions? Options { get; set; }
 
     [ProtoMember(1)]
     public Connector Connector { get; set; } = Connector.And;
@@ -91,15 +69,8 @@ public class FilterStatement<TPropertyType>
             PropertyId,
             parameterLog,
             (m, o) =>
-            {
-                var inlineMember = m;
-
-                foreach (var manipulator in Manipulators)
-                    inlineMember = manipulator.ManipulateExpression(m);
-
-                return Operation.Build(inlineMember, Values, Manipulators);
-            },
-            Operation.SkipNullMemberChecks
+                Operation.Build(Options.ApplyManipulators(m), Values, Options),
+            Operation.Defaults.NullHandler
         );
     }
 
@@ -129,18 +100,7 @@ public class FilterStatement<TPropertyType>
         Operation = operation;
         Values = values;
         Connector = connector;
-
-        if (options?.Manipulators != null)
-            Manipulators = options.Manipulators;
-
-        if (options != null)
-        {
-            if (options.SkipNullChecks.HasValue)
-                Operation.SkipNullMemberChecks = options.SkipNullChecks.Value;
-
-            if (options.Match.HasValue)
-                Operation.Match = options.Match.Value;
-        }
+        Options = options;
 
         Operation.Validate(this);
     }
@@ -262,14 +222,17 @@ public class FilterStatement<TPropertyType>
 
     public override string ToString()
     {
-        var outputString = $"{PropertyId} {Operation.Name}";
+        var outputString = PropertyId;
 
-        foreach (var manip in Manipulators)
-            outputString +=
-                $".{manip.Name}({string.Join(",", manip.Arguments)})";
+        if (Options?.Manipulators != null)
+            foreach (var manip in Options.Manipulators)
+                outputString +=
+                    $".{manip.Name}({string.Join(",", manip.Arguments)})";
 
-        if (Values.Count > 1)
-            outputString += $" {Operation.Match:g}";
+        outputString += " " + Operation.Name;
+
+        if (Values.Count > 1 || Options?.Match != null)
+            outputString += $" {Options?.Match ?? Operation.Defaults.Match:g}";
 
         if (Values.Any())
             outputString += $" [ {string.Join(", ", Values)} ]";

@@ -1,7 +1,5 @@
 namespace ExpressionBuilder.Tests;
 
-using TopMarksDevelopment.ExpressionBuilder.Api;
-
 [Collection("Matching Expressions to Strings")]
 public class ExpressionMatchStringTests
 {

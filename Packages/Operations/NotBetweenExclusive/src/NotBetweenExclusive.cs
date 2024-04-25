@@ -10,15 +10,34 @@ public struct NotBetweenExclusive : IOperation
 
     public readonly string Name => "NotBetweenExclusive";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new()
+        {
+            Match = Matches.All,
+            NullHandler = OperationNullHandler.IsNullOr
+        };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
-    ) => Expression.Not(new BetweenExclusive().Build(member, values, manipulators));
+        IFilterStatementOptions? options
+    ) =>
+        Expression.Not(
+            Expression.AndAlso(
+                Expression.GreaterThan(
+                    member,
+                    Expression.Constant(
+                        options.ApplyManipulators(values.ElementAt(0))
+                    )
+                ),
+                Expression.LessThan(
+                    member,
+                    Expression.Constant(
+                        options.ApplyManipulators(values.ElementAt(1))
+                    )
+                )
+            )
+        );
 
     public readonly void Validate(IFilterStatement statement)
     {

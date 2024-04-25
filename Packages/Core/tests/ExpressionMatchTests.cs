@@ -1,6 +1,5 @@
 namespace ExpressionBuilder.Tests;
 
-using Xunit;
 
 [Collection("Matching queries - Expressions")]
 public class ExpressionAllTests

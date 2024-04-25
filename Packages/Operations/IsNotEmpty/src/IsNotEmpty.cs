@@ -6,22 +6,26 @@ using TopMarksDevelopment.ExpressionBuilder.Api;
 
 public struct IsNotEmpty : IOperation
 {
-    static IsEmpty? _original;
-    static IsEmpty Original => _original ??= new();
-
     public IsNotEmpty() { }
 
     public readonly string Name => "IsNotEmpty";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = Original.SkipNullMemberChecks;
+    public readonly OperationDefaults Defaults =>
+        new()
+        {
+            Match = Matches.All,
+            NullHandler = OperationNullHandler.IsNullOr
+        };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
-        IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
-    ) => Expression.Not(Original.Build(member, values, manipulators));
+        IFilterCollection<TPropertyType?> _,
+        IFilterStatementOptions? __
+    ) =>
+        Expression.NotEqual(
+            member.ToStringExpression(),
+            Expression.Constant("")
+        );
 
     public readonly void Validate(IFilterStatement statement)
     {

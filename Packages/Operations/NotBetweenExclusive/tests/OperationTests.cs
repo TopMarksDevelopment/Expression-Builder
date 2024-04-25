@@ -2,7 +2,7 @@ namespace TopMarksDevelopment.ExpressionBuilder.Operations.Tests.NotBetweenExclu
 
 public class OperationTests
 {
-    [Theory(DisplayName = "Anything other than 2 values throws")]
+    [Theory(DisplayName = "Having no values throws")]
     [InlineData(null)]
     [InlineData(new int[] {})]
     [InlineData(new int[] { 1 })]

@@ -10,15 +10,32 @@ public struct NotEqual : IOperation
 
     public readonly string Name => "NotEqual";
 
-    public Matches Match { get; set; } = Matches.Any;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new() { Match = Matches.All, NullHandler = OperationNullHandler.Skip };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
-    ) => Expression.Not(new Equal() { Match = Match }.Build(member, values, manipulators));
+        IFilterStatementOptions? options
+    ) =>
+        values.Count == 1
+            ? Expression.NotEqual(
+                member,
+                Expression.Constant(
+                    options.ApplyManipulators(values.ElementAt(0))
+                )
+            )
+            : options?.Match == Matches.Any
+                ? member.WorkOnValues(
+                    values,
+                    Matches.Any,
+                    (m, v) =>
+                        Expression.NotEqual(
+                            m,
+                            Expression.Constant(options?.ApplyManipulators(v))
+                        )
+                )
+                : Expression.Not(new In().Build(member, values, options));
 
     public readonly void Validate(IFilterStatement statement)
     {

@@ -11,23 +11,30 @@ public struct BetweenExclusive : IOperation
 
     public readonly string Name => "BetweenExclusive";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new()
+        {
+            Match = Matches.All,
+            NullHandler = OperationNullHandler.NotNullAnd
+        };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
+        IFilterStatementOptions? options
     ) =>
         Expression.AndAlso(
             Expression.GreaterThan(
                 member,
-                Expression.Constant(values.ElementAt(0))
+                Expression.Constant(
+                    options.ApplyManipulators(values.ElementAt(0))
+                )
             ),
             Expression.LessThan(
                 member,
-                Expression.Constant(values.ElementAt(1))
+                Expression.Constant(
+                    options.ApplyManipulators(values.ElementAt(1))
+                )
             )
         );
 

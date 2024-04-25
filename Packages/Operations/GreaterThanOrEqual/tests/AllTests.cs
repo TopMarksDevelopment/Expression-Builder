@@ -1,13 +1,13 @@
 namespace ExpressionBuilder.Tests;
 
-using System.Collections.Generic;
-using ExpressionBuilder.Tests.Models;
-using TopMarksDevelopment.ExpressionBuilder;
-
-public class AllTests
+public class AllTests : TheoryData
 {
-    public static IEnumerable<object[]> GetAllMatchers() =>
-        new List<object[]> { new[] { GreaterThanOrEqualX } };
+    public AllTests() =>
+        AddRows(
+            [
+                [GreaterThanOrEqualX]
+            ]
+        );
 
     static TestBuilder<Product> GreaterThanOrEqualX =>
         new(

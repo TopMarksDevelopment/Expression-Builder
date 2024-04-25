@@ -1,17 +1,19 @@
 namespace ExpressionBuilder.Tests;
 
-using System.Collections.Generic;
-using ExpressionBuilder.Tests.Models;
-using TopMarksDevelopment.ExpressionBuilder;
-
-public class AllTests
+public class AllTests : TheoryData
 {
+    public AllTests() =>
+        AddRows(
+            [
+                [MultiMatcher],
+                [MultiNullMatcher]
+            ]
+        );
+
     internal static string ApplyReplacements(string input) =>
         input
-            .Replace("AllTests.values.", "[1, 2].");
-
-    public static IEnumerable<object[]> GetAllMatchers() =>
-        new List<object[]> { new[] { MultiMatcher } };
+            .Replace("AllTests.values.", "[1, 2].")
+            .Replace("AllTests.nullValues.", "[1, 2].");
 
     static TestBuilder<Product> MultiMatcher =>
         new(
@@ -23,5 +25,16 @@ public class AllTests
             x => x.NotIn(x => x.Id, values)
         );
 
+    static TestBuilder<Product> MultiNullMatcher =>
+        new(
+            "Matches multiple values",
+            x => x.BrandId == null || !nullValues.Contains(x.BrandId.Value),
+            x => x.NotIn("BrandId", nullValues),
+            x => x.NotIn(x => x.BrandId, nullValues),
+            x => x.NotIn(x => x.BrandId, nullValues),
+            x => x.NotIn(x => x.BrandId, nullValues)
+        );
+
     static readonly int[] values = [1, 2];
+    static readonly int?[] nullValues = [1, 2];
 }

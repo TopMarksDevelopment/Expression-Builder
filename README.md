@@ -1,8 +1,8 @@
 # Expression Builder
 
 [![Icon for GitHub actions workflow status](https://img.shields.io/github/actions/workflow/status/TopMarksDevelopment/Expression-Builder/build-and-test.yml?style=for-the-badge)](https://github.com/TopMarksDevelopment/Expression-Builder/actions/workflows/build-and-test.yml)
-[![Icon for NuGetVersion](https://img.shields.io/nuget/v/TopMarksDevelopment.ExpressionBuilder?style=for-the-badge)](https://www.nuget.org/packages/TopMarksDevelopment.ExpressionBuilder)
-[![Icon for NuGetVersion](https://img.shields.io/nuget/dt/TopMarksDevelopment.ExpressionBuilder?style=for-the-badge)](https://www.nuget.org/packages/TopMarksDevelopment.ExpressionBuilder)
+[![Icon for NuGet version](https://img.shields.io/nuget/v/TopMarksDevelopment.ExpressionBuilder?style=for-the-badge)](https://www.nuget.org/packages/TopMarksDevelopment.ExpressionBuilder)
+[![Icon for NuGet download count](https://img.shields.io/nuget/dt/TopMarksDevelopment.ExpressionBuilder?style=for-the-badge)](https://www.nuget.org/packages/TopMarksDevelopment.ExpressionBuilder)
 
 If you're looking for a library to help you easily build lambda expressions, look no further than the **Expression Builder** package. With this library you can quickly create a filter that can be applied to lists and database queries; even dynamically. Plus, it's packed with some great features too!
 
@@ -294,6 +294,50 @@ var filterFromJson =
 ```
 
 #### `Byte[]` serialisation (ProtoBuf)
+
+> ⚠ Important: For now serialization is under development. I'm looking at ways to improve/simplify further customisation.
+
+As the `FilterStatment<>` expects generic types, we wanted to ensure that the serialization order is maintained for the proper deserialization of data. To this there is a default order of the most generic types (detailed below). If your type isn't listed below then you must access the `TypeTracker.FilterStatementTypes` static property and add to it - you can also decide to create your own set by replacing the values once at runtime.
+
+<details>
+<summary>Default Type Order</summary>
+
+Default numeric order of statement types
+
+| FieldNumber | Filter Statement Type                  |
+| :---------: | -------------------------------------- |
+|     50      | FilterStatement&lt;string&gt;          |
+|     51      | FilterStatement&lt;string?&gt;         |
+|     52      | FilterStatement&lt;int&gt;             |
+|     53      | FilterStatement&lt;int?&gt;            |
+|     54      | FilterStatement&lt;short&gt;           |
+|     55      | FilterStatement&lt;short?&gt;          |
+|     56      | FilterStatement&lt;long&gt;            |
+|     57      | FilterStatement&lt;long?&gt;           |
+|     58      | FilterStatement&lt;uint&gt;            |
+|     59      | FilterStatement&lt;uint?&gt;           |
+|     60      | FilterStatement&lt;ushort&gt;          |
+|     61      | FilterStatement&lt;ushort?&gt;         |
+|     62      | FilterStatement&lt;ulong&gt;           |
+|     63      | FilterStatement&lt;ulong?&gt;          |
+|     64      | FilterStatement&lt;byte&gt;            |
+|     65      | FilterStatement&lt;byte?&gt;           |
+|     66      | FilterStatement&lt;bool&gt;            |
+|     67      | FilterStatement&lt;bool?&gt;           |
+|     68      | FilterStatement&lt;DateTime&gt;        |
+|     69      | FilterStatement&lt;DateTime?&gt;       |
+|     70      | FilterStatement&lt;DateTimeOffset&gt;  |
+|     71      | FilterStatement&lt;DateTimeOffset?&gt; |
+|     72      | FilterStatement&lt;DateOnly&gt;        |
+|     73      | FilterStatement&lt;DateOnly?&gt;       |
+|     74      | FilterStatement&lt;TimeOnly&gt;        |
+|     75      | FilterStatement&lt;TimeOnly?&gt;       |
+|     76      | FilterStatement&lt;float&gt;           |
+|     77      | FilterStatement&lt;float?&gt;          |
+|     78      | FilterStatement&lt;double&gt;          |
+|     79      | FilterStatement&lt;double?&gt;         |
+
+</details>
 
 ```CSharp
 // Using the `filter` that was built above

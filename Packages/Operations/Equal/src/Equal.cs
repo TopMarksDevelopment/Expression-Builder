@@ -11,18 +11,28 @@ public partial struct Equal : IOperation
 
     public readonly string Name => "Equal";
 
-    public Matches Match { get; set; } = Matches.Any;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new() { Match = Matches.Any, NullHandler = OperationNullHandler.Skip };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
-    ) =>
-        values.Count > 1
-            ? new In() { Match = Match }.Build(member, values, manipulators)
-            : Expression.Equal(member, Expression.Constant(values.First()));
+        IFilterStatementOptions? options
+    )
+    {
+        if (values.Count > 1)
+            return new In().Build(member, values, options);
+
+        Expression value = Expression.Constant(values.First());
+
+        if (
+            member.Type != value.Type
+            && Nullable.GetUnderlyingType(value.Type) == null
+        )
+            value = Expression.Convert(value, typeof(TPropertyType?));
+
+        return Expression.Equal(member, value);
+    }
 
     public readonly void Validate(IFilterStatement statement)
     {
@@ -32,7 +42,10 @@ public partial struct Equal : IOperation
                 "Must have at least one value"
             );
 
-        if (Match == Matches.All && statement.Values.Count > 1)
+        if (
+            statement.Options?.Match == Matches.All
+            && statement.Values.Count > 1
+        )
             throw new ArgumentOutOfRangeException(
                 nameof(statement.Values),
                 "No more than one value when matching `All`"

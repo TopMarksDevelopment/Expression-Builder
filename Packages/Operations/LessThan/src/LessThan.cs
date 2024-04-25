@@ -10,28 +10,28 @@ public struct LessThan : IOperation
 
     public readonly string Name => "LessThan";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new()
+        {
+            Match = Matches.All,
+            NullHandler = OperationNullHandler.NotNullAnd
+        };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
-    )
-    {
-        if (!values.Any())
-            throw new ArgumentOutOfRangeException(
+        IFilterStatementOptions? options
+    ) =>
+        !values.Any()
+            ? throw new ArgumentOutOfRangeException(
                 nameof(values),
                 "Must have at least one value"
+            )
+            : member.WorkOnValues(
+                values,
+                options?.Match ?? Defaults.Match,
+                (m, v) => Expression.LessThan(m, Expression.Constant(v))
             );
-
-        return member.WorkOnValues(
-            values,
-            Match,
-            (m, v) => Expression.LessThan(m, Expression.Constant(v))
-        );
-    }
 
     public readonly void Validate(IFilterStatement statement)
     {

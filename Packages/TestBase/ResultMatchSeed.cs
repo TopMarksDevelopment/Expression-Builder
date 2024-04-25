@@ -1,6 +1,4 @@
 namespace ExpressionBuilder.Tests;
-
-using System.Collections.Generic;
 using System.Linq;
 using ExpressionBuilder.Tests.Models;
 
@@ -12,6 +10,14 @@ public class ResultMatchSeed
         get => _createdDate ??= DateTime.Now;
         set => _createdDate = value;
     }
+
+    public ICollection<T> GetCollection<T>()
+        where T : class =>
+        typeof(T) == typeof(Product)
+            ? (ICollection<T>)Products
+            : typeof(T) == typeof(StockLocation)
+                ? (ICollection<T>)StockLocations
+                : (ICollection<T>)Categories;
 
     public HashSet<Product> Products { get; set; }
     public HashSet<StockLocation> StockLocations { get; set; }

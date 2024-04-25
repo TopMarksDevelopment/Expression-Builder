@@ -3,6 +3,7 @@ namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
+using TopMarksDevelopment.ExpressionBuilder.Api.Helpers;
 
 public struct DoesNotContain : IOperation
 {
@@ -10,21 +11,30 @@ public struct DoesNotContain : IOperation
 
     public readonly string Name => "DoesNotContain";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new() { Match = Matches.All, NullHandler = OperationNullHandler.IsNullOr };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
+        IFilterStatementOptions? options
     ) =>
-        Expression.Not(
-            new Contains()
-            {
-                Match = Match == Matches.Any ? Matches.All : Match
-            }.Build(member, values, manipulators)
-        );
+        member
+            .ToTrimLowerStringExpression()
+            .WorkOnValues(
+                values,
+                options?.Match ?? Defaults.Match,
+                (m, v) =>
+                    Expression.Not(
+                        Expression.Call(
+                            m,
+                            HelperMethods.ContainsMethod,
+                            options.ApplyManipulators(
+                                v.ToTrimLowerStringConstant()
+                            )
+                        )
+                    )
+            );
 
     public readonly void Validate(IFilterStatement statement)
     {

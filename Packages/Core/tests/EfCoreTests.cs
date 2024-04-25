@@ -1,5 +1,4 @@
 namespace ExpressionBuilder.Tests;
-using Xunit;
 
 [Collection("Matching queries - Results")]
 public class EfCoreTests : EfCoreTestBase

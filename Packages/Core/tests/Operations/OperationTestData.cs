@@ -1,8 +1,5 @@
 namespace ExpressionBuilder.Tests;
 
-using ExpressionBuilder.Tests.Models;
-using TopMarksDevelopment.ExpressionBuilder;
-
 internal class OperationTestData : TheoryData<TestBuilder<Product>>
 {
     internal static DateTime? createdDate = new(2023, 10, 1, 10, 0, 10);
@@ -14,26 +11,22 @@ internal class OperationTestData : TheoryData<TestBuilder<Product>>
             .Replace("new [] {", "[")
             .Replace("}.", "].")
             .Replace("OperationTestData.nonNullSource", "[1, 3]")
-            .Replace("[OperationTestData.createdDate", "[" + createdDate.ToString())
-            .Replace("OperationTestData.otherDate]", otherDate.ToString() + "]");
+            .Replace(
+                "[OperationTestData.createdDate",
+                "[" + createdDate.ToString()
+            )
+            .Replace(
+                "OperationTestData.otherDate]",
+                otherDate.ToString() + "]"
+            );
 
     public OperationTestData() =>
-        AddRange(
-            NullPropertyHasNullCheck,
-            NonNullableHasNoNullCheck,
-            SkipNullCheck
-        );
+        AddRange(NullPropertyHasNullCheck, NonNullableHasNoNullCheck);
 
     static TestBuilder<Product> NullPropertyHasNullCheck =>
         new(
             "A null property should have null checks",
-            x =>
-                (x.CreatedAt != null)
-                && (
-                    new[] { createdDate, otherDate }.Contains(
-                        (DateTime?)x.CreatedAt.Value
-                    )
-                ),
+            x => new[] { createdDate, otherDate }.Contains(x.CreatedAt),
             x =>
                 x.Equal<Product, DateTime?>(
                     x => x.CreatedAt,
@@ -54,33 +47,36 @@ internal class OperationTestData : TheoryData<TestBuilder<Product>>
             x => x.In(x => x.Id, nonNullSource)
         );
 
-    static TestBuilder<Product> SkipNullCheck =>
-        new(
-            "A null check can be skipped",
-            x => new[] { createdDate, otherDate }.Contains(x.CreatedAt),
-            x =>
-                x.Equal<Product, DateTime?>(
-                    x => x.CreatedAt,
-                    [createdDate, otherDate],
-                    new FilterStatementOptions { SkipNullChecks = true }
-                ),
-            x =>
-                x.Equal(
-                    x => x.CreatedAt,
-                    [createdDate, otherDate],
-                    new FilterStatementOptions { SkipNullChecks = true }
-                ),
-            x =>
-                x.Equal(
-                    x => x.CreatedAt,
-                    [createdDate, otherDate],
-                    new FilterStatementOptions { SkipNullChecks = true }
-                ),
-            x =>
-                x.Equal(
-                    x => x.CreatedAt,
-                    [createdDate, otherDate],
-                    new FilterStatementOptions { SkipNullChecks = true }
-                )
-        );
+    // This is no longer available - need to revisit (as per blow)
+    // https://github.com/TopMarksDevelopment/Expression-Builder/discussions/14
+    //
+    // static TestBuilder<Product> SkipNullCheck =>
+    //     new(
+    //         "A null check can be skipped",
+    //         x => new[] { createdDate, otherDate }.Contains(x.CreatedAt),
+    //         x =>
+    //             x.Equal<Product, DateTime?>(
+    //                 x => x.CreatedAt,
+    //                 [createdDate, otherDate],
+    //                 new FilterStatementOptions { SkipNullChecks = true }
+    //             ),
+    //         x =>
+    //             x.Equal(
+    //                 x => x.CreatedAt,
+    //                 [createdDate, otherDate],
+    //                 new FilterStatementOptions { SkipNullChecks = true }
+    //             ),
+    //         x =>
+    //             x.Equal(
+    //                 x => x.CreatedAt,
+    //                 [createdDate, otherDate],
+    //                 new FilterStatementOptions { SkipNullChecks = true }
+    //             ),
+    //         x =>
+    //             x.Equal(
+    //                 x => x.CreatedAt,
+    //                 [createdDate, otherDate],
+    //                 new FilterStatementOptions { SkipNullChecks = true }
+    //             )
+    //     );
 }

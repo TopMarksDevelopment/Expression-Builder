@@ -41,7 +41,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Api\src\Api.Src.csproj" />
-    <ProjectReference Include="..\..\Equal\src\Operations.Equal.Src.csproj" />
+    <ProjectReference Include="..\..\In\src\Operations.In.Src.csproj" />
   </ItemGroup>
 
 </Project>

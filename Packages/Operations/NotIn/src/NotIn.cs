@@ -10,28 +10,24 @@ public struct NotIn : IOperation
 
     public readonly string Name => "NotIn";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new()
+        {
+            Match = Matches.All,
+            NullHandler = OperationNullHandler.IsNullOr
+        };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
-    ) =>
-        Expression.Not(
-            new In().Build(
-                member,
-                values,
-                manipulators
-            )
-        );
+        IFilterStatementOptions? options
+    ) => Expression.Not(new In().Build(member, values, options));
 
     public readonly void Validate(IFilterStatement statement)
     {
-        if (Match == Matches.Any)
+        if (statement.Options?.Match == Matches.Any)
             throw new ArgumentException(
-                nameof(Match),
+                nameof(statement.Options.Match),
                 "This method can only match `All`"
             );
 

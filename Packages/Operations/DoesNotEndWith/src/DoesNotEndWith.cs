@@ -3,6 +3,7 @@ namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
+using TopMarksDevelopment.ExpressionBuilder.Api.Helpers;
 
 public struct DoesNotEndWith : IOperation
 {
@@ -10,15 +11,28 @@ public struct DoesNotEndWith : IOperation
 
     public readonly string Name => "DoesNotEndWith";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new() { Match = Matches.All, NullHandler = OperationNullHandler.IsNullOr };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
-    ) => Expression.Not(new EndsWith().Build(member, values, manipulators));
+        IFilterStatementOptions? options
+    ) =>
+        member
+            .ToTrimLowerStringExpression()
+            .WorkOnValues(
+                values,
+                options?.Match ?? Defaults.Match,
+                (m, v) =>
+                    Expression.Not(
+                        Expression.Call(
+                            m,
+                            HelperMethods.EndsWithMethod,
+                            v.ToTrimLowerStringConstant()
+                        )
+                    )
+            );
 
     public readonly void Validate(IFilterStatement statement)
     {

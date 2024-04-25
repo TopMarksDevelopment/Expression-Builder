@@ -3,6 +3,7 @@ namespace TopMarksDevelopment.ExpressionBuilder.Api;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using TopMarksDevelopment.ExpressionBuilder;
 
 public partial interface IFilter<TClass> : IFilter
     where TClass : class

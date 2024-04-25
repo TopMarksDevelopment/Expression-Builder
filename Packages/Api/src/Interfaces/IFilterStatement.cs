@@ -21,8 +21,7 @@ public interface IFilterStatement : IFilterItem
     IFilterCollection Values { get; set; }
 
     /// <summary>
-    /// A set of methods we can use to manipulate the property<br/>
-    /// (<b>Note:</b> not the values)
+    /// Any options to use/apply when building our expressions
     /// </summary>
-    IEnumerable<IEntityManipulator> Manipulators { get; set; }
+    IFilterStatementOptions? Options { get; set; }
 }

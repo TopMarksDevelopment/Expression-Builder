@@ -1,6 +1,5 @@
 namespace ExpressionBuilder.Tests;
 
-using ExpressionBuilder.Tests.Models;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 

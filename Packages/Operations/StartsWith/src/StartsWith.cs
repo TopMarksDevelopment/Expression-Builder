@@ -11,14 +11,17 @@ public struct StartsWith : IOperation
 
     public readonly string Name => "StartsWith";
 
-    public Matches Match { get; set; } = Matches.Any;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new()
+        {
+            Match = Matches.Any,
+            NullHandler = OperationNullHandler.NotNullAnd
+        };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
+        IFilterStatementOptions? options
     ) =>
         !values.Any()
             ? throw new ArgumentOutOfRangeException(
@@ -29,7 +32,7 @@ public struct StartsWith : IOperation
                 .ToTrimLowerStringExpression()
                 .WorkOnValues(
                     values,
-                    Match,
+                    options?.Match ?? Defaults.Match,
                     (m, v) =>
                         Expression.Call(
                             m,
@@ -46,7 +49,10 @@ public struct StartsWith : IOperation
                 "Must have at least one value"
             );
 
-        if (Match == Matches.All && statement.Values.Count > 1)
+        if (
+            statement.Options?.Match == Matches.All
+            && statement.Values.Count > 1
+        )
             throw new ArgumentOutOfRangeException(
                 nameof(statement.Values),
                 "No more than one value when matching `All`"

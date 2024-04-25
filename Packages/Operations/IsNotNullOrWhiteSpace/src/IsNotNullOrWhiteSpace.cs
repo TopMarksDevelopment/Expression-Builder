@@ -10,15 +10,21 @@ public struct IsNotNullOrWhiteSpace : IOperation
 
     public readonly string Name => "IsNotNullOrWhiteSpace";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = true;
+    public readonly OperationDefaults Defaults =>
+        new() { Match = Matches.All, NullHandler = OperationNullHandler.Skip };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
-        IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
-    ) => Expression.Not(new IsNullOrWhiteSpace().Build(member, values, manipulators));
+        IFilterCollection<TPropertyType?> _,
+        IFilterStatementOptions? __
+    ) =>
+        Expression.AndAlso(
+            Expression.NotEqual(member, Expression.Constant(null)),
+            Expression.NotEqual(
+                member.ToTrimLowerStringExpression(),
+                Expression.Constant("")
+            )
+        );
 
     public readonly void Validate(IFilterStatement statement)
     {

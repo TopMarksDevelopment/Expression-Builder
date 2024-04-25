@@ -24,7 +24,7 @@
 		<ProjectReference Include="..\..\TestBase\TestBase.csproj" />
 		<ProjectReference Include="..\..\Api\src\Api.Src.csproj" />
 		<ProjectReference Include="..\..\Operations\Equal\src\Operations.Equal.Src.csproj" />
-		<ProjectReference Include="..\..\Operations\LessThanOrEqual\src\Operations.LessThanOrEqual.Src.csproj" />
 		<ProjectReference Include="..\..\Operations\IsNull\src\Operations.IsNull.Src.csproj" />
+		<ProjectReference Include="..\..\Operations\LessThanOrEqual\src\Operations.LessThanOrEqual.Src.csproj" />
 	</ItemGroup>
 </Project>

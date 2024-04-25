@@ -11,39 +11,30 @@ public struct Contains : IOperation
 
     public readonly string Name => "Contains";
 
-    public Matches Match { get; set; } = Matches.Any;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new()
+        {
+            Match = Matches.Any,
+            NullHandler = OperationNullHandler.NotNullAnd
+        };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
-    )
-    {
-        if (!values.Any())
-            throw new ArgumentOutOfRangeException(
-                nameof(values),
-                "Must have at least one value"
-            );
-
-        return member
+        IFilterStatementOptions? options
+    ) =>
+        member
             .ToTrimLowerStringExpression()
             .WorkOnValues(
                 values,
-                Match,
+                options?.Match ?? Defaults.Match,
                 (m, v) =>
-                {
-                    var value = v.ToTrimLowerStringConstant();
-
-                    if (manipulators?.Any() == true)
-                        foreach (var manip in manipulators)
-                            value = manip.ManipulateExpression(value);
-
-                    return Expression.Call(m, H.ContainsMethod, value);
-                }
+                    Expression.Call(
+                        m,
+                        H.ContainsMethod,
+                        options.ApplyManipulators(v.ToTrimLowerStringConstant())
+                    )
             );
-    }
 
     public readonly void Validate(IFilterStatement statement)
     {

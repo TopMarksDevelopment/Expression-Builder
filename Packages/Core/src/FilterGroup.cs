@@ -48,13 +48,8 @@ public class FilterGroup : IFilterGroup, ISerializer
         LastGroup = lastGroup;
     }
 
-    public IFilterGroup Close()
-    {
-        if (LastGroup == null)
-            throw new InvalidOperationException("No group to close");
-
-        return LastGroup;
-    }
+    public IFilterGroup Close() =>
+        LastGroup ?? throw new InvalidOperationException("No group to close");
 
     public Expression Build(
         Expression member,
@@ -64,7 +59,7 @@ public class FilterGroup : IFilterGroup, ISerializer
             ParentPropertyExpression,
             parameterLog,
             (p, l) => BuildItems(p, parameterLog) ?? Expression.Constant(true),
-            false
+            OperationNullHandler.Skip
         );
 
     Expression? BuildItems(
@@ -116,9 +111,6 @@ public class FilterGroup : IFilterGroup, ISerializer
     {
         foreach (var item in Items)
             if (item is ISerializer ss)
-                ss.PrepForSerialisation(
-                    ifilterBase,
-                    ref fTypes
-                );
+                ss.PrepForSerialisation(ifilterBase, ref fTypes);
     }
 }
