@@ -5,29 +5,36 @@ using System.Linq;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
-public struct Between : IOperation
+public readonly struct Between : IOperation
 {
     public Between() { }
 
     public readonly string Name => "Between";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new()
+        {
+            Match = Matches.All,
+            NullHandler = OperationNullHandler.NotNullAnd
+        };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
+        IFilterStatementOptions? options
     ) =>
         Expression.AndAlso(
             Expression.GreaterThanOrEqual(
                 member,
-                Expression.Constant(values.ElementAt(0))
+                Expression.Constant(
+                    options.ApplyManipulators(values.ElementAt(0))
+                )
             ),
             Expression.LessThanOrEqual(
                 member,
-                Expression.Constant(values.ElementAt(1))
+                Expression.Constant(
+                    options.ApplyManipulators(values.ElementAt(1))
+                )
             )
         );
 

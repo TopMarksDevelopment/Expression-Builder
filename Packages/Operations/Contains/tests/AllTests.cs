@@ -1,13 +1,14 @@
 namespace ExpressionBuilder.Tests;
 
-using System.Collections.Generic;
-using ExpressionBuilder.Tests.Models;
-using TopMarksDevelopment.ExpressionBuilder;
-
-public class AllTests
+public class AllTests : TheoryData
 {
-    public static IEnumerable<object[]> GetAllMatchers() =>
-        new List<object[]> { new[] { Contains }, new[] { ContainsEither } };
+    public AllTests() =>
+        AddRows(
+            [
+                [Contains],
+                [ContainsEither]
+            ]
+        );
 
     static TestBuilder<Product> Contains =>
         new(
@@ -33,12 +34,10 @@ public class AllTests
             x =>
                 x.Contains<Product, string?>(
                     x => x.OtherSearchField,
-                    new[] { "Word1", "1Word" }
+                    ["Word1", "1Word"]
                 ),
-            x =>
-                x.Contains(x => x.OtherSearchField, new[] { "Word1", "1Word" }),
-            x =>
-                x.Contains(x => x.OtherSearchField, new[] { "Word1", "1Word" }),
-            x => x.Contains(x => x.OtherSearchField, new[] { "Word1", "1Word" })
+            x => x.Contains(x => x.OtherSearchField, ["Word1", "1Word"]),
+            x => x.Contains(x => x.OtherSearchField, ["Word1", "1Word"]),
+            x => x.Contains(x => x.OtherSearchField, ["Word1", "1Word"])
         );
 }

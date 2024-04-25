@@ -4,10 +4,8 @@ using ProtoBuf;
 namespace TopMarksDevelopment.ExpressionBuilder.Serialization;
 
 [ProtoContract(UseProtoMembersOnly = true)]
-internal class ManipulatorInfo
+internal struct ManipulatorInfo
 {
-    ICollection<string>? _types;
-
     public ManipulatorInfo() { }
 
     public ManipulatorInfo(ExpressionMethodManipulator manipulator)
@@ -15,6 +13,9 @@ internal class ManipulatorInfo
         Name = manipulator.Name;
         Arguments = manipulator.Arguments;
         Type = manipulator.TypeName;
+        ArgTypes = manipulator
+            .ExpectedTypes.Select(x => x.FullName ?? x.Name)
+            .ToList();
     }
 
     public ManipulatorInfo(string name, object?[] arguments)
@@ -32,22 +33,12 @@ internal class ManipulatorInfo
     public string? Type { get; set; }
 
     [ProtoMember(3)]
-    public ICollection<string>? ArgTypes
-    {
-        get =>
-            Type == null
-                ? null
-                : _types ??= Arguments
-                    .Select(x => x!.GetType())
-                    .Select(x => x.FullName ?? x.Name)
-                    .ToList();
-        set => _types = value;
-    }
+    public ICollection<string>? ArgTypes { get; set; }
 
     [ProtoMember(4)]
     string Args
     {
-        get => JsonSerializer.Serialize(Arguments);
+        readonly get => JsonSerializer.Serialize(Arguments);
         set => Arguments = JsonSerializer.Deserialize<object?[]>(value) ?? [];
     }
 }

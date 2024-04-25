@@ -1,9 +1,5 @@
 namespace ExpressionBuilder.Tests;
 
-using System;
-using System.Linq.Expressions;
-using TopMarksDevelopment.ExpressionBuilder.Api;
-
 public record TestBuilder<T>(
     string Name, 
     Expression<Func<T, bool>> Expected, 

@@ -10,19 +10,14 @@ public struct IsNull : IOperation
 
     public readonly string Name => "IsNull";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = true;
+    public readonly OperationDefaults Defaults =>
+        new() { Match = Matches.All, NullHandler = OperationNullHandler.Skip };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
-        IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
-    ) =>
-        Expression.Equal(
-            member,
-            Expression.Constant(null)
-        );
+        IFilterCollection<TPropertyType?> _,
+        IFilterStatementOptions? __
+    ) => Expression.Equal(member, Expression.Constant(null));
 
     public readonly void Validate(IFilterStatement statement)
     {

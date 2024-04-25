@@ -1,6 +1,7 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 
 using System;
+using System.Collections;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
@@ -10,31 +11,70 @@ public struct In : IOperation
 
     public readonly string Name => "In";
 
-    public Matches Match { get; set; } = Matches.Any;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new()
+        {
+            Match = Matches.Any,
+            NullHandler = OperationNullHandler.NotNullAnd
+        };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
+        IFilterStatementOptions? options
     )
     {
-        var containsMethod = values
-            .GetType()
-            .GetMethod("Contains", [typeof(TPropertyType)]);
+        Expression constValues;
+        var EnumType = values.GetType();
 
-        if (containsMethod == null)
-            throw new MissingMethodException(
-                $"No contains method for {typeof(TPropertyType?)}"
+        if (options != null && options.Manipulators?.Any() == true)
+            if (typeof(TPropertyType) == member.Type)
+            {
+                var cc =
+                    (IFilterCollection<TPropertyType?>)
+                        Activator.CreateInstance(EnumType)!;
+
+                foreach (var val in values)
+                    cc.Add((TPropertyType?)options.ApplyManipulators(val));
+
+                constValues = Expression.Constant(cc);
+            }
+            else
+            {
+                var cc = (IList)
+                    Activator.CreateInstance(
+                        typeof(TinyFilterCollection<>).MakeGenericType(
+                            Nullable.GetUnderlyingType(member.Type) == null
+                                ? member.Type
+                                : typeof(Nullable<>).MakeGenericType(
+                                    member.Type
+                                )
+                        )
+                    )!;
+
+                EnumType = cc.GetType();
+
+                foreach (var val in values)
+                    cc.Add(options.ApplyManipulators(val));
+
+                constValues = Expression.Constant(cc);
+            }
+        else
+            constValues = Expression.Constant(values);
+
+        var containsMethod =
+            EnumType.GetMethod("Contains", [member.Type])
+            ?? throw new MissingMethodException(
+                $"No contains method for {typeof(TPropertyType?)} collection"
             );
 
         return Expression.Call(
-            Expression.Constant(values),
+            constValues,
             containsMethod,
             Nullable.GetUnderlyingType(
                 containsMethod.ReflectedType!.GenericTypeArguments[0]
-            ) == null || member.Type == typeof(TPropertyType?)
+            ) == null
+            || member.Type == typeof(TPropertyType?)
                 ? member
                 : Expression.Convert(member, typeof(TPropertyType?))
         );
@@ -42,9 +82,9 @@ public struct In : IOperation
 
     public readonly void Validate(IFilterStatement statement)
     {
-        if (Match == Matches.All)
+        if (statement.Options?.Match == Matches.All)
             throw new ArgumentOutOfRangeException(
-                nameof(Match),
+                nameof(statement.Options.Match),
                 "This method can only match `Any`"
             );
 

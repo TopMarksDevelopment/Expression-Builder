@@ -10,15 +10,14 @@ public struct IsNotNull : IOperation
 
     public readonly string Name => "IsNotNull";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = true;
+    public readonly OperationDefaults Defaults =>
+        new() { Match = Matches.All, NullHandler = OperationNullHandler.Skip };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
-        IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
-    ) => Expression.Not(new IsNull().Build(member, values, manipulators));
+        IFilterCollection<TPropertyType?> _,
+        IFilterStatementOptions? __
+    ) => Expression.NotEqual(member, Expression.Constant(null));
 
     public readonly void Validate(IFilterStatement statement)
     {

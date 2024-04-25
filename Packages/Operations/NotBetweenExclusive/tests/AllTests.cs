@@ -1,13 +1,14 @@
 namespace ExpressionBuilder.Tests;
 
-using System.Collections.Generic;
-using ExpressionBuilder.Tests.Models;
-using TopMarksDevelopment.ExpressionBuilder;
-
-public class AllTests
+public class AllTests : TheoryData
 {
-    public static IEnumerable<object[]> GetAllMatchers() =>
-        new List<object[]> { new[] { NotBetweenExclusiveXY } };
+    public AllTests() =>
+        AddRows(
+            [
+                [NotBetweenExclusiveXY],
+                [NullCheck]
+            ]
+        );
 
     static TestBuilder<Product> NotBetweenExclusiveXY =>
         new(
@@ -17,5 +18,15 @@ public class AllTests
             x => x.NotBetweenExclusive(x => x.Id, 1, 3),
             x => x.NotBetweenExclusive(x => x.Id, 1, 3),
             x => x.NotBetweenExclusive(x => x.Id, 1, 3)
+        );
+
+    static TestBuilder<Product> NullCheck =>
+        new(
+            "NotBetweenExclusive on nullable",
+            x => x.BrandId == null || !(x.BrandId.Value > 1 && x.BrandId.Value < 2),
+            x => x.NotBetweenExclusive<Product, int?>(x => x.BrandId, 1, 2),
+            x => x.NotBetweenExclusive(x => x.BrandId, 1, 2),
+            x => x.NotBetweenExclusive(x => x.BrandId, 1, 2),
+            x => x.NotBetweenExclusive(x => x.BrandId, 1, 2)
         );
 }

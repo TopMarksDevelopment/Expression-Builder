@@ -10,19 +10,18 @@ public struct IsEmpty : IOperation
 
     public readonly string Name => "IsEmpty";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new()
+        {
+            Match = Matches.All,
+            NullHandler = OperationNullHandler.NotNullAnd
+        };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
-        IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
-    ) =>
-        Expression.Equal(
-            member.ToStringExpression(),
-            Expression.Constant("")
-        );
+        IFilterCollection<TPropertyType?> _,
+        IFilterStatementOptions? __
+    ) => Expression.Equal(member.ToStringExpression(), Expression.Constant(""));
 
     public readonly void Validate(IFilterStatement statement)
     {

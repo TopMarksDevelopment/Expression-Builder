@@ -4,12 +4,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
-internal class FilterCollection<TPropertyType> : IFilterCollection<TPropertyType?>
+internal class FilterCollection<TPropertyType>
+    : IFilterCollection<TPropertyType?>
 {
-    ICollection<TPropertyType?> _values { get; set; } = [];
+    readonly ICollection<TPropertyType?> _values = [];
 
     public FilterCollection(IEnumerable<TPropertyType?> values)
     {
@@ -18,7 +18,7 @@ internal class FilterCollection<TPropertyType> : IFilterCollection<TPropertyType
 
     internal FilterCollection(IFilterCollection values)
     {
-        var list = new List<TPropertyType?>().ToArray();
+        TPropertyType?[] list = [];
 
         values.CopyTo(list, 0);
 
@@ -27,22 +27,13 @@ internal class FilterCollection<TPropertyType> : IFilterCollection<TPropertyType
 
     public FilterCollection() { }
 
-    public override string ToString()
-    {
-        var builder = new StringBuilder("[");
-
-        foreach (var item in _values)
-        {
-            if (builder.Length > 1)
-                builder.Append(", ");
-
-            builder.Append(item?.ToString() ?? "null");
-        }
-
-        return builder.ToString() + "]";
-    }
+    public override string ToString() =>
+        "["
+        + string.Join(", ", _values.Select(x => x?.ToString() ?? "null"))
+        + "]";
 
     public int Count => _values.Count;
+
     public bool Any() => _values.Any();
 
     public bool IsReadOnly => _values.IsReadOnly;
@@ -57,11 +48,13 @@ internal class FilterCollection<TPropertyType> : IFilterCollection<TPropertyType
 
     public bool Contains(TPropertyType? item) => _values.Contains(item);
 
-    public void CopyTo(TPropertyType?[] array, int arrayIndex) => _values.CopyTo(array, arrayIndex);
+    public void CopyTo(TPropertyType?[] array, int arrayIndex) =>
+        _values.CopyTo(array, arrayIndex);
 
     public bool Remove(TPropertyType? item) => _values.Remove(item);
 
-    IEnumerator<TPropertyType?> IEnumerable<TPropertyType?>.GetEnumerator() => _values.GetEnumerator();
+    IEnumerator<TPropertyType?> IEnumerable<TPropertyType?>.GetEnumerator() =>
+        _values.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => _values.GetEnumerator();
 
@@ -75,6 +68,7 @@ internal class FilterCollection<TPropertyType> : IFilterCollection<TPropertyType
         CopyTo(ppArray, index);
     }
 
-    public static explicit operator FilterCollection<TPropertyType>(List<TPropertyType> list)
-        => new(list);
+    public static explicit operator FilterCollection<TPropertyType>(
+        List<TPropertyType> list
+    ) => new(list);
 }

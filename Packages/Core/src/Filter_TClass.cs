@@ -16,6 +16,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
     where TClass : class
 {
     readonly IFilterGroup _group;
+    readonly IFilter? _oldFilter;
 
     IFilterGroup _current;
 
@@ -31,34 +32,50 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
 
     void PrepareForSerialization()
     {
-        if (TypeTracker.ProtoTypes == null)
+        if (!RuntimeTypeModel.Default.CanSerialize(typeof(IFilterItem)))
         {
             RuntimeTypeModel.Default.Add(typeof(Connector), true);
             RuntimeTypeModel.Default.Add(typeof(Matches), true);
 
-            RuntimeTypeModel.Default
-                .Add(typeof(IOperation), false)
-                .Add(1, "Name")
-                .Add(2, "Match");
-
-            RuntimeTypeModel.Default
-                .Add(typeof(IFilterGroup), false)
+            RuntimeTypeModel
+                .Default.Add(typeof(IFilterGroup), false)
                 .AddSubType(45, typeof(FilterGroup));
 
-            RuntimeTypeModel.Default
-                .Add(typeof(IFilterItem), false)
+            RuntimeTypeModel
+                .Default.Add(typeof(IFilterStatementOptions), false)
+                .AddSubType(45, typeof(FilterStatementOptions));
+
+            RuntimeTypeModel
+                .Default.Add(typeof(IFilterItem), false)
                 .AddSubType(45, typeof(IFilterStatement))
                 .AddSubType(46, typeof(IFilterGroup));
 
             Serializer.PrepareSerializer<Filter<TClass>>();
         }
 
-        var pType = TypeTracker.ProtoTypes ??= [];
-
-        (_group as FilterGroup)!.PrepForSerialisation(
-            RuntimeTypeModel.Default.Add(typeof(IFilterStatement), false),
-            ref pType
+        var pTypes = TypeTracker.FilterStatementTypes;
+        var filterMeta = RuntimeTypeModel.Default.Add(
+            typeof(IFilterStatement),
+            false
         );
+        var filterSubTypes = filterMeta
+            .GetSubtypes()
+            .Select(x => x.DerivedType.Type);
+        var baseType = typeof(FilterStatement<>);
+
+        var indexTracker = 0;
+        foreach (var pType in pTypes)
+        {
+            if (baseType != pType.GetGenericTypeDefinition())
+                throw new TypeLoadException("Must be of type FilterStatement<>");
+
+            if (!filterSubTypes.Contains(pType))
+                filterMeta.AddSubType(50 + indexTracker, pType);
+
+            indexTracker++;
+        }
+
+        (_group as FilterGroup)!.PrepForSerialisation(filterMeta, ref pTypes);
     }
 
     public void SerializeTo(Stream stream)
@@ -79,7 +96,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
     {
         var group = Serializer.Deserialize<IFilterGroup>(stream);
 
-        return new Filter<TClass>(group, group);
+        return new Filter<TClass>(group, group, null);
     }
 
     public static Filter<TClass> DeserializeFrom(byte[] bytes)
@@ -87,7 +104,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         using var memStream = new MemoryStream(bytes);
         var group = Serializer.Deserialize<IFilterGroup>(memStream);
 
-        return new Filter<TClass>(group, group);
+        return new Filter<TClass>(group, group, null);
     }
 
     public Filter()
@@ -96,12 +113,11 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         _current = _group;
     }
 
-    Filter(IFilterGroup group, IFilterGroup current) //, string PropertyPrefix)
+    Filter(IFilterGroup group, IFilterGroup current, IFilter? oldFilter)
     {
         _group = group;
-        //_propertyPrefix = PropertyPrefix;
-
         _current = current;
+        _oldFilter = oldFilter;
     }
 
     #region Add methods
@@ -178,6 +194,12 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
 
         _current = _current.Close();
 
+        try
+        {
+            _oldFilter?.CloseGroup();
+        }
+        catch { }
+
         return connection;
     }
 
@@ -201,7 +223,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         _current.Items.Add(newGroup);
         _current = newGroup;
 
-        return new Filter<T>(_group, _current);
+        return new Filter<T>(_group, _current, this);
     }
 
     public virtual IFilterConnection<T> CloseCollection<T>()
@@ -210,7 +232,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         CloseGroup();
 
         return new FilterConnection<T>(
-            new Filter<T>(_group, _current),
+            new Filter<T>(_group, _current, _oldFilter),
             _current
         );
     }
@@ -241,7 +263,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
                     null,
                     parameterLog,
                     (o, l) => _group.Build(o, parameterLog),
-                    false
+                    OperationNullHandler.Skip
                 ),
                 param
             );

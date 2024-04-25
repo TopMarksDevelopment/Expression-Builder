@@ -10,15 +10,34 @@ public struct NotBetween : IOperation
 
     public readonly string Name => "NotBetween";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new()
+        {
+            Match = Matches.All,
+            NullHandler = OperationNullHandler.IsNullOr
+        };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
-    ) => Expression.Not(new Between().Build(member, values, manipulators));
+        IFilterStatementOptions? options
+    ) =>
+        Expression.Not(
+            Expression.AndAlso(
+                Expression.GreaterThanOrEqual(
+                    member,
+                    Expression.Constant(
+                        options.ApplyManipulators(values.ElementAt(0))
+                    )
+                ),
+                Expression.LessThanOrEqual(
+                    member,
+                    Expression.Constant(
+                        options.ApplyManipulators(values.ElementAt(1))
+                    )
+                )
+            )
+        );
 
     public readonly void Validate(IFilterStatement statement)
     {

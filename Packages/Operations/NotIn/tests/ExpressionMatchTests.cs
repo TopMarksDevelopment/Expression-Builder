@@ -1,15 +1,10 @@
 namespace ExpressionBuilder.Tests;
 
-using System.Collections.Generic;
-using Xunit;
-
 [Collection("Matching queries - Expressions")]
 public class ExpressionAllTests
 {
-    public static IEnumerable<object[]> GetAll() => AllTests.GetAllMatchers();
-
     [Theory(DisplayName = "Factory")]
-    [MemberData(nameof(GetAll))]
+    [ClassData(typeof(AllTests))]
     public void CheckFactoryStrings<T>(TestBuilder<T> match) where T : class, IItemable
         => Assert.Equal(
             match.Expected.ToMatchString(AllTests.ApplyReplacements),
@@ -17,7 +12,7 @@ public class ExpressionAllTests
         );
     
     [Theory(DisplayName = "Filterable")]
-    [MemberData(nameof(GetAll))]
+    [ClassData(typeof(AllTests))]
     public void CheckFilterableStrings<T>(TestBuilder<T> match) where T : class, IItemable
         => Assert.Equal(
             match.Expected.ToMatchString(AllTests.ApplyReplacements),
@@ -25,7 +20,7 @@ public class ExpressionAllTests
         );
     
     [Theory(DisplayName = "QueryFilterable")]
-    [MemberData(nameof(GetAll))]
+    [ClassData(typeof(AllTests))]
     public void CheckQueryableStrings<T>(TestBuilder<T> match) where T : class, IItemable
         => Assert.Equal(
             match.Expected.ToMatchString(AllTests.ApplyReplacements),
@@ -33,7 +28,7 @@ public class ExpressionAllTests
         );
     
     [Theory(DisplayName = "Fluent")]
-    [MemberData(nameof(GetAll))]
+    [ClassData(typeof(AllTests))]
     public void CheckFluentStrings<T>(TestBuilder<T> match) where T : class, IItemable
         => Assert.Equal(
             match.Expected.ToMatchString(AllTests.ApplyReplacements),

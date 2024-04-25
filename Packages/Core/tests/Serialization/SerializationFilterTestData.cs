@@ -1,12 +1,9 @@
 namespace ExpressionBuilder.Tests;
 
-using ExpressionBuilder.Tests.Models;
-using TopMarksDevelopment.ExpressionBuilder;
-
-public class SerializationTestData : TheoryData<Filter<Category>>
+public class SerializationFilterTestData : TheoryData<Filter<Category>>
 {
-    public SerializationTestData() =>
-        AddRange(ReplaceManipulator, ReplaceMethod, SkipNulls);
+    public SerializationFilterTestData() =>
+        AddRange(ReplaceManipulator, ReplaceMethod);
 
     static Filter<Category> ReplaceManipulator =>
         (Filter<Category>)
@@ -47,13 +44,16 @@ public class SerializationTestData : TheoryData<Filter<Category>>
                 .CloseCollection<Category>()
                 .And();
 
-    static Filter<Category> SkipNulls =>
-        (Filter<Category>)
-            new Filter<Category>()
-                .Equal(
-                    x => x.Name,
-                    "Category 2",
-                    new FilterStatementOptions { SkipNullChecks = true }
-                )
-                .And();
+    // This is no longer available - need to revisit (as per blow)
+    // https://github.com/TopMarksDevelopment/Expression-Builder/discussions/14
+    // 
+    // static Filter<Category> SkipNulls =>
+    //     (Filter<Category>)
+    //         new Filter<Category>()
+    //             .Equal(
+    //                 x => x.Name,
+    //                 "Category 2",
+    //                 new FilterStatementOptions { SkipNullChecks = true }
+    //             )
+    //             .And();
 }

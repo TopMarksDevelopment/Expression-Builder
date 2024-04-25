@@ -12,14 +12,17 @@ public partial struct SmartSearch : IOperation
 
     public readonly string Name => "SmartSearch";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new()
+        {
+            Match = Matches.All,
+            NullHandler = OperationNullHandler.NotNullAnd
+        };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
+        IFilterStatementOptions? options
     )
     {
         if (!values.Any())
@@ -27,8 +30,6 @@ public partial struct SmartSearch : IOperation
                 nameof(values),
                 "There must be only 1 value"
             );
-
-        var valuesAsString = values.Select(x => x?.ToString());
 
         var memberExpr = member.ToTrimLowerStringExpression();
         Expression? exactMatchExpr = null;
@@ -38,7 +39,7 @@ public partial struct SmartSearch : IOperation
         {
             var matcher = true;
             var workingExpression = memberExpr;
-            var workingTerm = term?.ToString() ?? "";
+            var workingTerm = options.ApplyManipulators(term)?.ToString() ?? "";
 
             if (workingTerm.StartsWith('-'))
             {
@@ -75,7 +76,7 @@ public partial struct SmartSearch : IOperation
                     ),
                     Expression.Constant(matcher)
                 ),
-                Match == Matches.Any ? Connector.Or : Connector.And
+                options?.Match == Matches.Any ? Connector.Or : Connector.And
             );
         }
 
@@ -93,7 +94,7 @@ public partial struct SmartSearch : IOperation
 
     public static string[] SplitTerm(string input) =>
         SplitTermRegex().Split(input);
-        
-    [GeneratedRegex(" (?=([^\"]*\"[^\"]*\")*[^\"]*$)")]
+
+    [GeneratedRegex(" (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)")]
     private static partial Regex SplitTermRegex();
 }

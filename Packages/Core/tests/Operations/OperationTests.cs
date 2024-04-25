@@ -24,18 +24,11 @@ public class OperationTests
     [Theory(DisplayName = "QueryFilterable")]
     [ClassData(typeof(OperationTestData))]
     public void CheckQueryableStrings<T>(TestBuilder<T> match)
-        where T : class, IItemable
-    {
-        var xx = match.Expected.ToMatchString(
-            OperationTestData.ApplyReplacements
-        );
-        var yy = match.QueryFilterable.ToMatchString();
-
+        where T : class, IItemable =>
         Assert.Equal(
             match.Expected.ToMatchString(OperationTestData.ApplyReplacements),
             match.QueryFilterable.ToMatchString()
         );
-    }
 
     [Theory(DisplayName = "Fluent")]
     [ClassData(typeof(OperationTestData))]

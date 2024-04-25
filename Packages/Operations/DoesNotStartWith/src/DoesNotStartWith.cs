@@ -3,6 +3,7 @@ namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
+using TopMarksDevelopment.ExpressionBuilder.Api.Helpers;
 
 public struct DoesNotStartWith : IOperation
 {
@@ -10,22 +11,28 @@ public struct DoesNotStartWith : IOperation
 
     public readonly string Name => "DoesNotStartWith";
 
-    public Matches Match { get; set; } = Matches.All;
-
-    public bool SkipNullMemberChecks { get; set; } = false;
+    public readonly OperationDefaults Defaults =>
+        new() { Match = Matches.All, NullHandler = OperationNullHandler.IsNullOr };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
-        IEnumerable<IEntityManipulator>? manipulators
+        IFilterStatementOptions? options
     ) =>
-        Expression.Not(
-            new StartsWith() { Match = Matches.All }.Build(
-                member,
+        member
+            .ToTrimLowerStringExpression()
+            .WorkOnValues(
                 values,
-                manipulators
-            )
-        );
+                options?.Match ?? Defaults.Match,
+                (m, v) =>
+                    Expression.Not(
+                        Expression.Call(
+                            m,
+                            HelperMethods.StartsWithMethod,
+                            v.ToTrimLowerStringConstant()
+                        )
+                    )
+            );
 
     public readonly void Validate(IFilterStatement statement)
     {

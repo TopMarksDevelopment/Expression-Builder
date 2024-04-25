@@ -11,13 +11,13 @@ internal static class ExpressionExtensions
         string? propertyChain,
         Dictionary<string, uint> parameterLog,
         Func<Expression, Dictionary<string, uint>, Expression> applyExpressions,
-        bool skipNullMemberChecks
+        OperationNullHandler nullHandler
     ) =>
         ((Expression)param).GetExpression(
             propertyChain,
             parameterLog,
             applyExpressions,
-            skipNullMemberChecks
+            nullHandler
         );
 
     /// <summary>
@@ -31,7 +31,7 @@ internal static class ExpressionExtensions
         string? propertyChain,
         Dictionary<string, uint> parameterLog,
         Func<Expression, Dictionary<string, uint>, Expression> applyExpressions,
-        bool skipNullMemberChecks
+        OperationNullHandler nullHandler
     )
     {
         if (string.IsNullOrWhiteSpace(propertyChain))
@@ -45,9 +45,8 @@ internal static class ExpressionExtensions
             !propertyChain.Contains('.')
             && !propertyChain.Contains("[]")
             && (
-                skipNullMemberChecks
-                || //IsNotNullable(member, true) &&
-                IsNotNullable(subMember)
+                nullHandler == OperationNullHandler.Skip
+                || IsNotNullable(subMember)
             )
         )
             return applyExpressions.Invoke(subMember, parameterLog);
@@ -57,7 +56,7 @@ internal static class ExpressionExtensions
                 propertyChain,
                 parameterLog,
                 applyExpressions,
-                skipNullMemberChecks
+                nullHandler
             );
 
         if (IsNotNullable(subMember))
@@ -66,16 +65,15 @@ internal static class ExpressionExtensions
                 restOfTerm,
                 parameterLog,
                 applyExpressions,
-                skipNullMemberChecks
+                nullHandler
             );
 
-        return Expression.AndAlso(
-            Expression.NotEqual(subMember, Expression.Constant(null)),
+        return ApplyNullHandler(
             GetExpression(
                 member.GetMemberExpression(
                     propertyName
                         + (
-                            restOfTerm?.Contains("Value") == true
+                            restOfTerm.StartsWith("Value")
                             || Nullable.GetUnderlyingType(subMember.Type)
                                 == null
                                 ? ""
@@ -85,9 +83,14 @@ internal static class ExpressionExtensions
                 restOfTerm,
                 parameterLog,
                 applyExpressions,
-                skipNullMemberChecks
+                nullHandler
             )
         );
+
+        BinaryExpression ApplyNullHandler(Expression right) =>
+            nullHandler == OperationNullHandler.IsNullOr
+                ? Expression.OrElse(Expression.Equal(subMember, Expression.Constant(null)), right)
+                : Expression.AndAlso(Expression.NotEqual(subMember, Expression.Constant(null)), right);
     }
 
     static Expression HandleCollections(
@@ -95,7 +98,7 @@ internal static class ExpressionExtensions
         string? propertyChain,
         Dictionary<string, uint> parameterLog,
         Func<Expression, Dictionary<string, uint>, Expression> applyExpressions,
-        bool skipNullMemberChecks
+        OperationNullHandler nullHandler
     )
     {
         if (
@@ -106,10 +109,9 @@ internal static class ExpressionExtensions
 
         ParseChain(propertyChain, out var propertyName, out var restOfTerm);
 
-        var embededProperty = param.GetPropertyInfo(propertyName[..^2]);
-
-        if (embededProperty == null)
-            throw new NullReferenceException(
+        var embededProperty =
+            param.GetPropertyInfo(propertyName[..^2])
+            ?? throw new NullReferenceException(
                 $"Could not find property \"{propertyChain}\" in \"{param.Type}\""
             );
 
@@ -135,7 +137,7 @@ internal static class ExpressionExtensions
                     restOfTerm,
                     parameterLog,
                     applyExpressions,
-                    skipNullMemberChecks
+                    nullHandler
                 ),
                 listParam
             )
@@ -144,10 +146,9 @@ internal static class ExpressionExtensions
 
     static bool IsNotNullable(Expression member) =>
         member.Type.IsClass
-            ? !member.Type.CustomAttributes.Any(
-                x =>
-                    x.AttributeType.FullName
-                    == "System.Runtime.CompilerServices.NullableAttribute"
+            ? !member.Type.CustomAttributes.Any(x =>
+                x.AttributeType.FullName
+                == "System.Runtime.CompilerServices.NullableAttribute"
             )
             : Nullable.GetUnderlyingType(member.Type) == null;
 
@@ -157,7 +158,7 @@ internal static class ExpressionExtensions
         out string restOfTerm
     )
     {
-        var index = propertyChain.IndexOf(".");
+        var index = propertyChain.IndexOf('.');
         propertyName = index == -1 ? propertyChain : propertyChain[..index];
         restOfTerm = index == -1 ? "" : propertyChain[(index + 1)..];
     }
@@ -170,7 +171,7 @@ internal static class ExpressionExtensions
         if (!propertyChain.Contains('.'))
             return param.Type.GetProperty(propertyChain);
 
-        var index = propertyChain.IndexOf(".");
+        var index = propertyChain.IndexOf('.');
         var x = param.GetMemberExpression(propertyChain[..index]);
 
         return x.Type.GetProperty(propertyChain[(index + 1)..]);
@@ -189,7 +190,7 @@ internal static class ExpressionExtensions
                     : propertyChain
             );
 
-        var index = propertyChain.IndexOf(".");
+        var index = propertyChain.IndexOf('.');
         var propName = propertyChain[..index];
         var subParam = Expression.PropertyOrField(
             param,

@@ -5,7 +5,7 @@ public class OperationTests
     GreaterThanOrEqual? _new;
     GreaterThanOrEqual Operation => _new ??= new GreaterThanOrEqual();
 
-    [Theory(DisplayName = "Anything other than 2 values throws")]
+    [Theory(DisplayName = "Having no values throws")]
     [InlineData(null)]
     [InlineData(new int[] {})]
     public void CheckFactoryStrings(int[]? values) =>

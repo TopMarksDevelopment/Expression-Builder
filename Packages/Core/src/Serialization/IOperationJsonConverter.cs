@@ -8,7 +8,7 @@ using TopMarksDevelopment.ExpressionBuilder.Api;
 
 internal class IOperationJsonConverter : JsonConverter<IOperation>
 {
-    ICollection<Type>? _foundTypes;
+    ICollection<Type> _foundTypes = [];
 
     public override IOperation Read(
         ref Utf8JsonReader reader,

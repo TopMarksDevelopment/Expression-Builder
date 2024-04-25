@@ -1,27 +1,40 @@
 using System.Linq.Expressions;
+using System.Reflection;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
 namespace TopMarksDevelopment.ExpressionBuilder;
 
 public struct ReplaceManipulator : IEntityManipulator
 {
+    static readonly MethodInfo _method = typeof(string).GetMethod(
+        "Replace",
+        [typeof(string), typeof(string)]
+    )!;
+
     public readonly string Name => "ReplaceManipulator";
 
-    public readonly string? TypeName => null;
+    public readonly Type[] ExpectedTypes => [typeof(string), typeof(string)];
 
     public object?[] Arguments { get; set; }
 
     public ReplaceManipulator() => Arguments = [];
 
     public ReplaceManipulator(string searchterm, string replacementTerm) =>
-        Arguments = [ searchterm, replacementTerm ];
+        Arguments = [searchterm, replacementTerm];
 
-    public readonly Expression ManipulateExpression(Expression member)
-        => Expression.Call(
+    public readonly Expression ManipulateMember(Expression member) =>
+        Expression.Call(
             member.ToStringExpression(),
-            typeof(string).GetMethod("Replace", [typeof(string), typeof(string)])!,
-            Expression.Constant(Arguments.ElementAt(0)),
-            Expression.Constant(Arguments.ElementAt(1))
+            _method,
+            Arguments.Select(Expression.Constant)
+        );
+
+    public readonly object? ManipulateValue<TPropertyType>(
+        TPropertyType? value
+    ) =>
+        _method.Invoke(
+            typeof(TPropertyType) == typeof(string) ? value : value?.ToString(),
+            Arguments
         );
 
     public readonly void Validate()

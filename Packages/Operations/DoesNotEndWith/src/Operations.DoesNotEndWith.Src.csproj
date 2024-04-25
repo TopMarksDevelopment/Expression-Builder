@@ -41,7 +41,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Api\src\Api.Src.csproj" />
-    <ProjectReference Include="..\..\EndsWith\src\Operations.EndsWith.Src.csproj" />
   </ItemGroup>
 
 </Project>
