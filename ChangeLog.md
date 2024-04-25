@@ -39,7 +39,8 @@ All notable changes to this project will be documented in this file.
     -   Has new `Defaults` property
     -   `Match` has moved into `Defaults`
     -   `SkipNullMemberChecks` has moved into `Defaults` and is now called `NullHandler`
--   Operations can no longer have their null handler customised
+-   Operations can no longer have their null handler customised  
+This needs to be revisited, read the [discussion](https://github.com/TopMarksDevelopment/Expression-Builder/discussions/14)
 -   Serialisation
     -   To accommodate the changes above, we now serialise `Options` - meaning current `Manipulators` will be lost.
     -   Serialisation could break if the order of types was different. To prevent this there is now a default order and a `TypeTracker.FilterStatementTypes` static property for customisation
@@ -191,7 +192,7 @@ All notable changes to this project will be documented in this file.
 
 #### Added
 
--   Completed adding all tests for the rest of the operations. Closes: #1
+-   Completed adding all tests for the rest of the operations. Closes: [#1](https://github.com/TopMarksDevelopment/Expression-Builder/issues/1)
 -   Added more tests to:
     -   `Core` package
     -   all the `Between` operations
