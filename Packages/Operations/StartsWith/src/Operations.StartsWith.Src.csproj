@@ -7,7 +7,7 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
     <PackageId>TopMarksDevelopment.ExpressionBuilder.Operations.StartsWith</PackageId>
-    <version>0.2.1-beta</version>
+    <version>0.3.0-beta</version>
     <title>Expression Builder - Operation: StartsWith</title>
     <Authors>Glenn Marks</Authors>
     <Company>Top Marks Development</Company>

@@ -7,7 +7,7 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
     <PackageId>TopMarksDevelopment.ExpressionBuilder.Operations.DoesNotEndWith</PackageId>
-    <version>0.2.1-beta</version>
+    <version>0.3.0-beta</version>
     <title>Expression Builder - Operation: DoesNotEndWith</title>
     <Authors>Glenn Marks</Authors>
     <Company>Top Marks Development</Company>
