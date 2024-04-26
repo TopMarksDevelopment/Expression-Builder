@@ -32,7 +32,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
     /// <summary>
     /// The items Filter is currently applying to
     /// </summary>
-    [JsonConverter(typeof(FilterItemCollectionJsonConverter))]
+    [JsonIgnore]
     public ICollection<IFilterItem> Current
     {
         get => _current.Items;
