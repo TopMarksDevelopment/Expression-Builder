@@ -39,7 +39,7 @@ All notable changes to this project will be documented in this file.
 
 -   `IFilter` now requires a `Current` list to show the collection it's currently working on. This means that close chaining works better
 
-### Added
+#### Added
 
 -   Added summary blocks to all the interfaces (Chore: more to do)
 
