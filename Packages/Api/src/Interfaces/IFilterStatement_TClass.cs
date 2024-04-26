@@ -2,6 +2,10 @@ namespace TopMarksDevelopment.ExpressionBuilder.Api;
 
 using System.Linq.Expressions;
 
+/// <summary>
+/// A filter statement
+/// </summary>
+/// <typeparam name="TPropertyType">The underlying type of the property and its' values</typeparam>
 public interface IFilterStatement<TPropertyType> : IFilterStatement
 {
     /// <summary>

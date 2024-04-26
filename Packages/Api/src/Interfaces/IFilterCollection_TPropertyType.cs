@@ -2,6 +2,10 @@ namespace TopMarksDevelopment.ExpressionBuilder.Api;
 
 using System.Collections.Generic;
 
+/// <summary>
+/// A collection applied on a <see cref="IFilterStatement"/>
+/// </summary>
+/// <typeparam name="TPropertyType">The type of the values inside the collection</typeparam>
 public interface IFilterCollection<TPropertyType>
     : IFilterCollection,
         ICollection<TPropertyType?>

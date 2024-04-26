@@ -19,9 +19,6 @@ public class QueryFilterableConnection<TClass>
     public IQueryFilterable<TClass> Or() =>
         _filterable.SetConnector(Connector.Or);
 
-    /// <summary>
-    /// Use this at the end of your chain, thus gaining access to the Enumerable again
-    /// </summary>
     public IQueryFilterable<TClass> End() => _filterable;
 
     public IQueryFilterableConnection<TClass> CloseGroup() =>

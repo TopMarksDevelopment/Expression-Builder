@@ -2,6 +2,9 @@ namespace TopMarksDevelopment.ExpressionBuilder.Api;
 
 using System.Linq.Expressions;
 
+/// <summary>
+/// An operation that is performed within a <see cref="IFilterStatement"/>
+/// </summary>
 public interface IOperation
 {
     /// <summary>
@@ -34,5 +37,9 @@ public interface IOperation
         IFilterStatementOptions? options
     );
 
+    /// <summary>
+    /// Confirm the statement works with this operation
+    /// </summary>
+    /// <param name="statement">The statement to check</param>
     void Validate(IFilterStatement statement);
 }
