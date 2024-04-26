@@ -47,6 +47,8 @@ All notable changes to this project will be documented in this file.
 #### Changes
 
 -   Implemented new `IFilter.Current` property
+-   Added test for some deeper close chaining  
+    (as it's not a fix, but rather a check, it's in core-tests)
 
 ## [0.3.0-beta] - 2024-04-25
 

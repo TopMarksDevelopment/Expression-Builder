@@ -111,5 +111,12 @@ FROM Product;";
         CreateContext().Categories
             .Include(x => x.Products)
             .ThenInclude(x => x.Categories)
-            .ThenInclude(x => x.Products);
+            .ThenInclude(x => x.Products)
+            .ThenInclude(x => x.StockLocations);
+
+    internal IQueryable<Product> GetProducts() =>
+        CreateContext().Products
+            .Include(x => x.Categories)
+            .ThenInclude(x => x.Products)
+            .ThenInclude(x => x.StockLocations);
 }
