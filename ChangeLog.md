@@ -25,6 +25,29 @@ All notable changes to this project will be documented in this file.
 
 > ❗ Whilst in the beta phase, breaking changes will happen between "minor" releases. Because of this, patches and new features will happen between "patch" releases
 
+## Unreleased
+
+### Breaking Changes (Overview)
+
+-   `IFilter` now requires a `Current` list to show the collection it's currently working on. This means that close chaining works better
+
+### Package: TopMarksDevelopment.ExpressionBuilder.Api
+
+#### Breaking changes
+
+-   `IFilter` now requires a `Current` list to show the collection it's currently working on. This means that close chaining works better
+
+### Package: TopMarksDevelopment.ExpressionBuilder.Core
+
+#### Fixed
+
+-   Close chaining no longer carries through to the root filer.  
+    _Fixes bug introduced in v0.3.0-beta_
+
+#### Changes
+
+-   Implemented new `IFilter.Current` property
+
 ## [0.3.0-beta] - 2024-04-25
 
 <small>[Compare to previous release][comp:0.3.0-beta]</small>
@@ -42,7 +65,7 @@ All notable changes to this project will be documented in this file.
     -   `Match` has moved into `Defaults`
     -   `SkipNullMemberChecks` has moved into `Defaults` and is now called `NullHandler`
 -   Operations can no longer have their null handler customised  
-This needs to be revisited, read the [discussion](https://github.com/TopMarksDevelopment/Expression-Builder/discussions/14)
+    This needs to be revisited, read the [discussion](https://github.com/TopMarksDevelopment/Expression-Builder/discussions/14)
 -   Serialisation
     -   To accommodate the changes above, we now serialise `Options` - meaning current `Manipulators` will be lost.
     -   Serialisation could break if the order of types was different. To prevent this there is now a default order and a `TypeTracker.FilterStatementTypes` static property for customisation
@@ -242,7 +265,7 @@ This needs to be revisited, read the [discussion](https://github.com/TopMarksDev
 
 ### Package: TopMarksDevelopment.ExpressionBuilder
 
-#### Fixes
+#### Fixed
 
 -   Removed duplicated methods from `TopMarksDevelopment.ExpressionBuilder`, as they were already in the `TopMarksDevelopment.ExpressionBuilder.Api` namespace. This prevented you from using an `Add` extension method if you `use` both namespaces
 

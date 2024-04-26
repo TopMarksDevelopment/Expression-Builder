@@ -17,7 +17,6 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
 {
     readonly IFilterGroup _group;
     readonly IFilter? _oldFilter;
-
     IFilterGroup _current;
 
     /// <summary>
@@ -28,6 +27,16 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
     {
         get => _group.Items;
         set { _group.Items = value; }
+    }
+
+    /// <summary>
+    /// The items Filter is currently applying to
+    /// </summary>
+    [JsonConverter(typeof(FilterItemCollectionJsonConverter))]
+    public ICollection<IFilterItem> Current
+    {
+        get => _current.Items;
+        set { _current.Items = value; }
     }
 
     void PrepareForSerialization()
@@ -67,7 +76,9 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         foreach (var pType in pTypes)
         {
             if (baseType != pType.GetGenericTypeDefinition())
-                throw new TypeLoadException("Must be of type FilterStatement<>");
+                throw new TypeLoadException(
+                    "Must be of type FilterStatement<>"
+                );
 
             if (!filterSubTypes.Contains(pType))
                 filterMeta.AddSubType(50 + indexTracker, pType);
@@ -192,13 +203,14 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
     {
         var connection = new FilterConnection<TClass>(this, _current);
 
-        _current = _current.Close();
-
         try
         {
-            _oldFilter?.CloseGroup();
+            if (_oldFilter?.Current == Current)
+                _oldFilter.CloseGroup();
         }
         catch { }
+
+        _current = _current.Close();
 
         return connection;
     }

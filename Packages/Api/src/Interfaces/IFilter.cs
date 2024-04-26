@@ -8,6 +8,8 @@ public interface IFilter
 {
     ICollection<IFilterItem> Items { get; }
 
+    ICollection<IFilterItem> Current { get; }
+
     IFilter Add(IFilterStatement statement);
 
     IFilterConnection Add<TClass, TPropertyType>(

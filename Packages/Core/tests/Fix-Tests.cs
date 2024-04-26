@@ -38,4 +38,26 @@ public class FixTests : EfCoreTestBase
 
         Assert.Null(Record.Exception(() => GetCategory().Where(filter)));
     }
+
+    [Fact(DisplayName = "Fixed: Bug introduced in v0.3.0-beta. Collection chaining error closing")]
+    public void CollectionChainNothingToClose()
+    {
+        var filter = new Filter<Category>();
+
+        // Collection opened so filter is now at Products
+        var group = filter.OpenCollection(x => x.Products);
+
+        // We open and close a collection,
+        //  so group should still be at Products
+        group
+            .OpenCollection(i => i.StockLocations)
+            .LessThanOrEqual(x => x.Quantity, 10)
+            .CloseCollection<Product>();
+
+        // Collection closed
+        //  filter should be reverted to Categories without error
+        filter.CloseCollection();
+        
+        Assert.Null(Record.Exception(() => GetCategory().Where(filter)));
+    }
 }
