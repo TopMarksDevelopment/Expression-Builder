@@ -37,6 +37,10 @@ All notable changes to this project will be documented in this file.
 
 -   `IFilter` now requires a `Current` list to show the collection it's currently working on. This means that close chaining works better
 
+### Added
+
+-   Added summary blocks to all the interfaces (Chore: more to do)
+
 ### Package: TopMarksDevelopment.ExpressionBuilder.Core
 
 #### Fixed
@@ -49,6 +53,7 @@ All notable changes to this project will be documented in this file.
 -   Implemented new `IFilter.Current` property
 -   Added test for some deeper close chaining  
     (as it's not a fix, but rather a check, it's in core-tests)
+-   Removed some summary blocks that had been moved to the `Api` package
 
 ## [0.3.0-beta] - 2024-04-25
 

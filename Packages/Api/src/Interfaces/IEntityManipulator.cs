@@ -2,6 +2,9 @@ using System.Linq.Expressions;
 
 namespace TopMarksDevelopment.ExpressionBuilder.Api;
 
+/// <summary>
+/// A manipulator that can be applied to an <see cref="IFilterStatement"/>
+/// </summary>
 public interface IEntityManipulator
 {
     /// <summary>

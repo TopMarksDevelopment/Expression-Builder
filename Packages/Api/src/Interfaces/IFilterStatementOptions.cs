@@ -2,6 +2,9 @@ namespace TopMarksDevelopment.ExpressionBuilder.Api;
 
 using System.Collections.Generic;
 
+/// <summary>
+/// The options you can pass to a <see cref="IFilterStatement"/> to adjust how it works
+/// </summary>
 public interface IFilterStatementOptions
 {
     /// <summary>

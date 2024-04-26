@@ -19,9 +19,6 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
     readonly IFilter? _oldFilter;
     IFilterGroup _current;
 
-    /// <summary>
-    /// The items that make apply in this filter
-    /// </summary>
     [JsonConverter(typeof(FilterItemCollectionJsonConverter))]
     public ICollection<IFilterItem> Items
     {
@@ -29,9 +26,6 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         set { _group.Items = value; }
     }
 
-    /// <summary>
-    /// The items Filter is currently applying to
-    /// </summary>
     [JsonIgnore]
     public ICollection<IFilterItem> Current
     {
