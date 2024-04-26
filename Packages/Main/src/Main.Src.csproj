@@ -7,7 +7,7 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
     <PackageId>TopMarksDevelopment.ExpressionBuilder</PackageId>
-    <version>0.3.0-beta</version>
+    <version>0.4.0-beta</version>
     <title>Expression Builder</title>
     <Authors>Glenn Marks</Authors>
     <Company>Top Marks Development</Company>
