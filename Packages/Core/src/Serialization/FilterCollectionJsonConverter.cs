@@ -1,7 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Serialization;
 
-using System;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TopMarksDevelopment.ExpressionBuilder.Api;

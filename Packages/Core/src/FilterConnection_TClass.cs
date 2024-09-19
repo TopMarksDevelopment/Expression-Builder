@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
 public class FilterConnection<TClass>(IFilter<TClass> filter, IFilterItem item)

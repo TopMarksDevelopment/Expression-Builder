@@ -63,7 +63,7 @@ internal static class SerializerBase
 
             manipulator.Arguments =
             [
-                .. ConvertArguments(info.Arguments, manipulator.ExpectedTypes)
+                .. ConvertArguments(info.Arguments, manipulator.ExpectedTypes),
             ];
         }
 

@@ -15,7 +15,7 @@ public class OperationTests
                         testType switch
                         {
                             TestType.Null => null,
-                            TestType.EmptyArray or _ => []
+                            TestType.EmptyArray or _ => [],
                         }
                     )
                 )
@@ -24,6 +24,6 @@ public class OperationTests
     public enum TestType
     {
         Null,
-        EmptyArray
+        EmptyArray,
     }
 }

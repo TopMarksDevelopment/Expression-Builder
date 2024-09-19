@@ -1,9 +1,6 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Collections;
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
 internal class FilterCollection<TPropertyType>
@@ -44,6 +41,12 @@ internal class FilterCollection<TPropertyType>
 
     public void Add(TPropertyType? item) => _values.Add(item);
 
+    public void AddRange(IEnumerable<TPropertyType?> items)
+    {
+        foreach (var item in items)
+            _values.Add(item);
+    }
+
     public void Clear() => _values.Clear();
 
     public bool Contains(TPropertyType? item) => _values.Contains(item);
@@ -67,6 +70,9 @@ internal class FilterCollection<TPropertyType>
 
         CopyTo(ppArray, index);
     }
+
+    public void AddRange(IEnumerable items) =>
+        AddRange(items.Cast<TPropertyType?>());
 
     public static explicit operator FilterCollection<TPropertyType>(
         List<TPropertyType> list

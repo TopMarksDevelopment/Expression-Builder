@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,18 +15,11 @@ public static partial class IFilterContainsExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
-        var f = filter.Add(
-            propertyExpression,
-            new Contains(),
-            value,
-            options
-        );
+        where TClass : class
+    {
+        var f = filter.Add(propertyExpression, new Contains(), value, options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilter Contains<TClass, TPropertyType>(
@@ -37,7 +29,8 @@ public static partial class IFilterContainsExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new Contains(),
             [value],
@@ -51,12 +44,8 @@ public static partial class IFilterContainsExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Contains(),
-            value,
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Contains(), value, options);
 
     public static IFilterConnection Contains<TClass, TPropertyType>(
         this IFilter filter,
@@ -64,36 +53,24 @@ public static partial class IFilterContainsExtensions
         TPropertyType? value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Contains(),
-            [value],
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Contains(), [value], options);
 
     public static IFilterConnection Contains<TClass, TPropertyType>(
         this IFilter filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Contains(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Contains(), value, null);
 
     public static IFilterConnection Contains<TClass, TPropertyType>(
         this IFilter filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Contains(),
-            [value],
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Contains(), [value], null);
 
     public static IFilter Contains<TClass, TPropertyType>(
         this IFilter filter,
@@ -101,13 +78,8 @@ public static partial class IFilterContainsExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Contains(),
-            value,
-            null,
-            connector
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Contains(), value, null, connector);
 
     public static IFilter Contains<TClass, TPropertyType>(
         this IFilter filter,
@@ -115,7 +87,8 @@ public static partial class IFilterContainsExtensions
         TPropertyType? value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new Contains(),
             [value],
@@ -133,18 +106,11 @@ public static partial class IFilterContainsExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ){
-        var f = filter.Add(
-            propertyExpression,
-            new Contains(),
-            value,
-            options
-        );
+    )
+    {
+        var f = filter.Add(propertyExpression, new Contains(), value, options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilter Contains<TPropertyType>(
@@ -153,7 +119,8 @@ public static partial class IFilterContainsExtensions
         TPropertyType? value,
         IFilterStatementOptions? options,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new Contains(),
             [value],
@@ -166,66 +133,41 @@ public static partial class IFilterContainsExtensions
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) => filter.Add(
-            propertyExpression,
-            new Contains(),
-            value,
-            options
-        );
+    ) => filter.Add(propertyExpression, new Contains(), value, options);
 
     public static IFilterConnection Contains<TPropertyType>(
         this IFilter filter,
         string propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
-    ) => filter.Add(
-            propertyExpression,
-            new Contains(),
-            [value],
-            options
-        );
+    ) => filter.Add(propertyExpression, new Contains(), [value], options);
 
     public static IFilterConnection Contains<TPropertyType>(
         this IFilter filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) => filter.Add(
-            propertyExpression,
-            new Contains(),
-            value,
-            null
-        );
+    ) => filter.Add(propertyExpression, new Contains(), value, null);
 
     public static IFilterConnection Contains<TPropertyType>(
         this IFilter filter,
         string propertyExpression,
         TPropertyType? value
-    ) => filter.Add(
-            propertyExpression,
-            new Contains(),
-            [value],
-            null
-        );
+    ) => filter.Add(propertyExpression, new Contains(), [value], null);
 
     public static IFilter Contains<TPropertyType>(
         this IFilter filter,
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) => filter.Add(
-            propertyExpression,
-            new Contains(),
-            value,
-            null,
-            connector
-        );
+    ) => filter.Add(propertyExpression, new Contains(), value, null, connector);
 
     public static IFilter Contains<TPropertyType>(
         this IFilter filter,
         string propertyExpression,
         TPropertyType? value,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new Contains(),
             [value],

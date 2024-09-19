@@ -6,13 +6,19 @@ using System.Collections;
 /// A collection applied on a <see cref="IFilterStatement"/>
 /// </summary>
 public interface IFilterCollection : ICollection
-{    
+{
     /// <summary>
     /// Checks if there are any elements inside the collection
     /// </summary>
     /// <returns>True if there is anything insdide the collection</returns>
     abstract bool Any();
-    
+
+    /// <summary>
+    /// Adds a set of items to the collection.
+    /// </summary>
+    /// <param name="items">The item set we're adding</param>
+    void AddRange(IEnumerable items);
+
     /// <summary>
     /// A friendly display of the collection
     /// </summary>

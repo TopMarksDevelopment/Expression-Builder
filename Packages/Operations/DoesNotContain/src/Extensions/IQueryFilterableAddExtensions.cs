@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,7 +15,8 @@ public static partial class IQueryFilterableDoesNotContainExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new DoesNotContain(),
@@ -24,10 +24,7 @@ public static partial class IQueryFilterableDoesNotContainExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IQueryFilterable DoesNotContain<TClass, TPropertyType>(
@@ -37,7 +34,8 @@ public static partial class IQueryFilterableDoesNotContainExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new DoesNotContain(),
             [value],
@@ -45,55 +43,51 @@ public static partial class IQueryFilterableDoesNotContainExtensions
             connector
         );
 
-    public static IQueryFilterableConnection DoesNotContain<TClass, TPropertyType>(
+    public static IQueryFilterableConnection DoesNotContain<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new DoesNotContain(),
-            value,
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new DoesNotContain(), value, options);
 
-    public static IQueryFilterableConnection DoesNotContain<TClass, TPropertyType>(
+    public static IQueryFilterableConnection DoesNotContain<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new DoesNotContain(),
-            [value],
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new DoesNotContain(), [value], options);
 
-    public static IQueryFilterableConnection DoesNotContain<TClass, TPropertyType>(
+    public static IQueryFilterableConnection DoesNotContain<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new DoesNotContain(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new DoesNotContain(), value, null);
 
-    public static IQueryFilterableConnection DoesNotContain<TClass, TPropertyType>(
+    public static IQueryFilterableConnection DoesNotContain<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new DoesNotContain(),
-            [value],
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new DoesNotContain(), [value], null);
 
     public static IQueryFilterable DoesNotContain<TClass, TPropertyType>(
         this IQueryFilterable filter,
@@ -101,7 +95,8 @@ public static partial class IQueryFilterableDoesNotContainExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new DoesNotContain(),
             value,
@@ -115,7 +110,8 @@ public static partial class IQueryFilterableDoesNotContainExtensions
         TPropertyType? value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new DoesNotContain(),
             [value],
@@ -133,7 +129,8 @@ public static partial class IQueryFilterableDoesNotContainExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ){
+    )
+    {
         var f = filter.Add(
             propertyExpression,
             new DoesNotContain(),
@@ -141,10 +138,7 @@ public static partial class IQueryFilterableDoesNotContainExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IQueryFilterable DoesNotContain<TPropertyType>(
@@ -153,7 +147,8 @@ public static partial class IQueryFilterableDoesNotContainExtensions
         TPropertyType? value,
         IFilterStatementOptions? options,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new DoesNotContain(),
             [value],
@@ -166,53 +161,34 @@ public static partial class IQueryFilterableDoesNotContainExtensions
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) => filter.Add(
-            propertyExpression,
-            new DoesNotContain(),
-            value,
-            options
-        );
+    ) => filter.Add(propertyExpression, new DoesNotContain(), value, options);
 
     public static IQueryFilterableConnection DoesNotContain<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
-    ) => filter.Add(
-            propertyExpression,
-            new DoesNotContain(),
-            [value],
-            options
-        );
+    ) => filter.Add(propertyExpression, new DoesNotContain(), [value], options);
 
     public static IQueryFilterableConnection DoesNotContain<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) => filter.Add(
-            propertyExpression,
-            new DoesNotContain(),
-            value,
-            null
-        );
+    ) => filter.Add(propertyExpression, new DoesNotContain(), value, null);
 
     public static IQueryFilterableConnection DoesNotContain<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType? value
-    ) => filter.Add(
-            propertyExpression,
-            new DoesNotContain(),
-            [value],
-            null
-        );
+    ) => filter.Add(propertyExpression, new DoesNotContain(), [value], null);
 
     public static IQueryFilterable DoesNotContain<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new DoesNotContain(),
             value,
@@ -225,7 +201,8 @@ public static partial class IQueryFilterableDoesNotContainExtensions
         string propertyExpression,
         TPropertyType? value,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new DoesNotContain(),
             [value],

@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -15,18 +14,11 @@ public static partial class IFilter_TClass_IsEmptyExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
-        var f = filter.Add(
-            propertyExpression,
-            new IsEmpty(),
-            [],
-            options
-        );
+        where TClass : class
+    {
+        var f = filter.Add(propertyExpression, new IsEmpty(), [], options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterConnection<TClass> IsEmpty<TClass, TPropertyType>(
@@ -34,36 +26,23 @@ public static partial class IFilter_TClass_IsEmptyExtensions
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsEmpty(),
-            [],
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsEmpty(), [], options);
 
     public static IFilterConnection<TClass> IsEmpty<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsEmpty(),
-            [],
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsEmpty(), [], null);
 
     public static IFilter<TClass> IsEmpty<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         Connector connector
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsEmpty(),
-            [],
-            null,
-            connector
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsEmpty(), [], null, connector);
 
     #endregion Expression<Func<,>> propertyExpression
 
@@ -74,7 +53,9 @@ public static partial class IFilter_TClass_IsEmptyExtensions
         string propertyExpression,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class {
+    )
+        where TClass : class
+    {
         var f = filter.Add<TPropertyType>(
             propertyExpression,
             new IsEmpty(),
@@ -82,17 +63,16 @@ public static partial class IFilter_TClass_IsEmptyExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterConnection<TClass> IsEmpty<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         string propertyExpression,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add<TPropertyType>(
+    )
+        where TClass : class =>
+        filter.Add<TPropertyType>(
             propertyExpression,
             new IsEmpty(),
             [],
@@ -102,18 +82,17 @@ public static partial class IFilter_TClass_IsEmptyExtensions
     public static IFilterConnection<TClass> IsEmpty<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         string propertyExpression
-    ) where TClass : class  => filter.Add<TPropertyType>(
-            propertyExpression,
-            new IsEmpty(),
-            [],
-            null
-        );
+    )
+        where TClass : class =>
+        filter.Add<TPropertyType>(propertyExpression, new IsEmpty(), [], null);
 
     public static IFilter<TClass> IsEmpty<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         string propertyExpression,
         Connector connector
-    ) where TClass : class  => filter.Add<TClass, TPropertyType>(
+    )
+        where TClass : class =>
+        filter.Add<TClass, TPropertyType>(
             propertyExpression,
             new IsEmpty(),
             [],

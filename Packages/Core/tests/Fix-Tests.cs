@@ -39,7 +39,9 @@ public class FixTests : EfCoreTestBase
         Assert.Null(Record.Exception(() => GetCategory().Where(filter)));
     }
 
-    [Fact(DisplayName = "Fixed: Bug introduced in v0.3.0-beta. Collection chaining error closing")]
+    [Fact(
+        DisplayName = "Fixed: Bug introduced in v0.3.0-beta. Collection chaining error closing"
+    )]
     public void CollectionChainNothingToClose()
     {
         var filter = new Filter<Category>();
@@ -57,7 +59,7 @@ public class FixTests : EfCoreTestBase
         // Collection closed
         //  filter should be reverted to Categories without error
         filter.CloseCollection();
-        
+
         Assert.Null(Record.Exception(() => GetCategory().Where(filter)));
     }
 }

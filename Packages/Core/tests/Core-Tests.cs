@@ -15,9 +15,7 @@ public class CoreTests : EfCoreTestBase
         Assert.Null(exception);
     }
 
-    [Fact(
-        DisplayName = "Deeper collection chaining works"
-    )]
+    [Fact(DisplayName = "Deeper collection chaining works")]
     public void CollectionChainDoubleCloseCheck()
     {
         var filter = new Filter<Product>();

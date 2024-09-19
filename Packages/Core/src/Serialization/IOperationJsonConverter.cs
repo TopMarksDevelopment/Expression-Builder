@@ -1,7 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Serialization;
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TopMarksDevelopment.ExpressionBuilder.Api;
@@ -14,11 +12,8 @@ internal class IOperationJsonConverter : JsonConverter<IOperation>
         ref Utf8JsonReader reader,
         Type typeToConvert,
         JsonSerializerOptions options
-    )
-        => SerializerBase.FindOperationByName(
-            reader.GetString(), 
-            ref _foundTypes
-        );
+    ) =>
+        SerializerBase.FindOperationByName(reader.GetString(), ref _foundTypes);
 
     public override void Write(
         Utf8JsonWriter writer,

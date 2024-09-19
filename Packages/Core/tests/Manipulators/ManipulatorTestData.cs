@@ -16,7 +16,7 @@ public class ManipulatorTestData : TheoryData<TestBuilder<Product>>
                     "Product 2",
                     new FilterStatementOptions
                     {
-                        Manipulators = [new ReplaceManipulator(" ", "")]
+                        Manipulators = [new ReplaceManipulator(" ", "")],
                     }
                 ),
             x =>
@@ -25,7 +25,7 @@ public class ManipulatorTestData : TheoryData<TestBuilder<Product>>
                     "Product 2",
                     new FilterStatementOptions
                     {
-                        Manipulators = [new ReplaceManipulator(" ", "")]
+                        Manipulators = [new ReplaceManipulator(" ", "")],
                     }
                 ),
             x =>
@@ -34,7 +34,7 @@ public class ManipulatorTestData : TheoryData<TestBuilder<Product>>
                     "Product 2",
                     new FilterStatementOptions
                     {
-                        Manipulators = [new ReplaceManipulator(" ", "")]
+                        Manipulators = [new ReplaceManipulator(" ", "")],
                     }
                 ),
             x =>
@@ -43,7 +43,7 @@ public class ManipulatorTestData : TheoryData<TestBuilder<Product>>
                     "Product 2",
                     new FilterStatementOptions
                     {
-                        Manipulators = [new ReplaceManipulator(" ", "")]
+                        Manipulators = [new ReplaceManipulator(" ", "")],
                     }
                 )
         );

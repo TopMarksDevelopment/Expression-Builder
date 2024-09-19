@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,7 +15,8 @@ public static partial class IFilterable_TClass_NotBetweenExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new NotBetween(),
@@ -24,10 +24,7 @@ public static partial class IFilterable_TClass_NotBetweenExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterable<TClass> NotBetween<TClass, TPropertyType>(
@@ -38,7 +35,8 @@ public static partial class IFilterable_TClass_NotBetweenExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotBetween(),
             [value, value2],
@@ -46,56 +44,58 @@ public static partial class IFilterable_TClass_NotBetweenExtensions
             connector
         );
 
-    public static IFilterableConnection<TClass> NotBetween<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> NotBetween<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotBetween(),
-            value,
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotBetween(), value, options);
 
-    public static IFilterableConnection<TClass> NotBetween<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> NotBetween<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value,
         TPropertyType? value2,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotBetween(),
             [value, value2],
             options
         );
 
-    public static IFilterableConnection<TClass> NotBetween<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> NotBetween<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotBetween(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotBetween(), value, null);
 
-    public static IFilterableConnection<TClass> NotBetween<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> NotBetween<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value,
         TPropertyType? value2
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotBetween(),
-            [value, value2]
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotBetween(), [value, value2]);
 
     public static IFilterable<TClass> NotBetween<TClass, TPropertyType>(
         this IFilterable<TClass> filter,
@@ -103,7 +103,8 @@ public static partial class IFilterable_TClass_NotBetweenExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotBetween(),
             value,
@@ -118,7 +119,8 @@ public static partial class IFilterable_TClass_NotBetweenExtensions
         TPropertyType? value2,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotBetween(),
             [value, value2],
@@ -136,7 +138,9 @@ public static partial class IFilterable_TClass_NotBetweenExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class {
+    )
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new NotBetween(),
@@ -144,10 +148,7 @@ public static partial class IFilterable_TClass_NotBetweenExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterable<TClass> NotBetween<TClass, TPropertyType>(
@@ -157,7 +158,9 @@ public static partial class IFilterable_TClass_NotBetweenExtensions
         TPropertyType? value2,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotBetween(),
             [value, value2],
@@ -165,60 +168,67 @@ public static partial class IFilterable_TClass_NotBetweenExtensions
             connector
         );
 
-    public static IFilterableConnection<TClass> NotBetween<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> NotBetween<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new NotBetween(),
-            value,
-            options
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotBetween(), value, options);
 
-    public static IFilterableConnection<TClass> NotBetween<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> NotBetween<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType? value,
         TPropertyType? value2,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotBetween(),
             [value, value2],
             options
         );
 
-    public static IFilterableConnection<TClass> NotBetween<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> NotBetween<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new NotBetween(),
-            value,
-            null
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotBetween(), value, null);
 
-    public static IFilterableConnection<TClass> NotBetween<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> NotBetween<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType? value,
         TPropertyType? value2
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new NotBetween(),
-            [value, value2],
-            null
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotBetween(), [value, value2], null);
 
     public static IFilterable<TClass> NotBetween<TClass, TPropertyType>(
         this IFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotBetween(),
             value,
@@ -232,7 +242,9 @@ public static partial class IFilterable_TClass_NotBetweenExtensions
         TPropertyType? value,
         TPropertyType? value2,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotBetween(),
             [value, value2],

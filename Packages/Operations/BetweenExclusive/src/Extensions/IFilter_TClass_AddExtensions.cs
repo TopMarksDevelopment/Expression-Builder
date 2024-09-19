@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,7 +15,8 @@ public static partial class IFilter_TClass_BetweenExclusiveExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new BetweenExclusive(),
@@ -24,10 +24,7 @@ public static partial class IFilter_TClass_BetweenExclusiveExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilter<TClass> BetweenExclusive<TClass, TPropertyType>(
@@ -38,7 +35,8 @@ public static partial class IFilter_TClass_BetweenExclusiveExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new BetweenExclusive(),
             [value, value2],
@@ -46,52 +44,58 @@ public static partial class IFilter_TClass_BetweenExclusiveExtensions
             connector
         );
 
-    public static IFilterConnection<TClass> BetweenExclusive<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> BetweenExclusive<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new BetweenExclusive(),
-            value,
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new BetweenExclusive(), value, options);
 
-    public static IFilterConnection<TClass> BetweenExclusive<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> BetweenExclusive<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value,
         TPropertyType? value2,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new BetweenExclusive(),
             [value, value2],
             options
         );
 
-    public static IFilterConnection<TClass> BetweenExclusive<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> BetweenExclusive<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new BetweenExclusive(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new BetweenExclusive(), value, null);
 
-    public static IFilterConnection<TClass> BetweenExclusive<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> BetweenExclusive<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value,
         TPropertyType? value2
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new BetweenExclusive(),
             [value, value2],
@@ -104,7 +108,8 @@ public static partial class IFilter_TClass_BetweenExclusiveExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new BetweenExclusive(),
             value,
@@ -119,7 +124,8 @@ public static partial class IFilter_TClass_BetweenExclusiveExtensions
         TPropertyType? value2,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new BetweenExclusive(),
             [value, value2],
@@ -137,7 +143,9 @@ public static partial class IFilter_TClass_BetweenExclusiveExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class {
+    )
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new BetweenExclusive(),
@@ -145,10 +153,7 @@ public static partial class IFilter_TClass_BetweenExclusiveExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilter<TClass> BetweenExclusive<TClass, TPropertyType>(
@@ -158,7 +163,9 @@ public static partial class IFilter_TClass_BetweenExclusiveExtensions
         TPropertyType? value2,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new BetweenExclusive(),
             [value, value2],
@@ -166,48 +173,58 @@ public static partial class IFilter_TClass_BetweenExclusiveExtensions
             connector
         );
 
-    public static IFilterConnection<TClass> BetweenExclusive<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> BetweenExclusive<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new BetweenExclusive(),
-            value,
-            options
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new BetweenExclusive(), value, options);
 
-    public static IFilterConnection<TClass> BetweenExclusive<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> BetweenExclusive<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         string propertyExpression,
         TPropertyType? value,
         TPropertyType? value2,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new BetweenExclusive(),
             [value, value2],
             options
         );
 
-    public static IFilterConnection<TClass> BetweenExclusive<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> BetweenExclusive<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new BetweenExclusive(),
-            value,
-            null
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new BetweenExclusive(), value, null);
 
-    public static IFilterConnection<TClass> BetweenExclusive<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> BetweenExclusive<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         string propertyExpression,
         TPropertyType? value,
         TPropertyType? value2
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new BetweenExclusive(),
             [value, value2],
@@ -219,7 +236,9 @@ public static partial class IFilter_TClass_BetweenExclusiveExtensions
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new BetweenExclusive(),
             value,
@@ -233,7 +252,9 @@ public static partial class IFilter_TClass_BetweenExclusiveExtensions
         TPropertyType? value,
         TPropertyType? value2,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new BetweenExclusive(),
             [value, value2],

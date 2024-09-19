@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -15,18 +14,11 @@ public static partial class IFilterableIsNotEmptyExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
-        var f = filter.Add(
-            propertyExpression,
-            new IsNotEmpty(),
-            [],
-            options
-        );
+        where TClass : class
+    {
+        var f = filter.Add(propertyExpression, new IsNotEmpty(), [], options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterableConnection IsNotEmpty<TClass, TPropertyType>(
@@ -34,35 +26,23 @@ public static partial class IFilterableIsNotEmptyExtensions
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsNotEmpty(),
-            [],
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsNotEmpty(), [], options);
 
     public static IFilterableConnection IsNotEmpty<TClass, TPropertyType>(
         this IFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsNotEmpty(),
-            []
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsNotEmpty(), []);
 
     public static IFilterable IsNotEmpty<TClass, TPropertyType>(
         this IFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         Connector connector
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsNotEmpty(),
-            [],
-            null,
-            connector
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsNotEmpty(), [], null, connector);
 
     #endregion Expression<Func<,>> propertyExpression
 
@@ -73,7 +53,8 @@ public static partial class IFilterableIsNotEmptyExtensions
         string propertyExpression,
         IFilterStatementOptions? options,
         Connector connector
-    ){
+    )
+    {
         var f = filter.Add(
             propertyExpression,
             new IsNotEmpty(),
@@ -81,17 +62,15 @@ public static partial class IFilterableIsNotEmptyExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterableConnection IsNotEmpty(
         this IFilterable filter,
         string propertyExpression,
         IFilterStatementOptions? options
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new IsNotEmpty(),
             Array.Empty<dynamic?>(),
@@ -101,7 +80,8 @@ public static partial class IFilterableIsNotEmptyExtensions
     public static IFilterableConnection IsNotEmpty(
         this IFilterable filter,
         string propertyExpression
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new IsNotEmpty(),
             Array.Empty<dynamic?>(),
@@ -112,7 +92,8 @@ public static partial class IFilterableIsNotEmptyExtensions
         this IFilterable filter,
         string propertyExpression,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new IsNotEmpty(),
             Array.Empty<dynamic?>(),

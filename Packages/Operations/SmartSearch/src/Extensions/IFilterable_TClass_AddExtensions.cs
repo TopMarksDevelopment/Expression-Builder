@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,7 +15,8 @@ public static partial class IFilterable_TClass_SmartSearchExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new SmartSearch(),
@@ -24,10 +24,7 @@ public static partial class IFilterable_TClass_SmartSearchExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterable<TClass> SmartSearch<TClass, TPropertyType>(
@@ -37,7 +34,8 @@ public static partial class IFilterable_TClass_SmartSearchExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new SmartSearch(),
             [value],
@@ -45,54 +43,51 @@ public static partial class IFilterable_TClass_SmartSearchExtensions
             connector
         );
 
-    public static IFilterableConnection<TClass> SmartSearch<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> SmartSearch<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new SmartSearch(),
-            value,
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new SmartSearch(), value, options);
 
-    public static IFilterableConnection<TClass> SmartSearch<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> SmartSearch<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new SmartSearch(),
-            [value],
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new SmartSearch(), [value], options);
 
-    public static IFilterableConnection<TClass> SmartSearch<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> SmartSearch<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new SmartSearch(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new SmartSearch(), value, null);
 
-    public static IFilterableConnection<TClass> SmartSearch<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> SmartSearch<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new SmartSearch(),
-            [value]
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new SmartSearch(), [value]);
 
     public static IFilterable<TClass> SmartSearch<TClass, TPropertyType>(
         this IFilterable<TClass> filter,
@@ -100,7 +95,8 @@ public static partial class IFilterable_TClass_SmartSearchExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new SmartSearch(),
             value,
@@ -114,7 +110,8 @@ public static partial class IFilterable_TClass_SmartSearchExtensions
         TPropertyType? value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new SmartSearch(),
             [value],
@@ -132,7 +129,9 @@ public static partial class IFilterable_TClass_SmartSearchExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class {
+    )
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new SmartSearch(),
@@ -140,10 +139,7 @@ public static partial class IFilterable_TClass_SmartSearchExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterable<TClass> SmartSearch<TClass, TPropertyType>(
@@ -152,7 +148,9 @@ public static partial class IFilterable_TClass_SmartSearchExtensions
         TPropertyType? value,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new SmartSearch(),
             [value],
@@ -160,58 +158,60 @@ public static partial class IFilterable_TClass_SmartSearchExtensions
             connector
         );
 
-    public static IFilterableConnection<TClass> SmartSearch<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> SmartSearch<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new SmartSearch(),
-            value,
-            options
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new SmartSearch(), value, options);
 
-    public static IFilterableConnection<TClass> SmartSearch<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> SmartSearch<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new SmartSearch(),
-            [value],
-            options
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new SmartSearch(), [value], options);
 
-    public static IFilterableConnection<TClass> SmartSearch<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> SmartSearch<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new SmartSearch(),
-            value,
-            null
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new SmartSearch(), value, null);
 
-    public static IFilterableConnection<TClass> SmartSearch<TClass, TPropertyType>(
+    public static IFilterableConnection<TClass> SmartSearch<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType? value
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new SmartSearch(),
-            [value],
-            null
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new SmartSearch(), [value], null);
 
     public static IFilterable<TClass> SmartSearch<TClass, TPropertyType>(
         this IFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new SmartSearch(),
             value,
@@ -224,7 +224,9 @@ public static partial class IFilterable_TClass_SmartSearchExtensions
         string propertyExpression,
         TPropertyType? value,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new SmartSearch(),
             [value],

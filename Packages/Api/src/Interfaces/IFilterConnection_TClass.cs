@@ -1,7 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Api;
 
-using System;
-
 /// <summary>
 /// A connection for fluent calls
 /// </summary>

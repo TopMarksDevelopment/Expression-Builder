@@ -14,7 +14,7 @@ public class SerializationFilterTestData : TheoryData<Filter<Category>>
                     "Product2",
                     new FilterStatementOptions
                     {
-                        Manipulators = [new ReplaceManipulator(" ", "")]
+                        Manipulators = [new ReplaceManipulator(" ", "")],
                     }
                 )
                 .Or()
@@ -46,7 +46,7 @@ public class SerializationFilterTestData : TheoryData<Filter<Category>>
 
     // This is no longer available - need to revisit (as per blow)
     // https://github.com/TopMarksDevelopment/Expression-Builder/discussions/14
-    // 
+    //
     // static Filter<Category> SkipNulls =>
     //     (Filter<Category>)
     //         new Filter<Category>()

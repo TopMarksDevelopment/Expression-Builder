@@ -1,5 +1,5 @@
 namespace ExpressionBuilder.Tests;
-using System.Linq;
+
 using ExpressionBuilder.Tests.Models;
 
 public class ResultMatchSeed
@@ -13,11 +13,9 @@ public class ResultMatchSeed
 
     public ICollection<T> GetCollection<T>()
         where T : class =>
-        typeof(T) == typeof(Product)
-            ? (ICollection<T>)Products
-            : typeof(T) == typeof(StockLocation)
-                ? (ICollection<T>)StockLocations
-                : (ICollection<T>)Categories;
+        typeof(T) == typeof(Product) ? (ICollection<T>)Products
+        : typeof(T) == typeof(StockLocation) ? (ICollection<T>)StockLocations
+        : (ICollection<T>)Categories;
 
     public HashSet<Product> Products { get; set; }
     public HashSet<StockLocation> StockLocations { get; set; }
@@ -60,7 +58,7 @@ public class ResultMatchSeed
                 Products =
                     source == null
                         ? new HashSet<Product>()
-                        : GetProds(1, source)
+                        : GetProds(1, source),
             },
             new Category
             {
@@ -69,7 +67,7 @@ public class ResultMatchSeed
                 Products =
                     source == null
                         ? new HashSet<Product>()
-                        : GetProds(3, source)
+                        : GetProds(3, source),
             },
             new Category
             {
@@ -78,7 +76,7 @@ public class ResultMatchSeed
                 Products =
                     source == null
                         ? new HashSet<Product>()
-                        : GetProds(6, source)
+                        : GetProds(6, source),
             },
         ];
 

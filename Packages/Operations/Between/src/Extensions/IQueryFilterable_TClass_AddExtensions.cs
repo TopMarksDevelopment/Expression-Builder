@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,18 +15,11 @@ public static partial class IQueryFilterable_TClass_BetweenExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
-        var f = filter.Add(
-            propertyExpression,
-            new Between(),
-            value,
-            options
-        );
+        where TClass : class
+    {
+        var f = filter.Add(propertyExpression, new Between(), value, options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IQueryFilterable<TClass> Between<TClass, TPropertyType>(
@@ -38,7 +30,8 @@ public static partial class IQueryFilterable_TClass_BetweenExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new Between(),
             [value, value2],
@@ -46,57 +39,53 @@ public static partial class IQueryFilterable_TClass_BetweenExtensions
             connector
         );
 
-    public static IQueryFilterableConnection<TClass> Between<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Between<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Between(),
-            value,
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Between(), value, options);
 
-    public static IQueryFilterableConnection<TClass> Between<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Between<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value,
         TPropertyType? value2,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Between(),
-            [value, value2],
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Between(), [value, value2], options);
 
-    public static IQueryFilterableConnection<TClass> Between<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Between<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Between(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Between(), value, null);
 
-    public static IQueryFilterableConnection<TClass> Between<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Between<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value,
         TPropertyType? value2
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Between(),
-            [value, value2],
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Between(), [value, value2], null);
 
     public static IQueryFilterable<TClass> Between<TClass, TPropertyType>(
         this IQueryFilterable<TClass> filter,
@@ -104,13 +93,8 @@ public static partial class IQueryFilterable_TClass_BetweenExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Between(),
-            value,
-            null,
-            connector
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Between(), value, null, connector);
 
     public static IQueryFilterable<TClass> Between<TClass, TPropertyType>(
         this IQueryFilterable<TClass> filter,
@@ -119,7 +103,8 @@ public static partial class IQueryFilterable_TClass_BetweenExtensions
         TPropertyType? value2,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new Between(),
             [value, value2],
@@ -137,18 +122,12 @@ public static partial class IQueryFilterable_TClass_BetweenExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class {
-        var f = filter.Add(
-            propertyExpression,
-            new Between(),
-            value,
-            options
-        );
+    )
+        where TClass : class
+    {
+        var f = filter.Add(propertyExpression, new Between(), value, options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IQueryFilterable<TClass> Between<TClass, TPropertyType>(
@@ -158,7 +137,9 @@ public static partial class IQueryFilterable_TClass_BetweenExtensions
         TPropertyType? value2,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new Between(),
             [value, value2],
@@ -166,66 +147,62 @@ public static partial class IQueryFilterable_TClass_BetweenExtensions
             connector
         );
 
-    public static IQueryFilterableConnection<TClass> Between<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Between<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new Between(),
-            value,
-            options
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new Between(), value, options);
 
-    public static IQueryFilterableConnection<TClass> Between<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Between<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType? value,
         TPropertyType? value2,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new Between(),
-            [value, value2],
-            options
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new Between(), [value, value2], options);
 
-    public static IQueryFilterableConnection<TClass> Between<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Between<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new Between(),
-            value,
-            null
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new Between(), value, null);
 
-    public static IQueryFilterableConnection<TClass> Between<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Between<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType? value,
         TPropertyType? value2
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new Between(),
-            [value, value2],
-            null
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new Between(), [value, value2], null);
 
     public static IQueryFilterable<TClass> Between<TClass, TPropertyType>(
         this IQueryFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new Between(),
-            value,
-            null,
-            connector
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new Between(), value, null, connector);
 
     public static IQueryFilterable<TClass> Between<TClass, TPropertyType>(
         this IQueryFilterable<TClass> filter,
@@ -233,7 +210,9 @@ public static partial class IQueryFilterable_TClass_BetweenExtensions
         TPropertyType? value,
         TPropertyType? value2,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new Between(),
             [value, value2],

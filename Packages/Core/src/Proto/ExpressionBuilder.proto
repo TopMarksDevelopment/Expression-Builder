@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package TopMarksDevelopment.ExpressionBuilder.protobuf;
+
+enum Connector {
+   And = 0;
+   Or = 1;
+}
+
+message FilterGroup {
+   Connector Connector = 1;
+   string ParentPropertyExpression = 2;
+   repeated IFilterItem Statements = 3;
+}
+
+message FilterStatementOptions {
+   Matches Match = 1;
+   repeated ManipulatorInfo ManipulatorInfo = 2;
+}
+
+message ProtoFilterStatement {
+   Connector Connector = 1;
+   string propertyType = 2;
+   string PropertyId = 3;
+   string OperationName = 4;
+   repeated bytes ByteValues = 5 [packed = false];
+   FilterStatementOptions Options = 6;
+}
+
+message ProtoIFilterItem {
+   oneof subtype {
+      FilterStatement IFilterStatement = 45;
+      FilterGroup IFilterGroup = 46;
+   }
+}
+
+message ManipulatorInfo {
+   string Name = 1;
+   string Type = 2;
+   repeated string ArgTypes = 3;
+   string Args = 4;
+}
+
+enum Matches {
+   All = 0;
+   Any = 1;
+}

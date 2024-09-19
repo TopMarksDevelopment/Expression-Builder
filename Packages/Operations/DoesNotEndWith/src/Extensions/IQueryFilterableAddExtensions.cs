@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,7 +15,8 @@ public static partial class IQueryFilterableDoesNotEndWithExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new DoesNotEndWith(),
@@ -24,10 +24,7 @@ public static partial class IQueryFilterableDoesNotEndWithExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IQueryFilterable DoesNotEndWith<TClass, TPropertyType>(
@@ -37,7 +34,8 @@ public static partial class IQueryFilterableDoesNotEndWithExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new DoesNotEndWith(),
             [value],
@@ -45,55 +43,51 @@ public static partial class IQueryFilterableDoesNotEndWithExtensions
             connector
         );
 
-    public static IQueryFilterableConnection DoesNotEndWith<TClass, TPropertyType>(
+    public static IQueryFilterableConnection DoesNotEndWith<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new DoesNotEndWith(),
-            value,
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new DoesNotEndWith(), value, options);
 
-    public static IQueryFilterableConnection DoesNotEndWith<TClass, TPropertyType>(
+    public static IQueryFilterableConnection DoesNotEndWith<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new DoesNotEndWith(),
-            [value],
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new DoesNotEndWith(), [value], options);
 
-    public static IQueryFilterableConnection DoesNotEndWith<TClass, TPropertyType>(
+    public static IQueryFilterableConnection DoesNotEndWith<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new DoesNotEndWith(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new DoesNotEndWith(), value, null);
 
-    public static IQueryFilterableConnection DoesNotEndWith<TClass, TPropertyType>(
+    public static IQueryFilterableConnection DoesNotEndWith<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new DoesNotEndWith(),
-            [value],
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new DoesNotEndWith(), [value], null);
 
     public static IQueryFilterable DoesNotEndWith<TClass, TPropertyType>(
         this IQueryFilterable filter,
@@ -101,7 +95,8 @@ public static partial class IQueryFilterableDoesNotEndWithExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new DoesNotEndWith(),
             value,
@@ -115,7 +110,8 @@ public static partial class IQueryFilterableDoesNotEndWithExtensions
         TPropertyType? value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new DoesNotEndWith(),
             [value],
@@ -133,7 +129,8 @@ public static partial class IQueryFilterableDoesNotEndWithExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ){
+    )
+    {
         var f = filter.Add(
             propertyExpression,
             new DoesNotEndWith(),
@@ -141,10 +138,7 @@ public static partial class IQueryFilterableDoesNotEndWithExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IQueryFilterable DoesNotEndWith<TPropertyType>(
@@ -153,7 +147,8 @@ public static partial class IQueryFilterableDoesNotEndWithExtensions
         TPropertyType? value,
         IFilterStatementOptions? options,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new DoesNotEndWith(),
             [value],
@@ -166,53 +161,34 @@ public static partial class IQueryFilterableDoesNotEndWithExtensions
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) => filter.Add(
-            propertyExpression,
-            new DoesNotEndWith(),
-            value,
-            options
-        );
+    ) => filter.Add(propertyExpression, new DoesNotEndWith(), value, options);
 
     public static IQueryFilterableConnection DoesNotEndWith<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
-    ) => filter.Add(
-            propertyExpression,
-            new DoesNotEndWith(),
-            [value],
-            options
-        );
+    ) => filter.Add(propertyExpression, new DoesNotEndWith(), [value], options);
 
     public static IQueryFilterableConnection DoesNotEndWith<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) => filter.Add(
-            propertyExpression,
-            new DoesNotEndWith(),
-            value,
-            null
-        );
+    ) => filter.Add(propertyExpression, new DoesNotEndWith(), value, null);
 
     public static IQueryFilterableConnection DoesNotEndWith<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType? value
-    ) => filter.Add(
-            propertyExpression,
-            new DoesNotEndWith(),
-            [value],
-            null
-        );
+    ) => filter.Add(propertyExpression, new DoesNotEndWith(), [value], null);
 
     public static IQueryFilterable DoesNotEndWith<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new DoesNotEndWith(),
             value,
@@ -225,7 +201,8 @@ public static partial class IQueryFilterableDoesNotEndWithExtensions
         string propertyExpression,
         TPropertyType? value,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new DoesNotEndWith(),
             [value],

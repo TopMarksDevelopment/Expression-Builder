@@ -7,11 +7,7 @@ public class OperationTests
         Assert.Throws<ArgumentOutOfRangeException>(
             () =>
                 new IsNull().Validate(
-                    new FilterStatement<string>(
-                        "",
-                        new IsNull(),
-                        [""]
-                    )
+                    new FilterStatement<string>("", new IsNull(), [""])
                 )
         );
 }

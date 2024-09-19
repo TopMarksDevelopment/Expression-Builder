@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,18 +15,11 @@ public static partial class IFilterNotInExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
-        var f = filter.Add(
-            propertyExpression,
-            new NotIn(),
-            value,
-            options
-        );
+        where TClass : class
+    {
+        var f = filter.Add(propertyExpression, new NotIn(), value, options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilter NotIn<TClass, TPropertyType>(
@@ -37,7 +29,8 @@ public static partial class IFilterNotInExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotIn(),
             [value],
@@ -51,12 +44,8 @@ public static partial class IFilterNotInExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotIn(),
-            value,
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotIn(), value, options);
 
     public static IFilterConnection NotIn<TClass, TPropertyType>(
         this IFilter filter,
@@ -64,36 +53,24 @@ public static partial class IFilterNotInExtensions
         TPropertyType? value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotIn(),
-            [value],
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotIn(), [value], options);
 
     public static IFilterConnection NotIn<TClass, TPropertyType>(
         this IFilter filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotIn(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotIn(), value, null);
 
     public static IFilterConnection NotIn<TClass, TPropertyType>(
         this IFilter filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotIn(),
-            [value],
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotIn(), [value], null);
 
     public static IFilter NotIn<TClass, TPropertyType>(
         this IFilter filter,
@@ -101,13 +78,8 @@ public static partial class IFilterNotInExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotIn(),
-            value,
-            null,
-            connector
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotIn(), value, null, connector);
 
     public static IFilter NotIn<TClass, TPropertyType>(
         this IFilter filter,
@@ -115,13 +87,8 @@ public static partial class IFilterNotInExtensions
         TPropertyType? value,
         Connector connector
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotIn(),
-            [value],
-            null,
-            connector
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotIn(), [value], null, connector);
 
     #endregion Expression<Func<,>> propertyExpression
 
@@ -133,18 +100,11 @@ public static partial class IFilterNotInExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ){
-        var f = filter.Add(
-            propertyExpression,
-            new NotIn(),
-            value,
-            options
-        );
+    )
+    {
+        var f = filter.Add(propertyExpression, new NotIn(), value, options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilter NotIn<TPropertyType>(
@@ -153,7 +113,8 @@ public static partial class IFilterNotInExtensions
         TPropertyType? value,
         IFilterStatementOptions? options,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new NotIn(),
             [value],
@@ -166,72 +127,40 @@ public static partial class IFilterNotInExtensions
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) => filter.Add(
-            propertyExpression,
-            new NotIn(),
-            value,
-            options
-        );
+    ) => filter.Add(propertyExpression, new NotIn(), value, options);
 
     public static IFilterConnection NotIn<TPropertyType>(
         this IFilter filter,
         string propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
-    ) => filter.Add(
-            propertyExpression,
-            new NotIn(),
-            [value],
-            options
-        );
+    ) => filter.Add(propertyExpression, new NotIn(), [value], options);
 
     public static IFilterConnection NotIn<TPropertyType>(
         this IFilter filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) => filter.Add(
-            propertyExpression,
-            new NotIn(),
-            value,
-            null
-        );
+    ) => filter.Add(propertyExpression, new NotIn(), value, null);
 
     public static IFilterConnection NotIn<TPropertyType>(
         this IFilter filter,
         string propertyExpression,
         TPropertyType? value
-    ) => filter.Add(
-            propertyExpression,
-            new NotIn(),
-            [value],
-            null
-        );
+    ) => filter.Add(propertyExpression, new NotIn(), [value], null);
 
     public static IFilter NotIn<TPropertyType>(
         this IFilter filter,
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) => filter.Add(
-            propertyExpression,
-            new NotIn(),
-            value,
-            null,
-            connector
-        );
+    ) => filter.Add(propertyExpression, new NotIn(), value, null, connector);
 
     public static IFilter NotIn<TPropertyType>(
         this IFilter filter,
         string propertyExpression,
         TPropertyType? value,
         Connector connector
-    ) => filter.Add(
-            propertyExpression,
-            new NotIn(),
-            [value],
-            null,
-            connector
-        );
+    ) => filter.Add(propertyExpression, new NotIn(), [value], null, connector);
 
     #endregion string propertyExpression
 }

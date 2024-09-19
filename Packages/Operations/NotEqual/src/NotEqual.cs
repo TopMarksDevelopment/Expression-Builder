@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
@@ -25,17 +24,17 @@ public struct NotEqual : IOperation
                     options.ApplyManipulators(values.ElementAt(0))
                 )
             )
-            : options?.Match == Matches.Any
-                ? member.WorkOnValues(
-                    values,
-                    Matches.Any,
-                    (m, v) =>
-                        Expression.NotEqual(
-                            m,
-                            Expression.Constant(options?.ApplyManipulators(v))
-                        )
-                )
-                : Expression.Not(new In().Build(member, values, options));
+        : options?.Match == Matches.Any
+            ? member.WorkOnValues(
+                values,
+                Matches.Any,
+                (m, v) =>
+                    Expression.NotEqual(
+                        m,
+                        Expression.Constant(options?.ApplyManipulators(v))
+                    )
+            )
+        : Expression.Not(new In().Build(member, values, options));
 
     public readonly void Validate(IFilterStatement statement)
     {

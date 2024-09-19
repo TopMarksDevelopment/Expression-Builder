@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,7 +15,8 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new NotBetweenExclusive(),
@@ -24,10 +24,7 @@ public static partial class IFilterNotBetweenExclusiveExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilter NotBetweenExclusive<TClass, TPropertyType>(
@@ -38,7 +35,8 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotBetweenExclusive(),
             [value, value2],
@@ -52,7 +50,8 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotBetweenExclusive(),
             value,
@@ -66,7 +65,8 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         TPropertyType? value2,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotBetweenExclusive(),
             [value, value2],
@@ -78,12 +78,8 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotBetweenExclusive(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotBetweenExclusive(), value, null);
 
     public static IFilterConnection NotBetweenExclusive<TClass, TPropertyType>(
         this IFilter filter,
@@ -91,7 +87,8 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         TPropertyType? value,
         TPropertyType? value2
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotBetweenExclusive(),
             [value, value2],
@@ -104,7 +101,8 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotBetweenExclusive(),
             value,
@@ -119,7 +117,8 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         TPropertyType? value2,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotBetweenExclusive(),
             [value, value2],
@@ -137,7 +136,8 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ){
+    )
+    {
         var f = filter.Add(
             propertyExpression,
             new NotBetweenExclusive(),
@@ -145,10 +145,7 @@ public static partial class IFilterNotBetweenExclusiveExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilter NotBetweenExclusive<TPropertyType>(
@@ -158,7 +155,8 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         TPropertyType? value2,
         IFilterStatementOptions? options,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new NotBetweenExclusive(),
             [value, value2],
@@ -171,7 +169,8 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new NotBetweenExclusive(),
             value,
@@ -184,7 +183,8 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         TPropertyType? value,
         TPropertyType? value2,
         IFilterStatementOptions? options
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new NotBetweenExclusive(),
             [value, value2],
@@ -195,19 +195,15 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         this IFilter filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) => filter.Add(
-            propertyExpression,
-            new NotBetweenExclusive(),
-            value,
-            null
-        );
+    ) => filter.Add(propertyExpression, new NotBetweenExclusive(), value, null);
 
     public static IFilterConnection NotBetweenExclusive<TPropertyType>(
         this IFilter filter,
         string propertyExpression,
         TPropertyType? value,
         TPropertyType? value2
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new NotBetweenExclusive(),
             [value, value2],
@@ -219,7 +215,8 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new NotBetweenExclusive(),
             value,
@@ -233,7 +230,8 @@ public static partial class IFilterNotBetweenExclusiveExtensions
         TPropertyType? value,
         TPropertyType? value2,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new NotBetweenExclusive(),
             [value, value2],

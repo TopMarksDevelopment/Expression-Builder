@@ -1,8 +1,5 @@
 ﻿namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -35,52 +32,13 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
 
     void PrepareForSerialization()
     {
-        if (!RuntimeTypeModel.Default.CanSerialize(typeof(IFilterItem)))
+        if (!RuntimeTypeModel.Default.CanSerialize(typeof(IProtoFilterItem)))
         {
             RuntimeTypeModel.Default.Add(typeof(Connector), true);
             RuntimeTypeModel.Default.Add(typeof(Matches), true);
 
-            RuntimeTypeModel
-                .Default.Add(typeof(IFilterGroup), false)
-                .AddSubType(45, typeof(FilterGroup));
-
-            RuntimeTypeModel
-                .Default.Add(typeof(IFilterStatementOptions), false)
-                .AddSubType(45, typeof(FilterStatementOptions));
-
-            RuntimeTypeModel
-                .Default.Add(typeof(IFilterItem), false)
-                .AddSubType(45, typeof(IFilterStatement))
-                .AddSubType(46, typeof(IFilterGroup));
-
-            Serializer.PrepareSerializer<Filter<TClass>>();
+            Serializer.PrepareSerializer<FilterGroup>();
         }
-
-        var pTypes = TypeTracker.FilterStatementTypes;
-        var filterMeta = RuntimeTypeModel.Default.Add(
-            typeof(IFilterStatement),
-            false
-        );
-        var filterSubTypes = filterMeta
-            .GetSubtypes()
-            .Select(x => x.DerivedType.Type);
-        var baseType = typeof(FilterStatement<>);
-
-        var indexTracker = 0;
-        foreach (var pType in pTypes)
-        {
-            if (baseType != pType.GetGenericTypeDefinition())
-                throw new TypeLoadException(
-                    "Must be of type FilterStatement<>"
-                );
-
-            if (!filterSubTypes.Contains(pType))
-                filterMeta.AddSubType(50 + indexTracker, pType);
-
-            indexTracker++;
-        }
-
-        (_group as FilterGroup)!.PrepForSerialisation(filterMeta, ref pTypes);
     }
 
     public void SerializeTo(Stream stream)
@@ -99,7 +57,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
 
     public static Filter<TClass> DeserializeFrom(Stream stream)
     {
-        var group = Serializer.Deserialize<IFilterGroup>(stream);
+        var group = Serializer.Deserialize<FilterGroup>(stream);
 
         return new Filter<TClass>(group, group, null);
     }
@@ -107,7 +65,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
     public static Filter<TClass> DeserializeFrom(byte[] bytes)
     {
         using var memStream = new MemoryStream(bytes);
-        var group = Serializer.Deserialize<IFilterGroup>(memStream);
+        var group = Serializer.Deserialize<FilterGroup>(memStream);
 
         return new Filter<TClass>(group, group, null);
     }

@@ -1,7 +1,5 @@
 namespace ExpressionBuilder.Tests.Models;
 
-using System.Collections.Generic;
-
 public class Category : IItemable
 {
     public int Id { get; set; }

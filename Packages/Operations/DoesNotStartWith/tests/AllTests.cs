@@ -6,7 +6,7 @@ public class AllTests : TheoryData
         AddRows(
             [
                 [DoesNotStartWith],
-                [DoesNotStartWithEither]
+                [DoesNotStartWithEither],
             ]
         );
 

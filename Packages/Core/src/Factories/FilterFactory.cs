@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Factories;
 
-using System;
 using TopMarksDevelopment.ExpressionBuilder;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 

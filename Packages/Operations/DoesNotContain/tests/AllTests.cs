@@ -8,7 +8,7 @@ public class AllTests : TheoryData
                 [DoesNotContain],
                 [DoesNotContainEither],
                 [DoesNotContainEitherAny],
-                [DoesNotContainEitherAll]
+                [DoesNotContainEitherAll],
             ]
         );
 

@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Serialization;
 
-using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TopMarksDevelopment.ExpressionBuilder.Api;
@@ -19,5 +18,10 @@ internal class FilterStatementOptionsJsonConverter
         Utf8JsonWriter writer,
         IFilterStatementOptions value,
         JsonSerializerOptions options
-    ) => JsonSerializer.Serialize(writer, value as FilterStatementOptions, options);
+    ) =>
+        JsonSerializer.Serialize(
+            writer,
+            value as FilterStatementOptions,
+            options
+        );
 }

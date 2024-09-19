@@ -2,28 +2,13 @@ namespace ExpressionBuilder.Tests;
 
 using System.IO;
 using System.Text.Json;
-using ProtoBuf.Meta;
-using TopMarksDevelopment.ExpressionBuilder.Serialization;
 
 [Collection("Serialization checks")]
 public class SerializationTests
 {
-    readonly Type _testType = typeof(FilterStatement<FilterGroup>);
-
-    public SerializationTests()
-    {
-        // Prep for `ProtobufTypeTrackerTest` - faking runtime setup
-        var protoTypes = TypeTracker.FilterStatementTypes;
-        if (!protoTypes.Contains(_testType))
-        {
-            protoTypes.Add(typeof(FilterStatement<Connector>));
-            protoTypes.Add(_testType);
-        }
-    }
-
-    [Theory(DisplayName = "Multi Collection Test")]
+    [Theory(DisplayName = "JSON String Test")]
     [ClassData(typeof(SerializationFilterTestData))]
-    public void MultiCollectionTest(Filter<Category> filter)
+    public void JsonStringTest(Filter<Category> filter)
     {
         var jsonString = JsonSerializer.Serialize(filter);
         var filterFromJson = JsonSerializer.Deserialize<Filter<Category>>(
@@ -33,41 +18,31 @@ public class SerializationTests
         Assert.Equal(filter.ToMatchString(), filterFromJson?.ToMatchString());
     }
 
-    [Fact(DisplayName = "Protobuf Type Tracker Test")]
-    public void ProtobufTypeTrackerTest()
+    [Theory(DisplayName = "JSON File Test")]
+    [ClassData(typeof(SerializationFilterTestData))]
+    public void JsonFileTest(Filter<Category> filter)
     {
-        // throw away filter
-        var filter = new Filter<Category>();
-        filter.Equal(x => x.Id, 2);
+        using (var file = File.Create("../../Test.json"))
+            file.Write(JsonSerializer.SerializeToUtf8Bytes(filter));
 
-        filter.SerializeTo(out var _);
+        var jsonFileData = File.ReadAllText("../../Test.json");
 
-        var expectedFieldNumber = RuntimeTypeModel
-            .Default.Add(typeof(IFilterStatement), false)
-            .GetSubtypes()
-            .FirstOrDefault(x => x.DerivedType.Type == _testType)
-            ?.FieldNumber;
+        var filterFromJson = JsonSerializer.Deserialize<Filter<Category>>(
+            jsonFileData
+        );
 
-        Assert.Equal(81, expectedFieldNumber);
+        Assert.Equal(filter.ToMatchString(), filterFromJson?.ToMatchString());
     }
 
-    [Theory(DisplayName = "Protobuf default order is correct")]
-    [ClassData(typeof(SerializationTypeTestData))]
-    public void ProtobufDefaultTest((int FieldNumber, Type Type) matchData)
+    [Theory(DisplayName = "Protobuf byte[] Test")]
+    [ClassData(typeof(SerializationFilterTestData))]
+    public void ProtobufByteArrayTest(Filter<Category> filter)
     {
-        // throw away filter
-        var filter = new Filter<Category>();
-        filter.Equal(x => x.Id, 2);
+        filter.SerializeTo(out var bytes);
 
-        filter.SerializeTo(out var _);
+        var actual = Filter<Category>.DeserializeFrom(bytes);
 
-        var expectedFieldNumber = RuntimeTypeModel
-            .Default.Add(typeof(IFilterStatement), false)
-            .GetSubtypes()
-            .FirstOrDefault(x => x.DerivedType.Type == matchData.Type)
-            ?.FieldNumber;
-
-        Assert.Equal(expectedFieldNumber, matchData.FieldNumber);
+        Assert.Equal(filter.ToMatchString(), actual.ToMatchString());
     }
 
     [Theory(DisplayName = "Protobuf File Test")]
@@ -80,17 +55,6 @@ public class SerializationTests
         using var rFile = File.OpenRead("../../Test.dat");
 
         var actual = Filter<Category>.DeserializeFrom(rFile);
-
-        Assert.Equal(filter.ToMatchString(), actual.ToMatchString());
-    }
-
-    [Theory(DisplayName = "Protobuf byte[] Test")]
-    [ClassData(typeof(SerializationFilterTestData))]
-    public void ProtobufByteArrayTest(Filter<Category> filter)
-    {
-        filter.SerializeTo(out var bytes);
-
-        var actual = Filter<Category>.DeserializeFrom(bytes);
 
         Assert.Equal(filter.ToMatchString(), actual.ToMatchString());
     }
