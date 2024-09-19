@@ -29,7 +29,7 @@ All notable changes to this project will be documented in this file.
 
 <small>[Compare to previous release][comp:1.0.0-rc.1]</small>
 
->ℹ️ This is the first release candidate for the package. There should be minimal changes between this and the final v1.0.0 release - as such, this is considered production ready
+>&#x1F6C8; This is the first release candidate for the package. There should be minimal changes between this and the final v1.0.0 release - as such, this is considered production ready
 
 ### Breaking Changes (Overview)
 
