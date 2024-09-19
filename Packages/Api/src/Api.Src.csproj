@@ -8,7 +8,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <PackageId>TopMarksDevelopment.ExpressionBuilder.Api</PackageId>
-    <version>0.4.0-beta</version>
+    <version>1.0.0-rc.1</version>
     <title>Expression Builder (API)</title>
     <Authors>Glenn Marks</Authors>
     <Company>Top Marks Development</Company>
