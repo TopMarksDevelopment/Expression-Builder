@@ -23,8 +23,6 @@ Types of changes
 
 All notable changes to this project will be documented in this file.
 
-> ❗ Whilst in the beta phase, breaking changes will happen between "minor" releases. Because of this, patches and new features will happen between "patch" releases
-
 ## [1.0.0-rc.1] - 2024-09-19
 
 <small>[Compare to previous release][comp:1.0.0-rc.1]</small>
