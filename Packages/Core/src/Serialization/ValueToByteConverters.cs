@@ -6,6 +6,9 @@ internal static class ValueToByteConverters
 {
     public static byte[]? Pack<T>(T? value)
     {
+        if (value is null)
+            return null;
+
         if (value is string x)
             return Encoding.UTF8.GetBytes(x);
 
@@ -37,7 +40,11 @@ internal static class ValueToByteConverters
             return BitConverter.GetBytes(dt.Ticks);
 
         if (value is DateTimeOffset dto)
-            return BitConverter.GetBytes(dto.Ticks);
+        {
+            var ticks = BitConverter.GetBytes(dto.Ticks);
+            var offset = BitConverter.GetBytes(dto.Offset.Ticks);
+            return [.. ticks, .. offset];
+        }
 
         if (value is DateOnly d)
             return BitConverter.GetBytes(d.DayNumber);
@@ -62,10 +69,9 @@ internal static class ValueToByteConverters
             return ba;
 
         if (value is Enum e)
-            return Pack(Enum.GetUnderlyingType(e.GetType()));
-
-        if (value is null)
-            return [];
+            return Pack(
+                Convert.ChangeType(e, Enum.GetUnderlyingType(e.GetType()))
+            );
 
         if (value is IProtoConverter c)
             return c.Pack();
@@ -73,7 +79,7 @@ internal static class ValueToByteConverters
         throw new NotSupportedException();
     }
 
-    public static T? UnPack<T>(byte[] bytes) => (T?)UnPack(typeof(T), bytes);
+    public static T? UnPack<T>(byte[]? bytes) => (T?)UnPack(typeof(T), bytes);
 
     internal static object? UnPack(
         Type type,
@@ -115,10 +121,14 @@ internal static class ValueToByteConverters
             return new DateTime(BitConverter.ToInt64(bytes));
 
         if (type == typeof(DateTimeOffset))
+        {
+            var ticks = BitConverter.ToInt64(bytes);
+            var offset = BitConverter.ToInt64(bytes, 8);
             return new DateTimeOffset(
-                BitConverter.ToInt64(bytes),
-                TimeSpan.Zero
+                new DateTime(ticks),
+                TimeSpan.FromTicks(offset)
             );
+        }
 
         if (type == typeof(DateOnly))
             return new DateOnly().AddDays(BitConverter.ToInt32(bytes));
@@ -137,11 +147,12 @@ internal static class ValueToByteConverters
 
         if (type == typeof(decimal))
             return new decimal(
-                BitConverter.ToInt32(bytes, 0),
-                BitConverter.ToInt32(bytes, 4),
-                BitConverter.ToInt32(bytes, 8),
-                bytes[12] == 1,
-                bytes[13]
+                [
+                    BitConverter.ToInt32(bytes, 0),
+                    BitConverter.ToInt32(bytes, 4),
+                    BitConverter.ToInt32(bytes, 8),
+                    BitConverter.ToInt32(bytes, 12),
+                ]
             );
 
         if (type == typeof(byte[]))
@@ -155,8 +166,16 @@ internal static class ValueToByteConverters
                     UnPack(Enum.GetUnderlyingType(type), bytes, true)!
                 );
 
-        if (type is IProtoConverter c)
-            return c.UnPack(bytes);
+        if (typeof(IProtoConverter).IsAssignableFrom(type))
+        {
+            var item =
+                (IProtoConverter?)Activator.CreateInstance(type)
+                ?? throw new InvalidOperationException();
+
+            item.UnPack(bytes);
+
+            return item;
+        }
 
         throw new NotSupportedException();
     }

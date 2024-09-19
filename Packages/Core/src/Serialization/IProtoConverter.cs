@@ -15,6 +15,5 @@ public interface IProtoConverter
     /// Unpacks the data from a byte array.
     /// </summary>
     /// <param name="bytes">The byte array containing the data to unpack.</param>
-    /// <returns>An object representing the unpacked data.</returns>
-    object UnPack(byte[] bytes);
+    void UnPack(byte[] bytes);
 }
