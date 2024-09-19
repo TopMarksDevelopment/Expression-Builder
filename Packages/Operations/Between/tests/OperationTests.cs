@@ -24,7 +24,11 @@ public class OperationTests
         {
             var filter = new Filter<Product>();
 
-            filter.Between(x => x.CreatedAt!.Value, DateTime.Now.AddDays(-1),  DateTime.Now);
+            filter.Between(
+                x => x.CreatedAt!.Value,
+                DateTime.Now.AddDays(-1),
+                DateTime.Now
+            );
         });
 
         Assert.Null(exception);
@@ -37,7 +41,7 @@ public class OperationTests
         {
             var filter = new Filter<Product>();
 
-            filter.Between(x => x.Id, 1,  1);
+            filter.Between(x => x.Id, 1, 1);
         });
 
         Assert.Null(exception);

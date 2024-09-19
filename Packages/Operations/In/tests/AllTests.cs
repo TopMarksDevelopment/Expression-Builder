@@ -14,7 +14,7 @@ public class AllTests : TheoryData
             [
                 [MultiMatcher],
                 [ManipulationCheck],
-                [ManipulatedTypeCheck]
+                [ManipulatedTypeCheck],
             ]
         );
 
@@ -31,7 +31,9 @@ public class AllTests : TheoryData
     static TestBuilder<Product> ManipulationCheck =>
         new(
             "Normal manipulation works",
-            x => x.Name != null && _inputManipValues.Contains(x.Name.Replace("2", "4")),
+            x =>
+                x.Name != null
+                && _inputManipValues.Contains(x.Name.Replace("2", "4")),
             x => x.In("Name", _manipValues, _manipsOptions),
             x => x.In(x => x.Name, _manipValues, _manipsOptions),
             x => x.In(x => x.Name, _manipValues, _manipsOptions),
@@ -57,7 +59,7 @@ public class AllTests : TheoryData
         {
             Manipulators = ExpressionMethodManipulator.GetAll<string>(x =>
                 x.Replace("2", "4")
-            )
+            ),
         };
 
     static readonly FilterStatementOptions _manipTypeOptions =
@@ -65,6 +67,6 @@ public class AllTests : TheoryData
         {
             Manipulators = ExpressionMethodManipulator.GetAll<int>(x =>
                 x.ToString().Replace("2", "4")
-            )
+            ),
         };
 }

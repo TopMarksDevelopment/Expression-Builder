@@ -28,7 +28,7 @@ internal class CoreTestData : TheoryData
                 [DateTimeYearCheck],
                 [NullableDateTimeYearCheck],
                 [ReplaceMethodCheck],
-                [ReplaceManipulatorCheck]
+                [ReplaceManipulatorCheck],
             ]
         );
 
@@ -351,7 +351,7 @@ internal class CoreTestData : TheoryData
                     "Product2",
                     new FilterStatementOptions
                     {
-                        Manipulators = [new ReplaceManipulator(" ", "")]
+                        Manipulators = [new ReplaceManipulator(" ", "")],
                     }
                 ),
             x =>
@@ -360,7 +360,7 @@ internal class CoreTestData : TheoryData
                     "Product2",
                     new FilterStatementOptions
                     {
-                        Manipulators = [new ReplaceManipulator(" ", "")]
+                        Manipulators = [new ReplaceManipulator(" ", "")],
                     }
                 ),
             x =>
@@ -369,7 +369,7 @@ internal class CoreTestData : TheoryData
                     "Product2",
                     new FilterStatementOptions
                     {
-                        Manipulators = [new ReplaceManipulator(" ", "")]
+                        Manipulators = [new ReplaceManipulator(" ", "")],
                     }
                 ),
             x =>
@@ -378,7 +378,7 @@ internal class CoreTestData : TheoryData
                     "Product2",
                     new FilterStatementOptions
                     {
-                        Manipulators = [new ReplaceManipulator(" ", "")]
+                        Manipulators = [new ReplaceManipulator(" ", "")],
                     }
                 )
         );

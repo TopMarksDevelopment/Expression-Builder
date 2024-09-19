@@ -1,11 +1,7 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Enumerables;
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Net.Sockets;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
 public class Filterable<TClass> : IFilterable<TClass>

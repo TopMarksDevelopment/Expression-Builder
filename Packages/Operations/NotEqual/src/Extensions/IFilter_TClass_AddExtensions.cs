@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,18 +15,11 @@ public static partial class IFilter_TClass_NotEqualExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
-        var f = filter.Add(
-            propertyExpression,
-            new NotEqual(),
-            value,
-            options
-        );
+        where TClass : class
+    {
+        var f = filter.Add(propertyExpression, new NotEqual(), value, options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilter<TClass> NotEqual<TClass, TPropertyType>(
@@ -37,7 +29,8 @@ public static partial class IFilter_TClass_NotEqualExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotEqual(),
             [value],
@@ -51,12 +44,8 @@ public static partial class IFilter_TClass_NotEqualExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotEqual(),
-            value,
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotEqual(), value, options);
 
     public static IFilterConnection<TClass> NotEqual<TClass, TPropertyType>(
         this IFilter<TClass> filter,
@@ -64,35 +53,24 @@ public static partial class IFilter_TClass_NotEqualExtensions
         TPropertyType? value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotEqual(),
-            [value],
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotEqual(), [value], options);
 
     public static IFilterConnection<TClass> NotEqual<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotEqual(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotEqual(), value, null);
 
     public static IFilterConnection<TClass> NotEqual<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotEqual(),
-            [value]
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotEqual(), [value]);
 
     public static IFilter<TClass> NotEqual<TClass, TPropertyType>(
         this IFilter<TClass> filter,
@@ -100,13 +78,8 @@ public static partial class IFilter_TClass_NotEqualExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new NotEqual(),
-            value,
-            null,
-            connector
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotEqual(), value, null, connector);
 
     public static IFilter<TClass> NotEqual<TClass, TPropertyType>(
         this IFilter<TClass> filter,
@@ -114,7 +87,8 @@ public static partial class IFilter_TClass_NotEqualExtensions
         TPropertyType? value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotEqual(),
             [value],
@@ -132,18 +106,12 @@ public static partial class IFilter_TClass_NotEqualExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class {
-        var f = filter.Add(
-            propertyExpression,
-            new NotEqual(),
-            value,
-            options
-        );
+    )
+        where TClass : class
+    {
+        var f = filter.Add(propertyExpression, new NotEqual(), value, options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilter<TClass> NotEqual<TClass, TPropertyType>(
@@ -152,7 +120,9 @@ public static partial class IFilter_TClass_NotEqualExtensions
         TPropertyType? value,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotEqual(),
             [value],
@@ -165,66 +135,52 @@ public static partial class IFilter_TClass_NotEqualExtensions
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new NotEqual(),
-            value,
-            options
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotEqual(), value, options);
 
     public static IFilterConnection<TClass> NotEqual<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         string propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new NotEqual(),
-            [value],
-            options
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotEqual(), [value], options);
 
     public static IFilterConnection<TClass> NotEqual<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new NotEqual(),
-            value,
-            null
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotEqual(), value, null);
 
     public static IFilterConnection<TClass> NotEqual<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         string propertyExpression,
         TPropertyType? value
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new NotEqual(),
-            [value],
-            null
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotEqual(), [value], null);
 
     public static IFilter<TClass> NotEqual<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new NotEqual(),
-            value,
-            null,
-            connector
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new NotEqual(), value, null, connector);
 
     public static IFilter<TClass> NotEqual<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         string propertyExpression,
         TPropertyType? value,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new NotEqual(),
             [value],

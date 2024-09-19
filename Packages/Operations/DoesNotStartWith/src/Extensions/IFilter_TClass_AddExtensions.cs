@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,7 +15,8 @@ public static partial class IFilter_TClass_DoesNotStartWithExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new DoesNotStartWith(),
@@ -24,10 +24,7 @@ public static partial class IFilter_TClass_DoesNotStartWithExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilter<TClass> DoesNotStartWith<TClass, TPropertyType>(
@@ -37,7 +34,8 @@ public static partial class IFilter_TClass_DoesNotStartWithExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new DoesNotStartWith(),
             [value],
@@ -45,54 +43,56 @@ public static partial class IFilter_TClass_DoesNotStartWithExtensions
             connector
         );
 
-    public static IFilterConnection<TClass> DoesNotStartWith<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> DoesNotStartWith<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new DoesNotStartWith(),
-            value,
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new DoesNotStartWith(), value, options);
 
-    public static IFilterConnection<TClass> DoesNotStartWith<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> DoesNotStartWith<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new DoesNotStartWith(),
             [value],
             options
         );
 
-    public static IFilterConnection<TClass> DoesNotStartWith<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> DoesNotStartWith<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new DoesNotStartWith(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new DoesNotStartWith(), value, null);
 
-    public static IFilterConnection<TClass> DoesNotStartWith<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> DoesNotStartWith<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new DoesNotStartWith(),
-            [value]
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new DoesNotStartWith(), [value]);
 
     public static IFilter<TClass> DoesNotStartWith<TClass, TPropertyType>(
         this IFilter<TClass> filter,
@@ -100,7 +100,8 @@ public static partial class IFilter_TClass_DoesNotStartWithExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new DoesNotStartWith(),
             value,
@@ -114,7 +115,8 @@ public static partial class IFilter_TClass_DoesNotStartWithExtensions
         TPropertyType? value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new DoesNotStartWith(),
             [value],
@@ -132,7 +134,9 @@ public static partial class IFilter_TClass_DoesNotStartWithExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class {
+    )
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new DoesNotStartWith(),
@@ -140,10 +144,7 @@ public static partial class IFilter_TClass_DoesNotStartWithExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilter<TClass> DoesNotStartWith<TClass, TPropertyType>(
@@ -152,7 +153,9 @@ public static partial class IFilter_TClass_DoesNotStartWithExtensions
         TPropertyType? value,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new DoesNotStartWith(),
             [value],
@@ -160,58 +163,65 @@ public static partial class IFilter_TClass_DoesNotStartWithExtensions
             connector
         );
 
-    public static IFilterConnection<TClass> DoesNotStartWith<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> DoesNotStartWith<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new DoesNotStartWith(),
-            value,
-            options
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new DoesNotStartWith(), value, options);
 
-    public static IFilterConnection<TClass> DoesNotStartWith<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> DoesNotStartWith<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         string propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new DoesNotStartWith(),
             [value],
             options
         );
 
-    public static IFilterConnection<TClass> DoesNotStartWith<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> DoesNotStartWith<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new DoesNotStartWith(),
-            value,
-            null
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new DoesNotStartWith(), value, null);
 
-    public static IFilterConnection<TClass> DoesNotStartWith<TClass, TPropertyType>(
+    public static IFilterConnection<TClass> DoesNotStartWith<
+        TClass,
+        TPropertyType
+    >(
         this IFilter<TClass> filter,
         string propertyExpression,
         TPropertyType? value
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new DoesNotStartWith(),
-            [value],
-            null
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new DoesNotStartWith(), [value], null);
 
     public static IFilter<TClass> DoesNotStartWith<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new DoesNotStartWith(),
             value,
@@ -224,7 +234,9 @@ public static partial class IFilter_TClass_DoesNotStartWithExtensions
         string propertyExpression,
         TPropertyType? value,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new DoesNotStartWith(),
             [value],

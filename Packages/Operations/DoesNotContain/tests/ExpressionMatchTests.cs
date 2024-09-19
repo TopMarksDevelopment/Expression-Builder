@@ -1,6 +1,5 @@
 namespace ExpressionBuilder.Tests;
 
-
 [Collection("Matching queries - Expressions")]
 public class ExpressionAllTests
 {

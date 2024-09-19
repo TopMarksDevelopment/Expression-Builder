@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,7 +15,8 @@ public static partial class IQueryFilterableStartsWithExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new StartsWith(),
@@ -24,10 +24,7 @@ public static partial class IQueryFilterableStartsWithExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IQueryFilterable StartsWith<TClass, TPropertyType>(
@@ -37,7 +34,8 @@ public static partial class IQueryFilterableStartsWithExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new StartsWith(),
             [value],
@@ -51,12 +49,8 @@ public static partial class IQueryFilterableStartsWithExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new StartsWith(),
-            value,
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new StartsWith(), value, options);
 
     public static IQueryFilterableConnection StartsWith<TClass, TPropertyType>(
         this IQueryFilterable filter,
@@ -64,36 +58,24 @@ public static partial class IQueryFilterableStartsWithExtensions
         TPropertyType? value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new StartsWith(),
-            [value],
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new StartsWith(), [value], options);
 
     public static IQueryFilterableConnection StartsWith<TClass, TPropertyType>(
         this IQueryFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new StartsWith(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new StartsWith(), value, null);
 
     public static IQueryFilterableConnection StartsWith<TClass, TPropertyType>(
         this IQueryFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new StartsWith(),
-            [value],
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new StartsWith(), [value], null);
 
     public static IQueryFilterable StartsWith<TClass, TPropertyType>(
         this IQueryFilterable filter,
@@ -101,7 +83,8 @@ public static partial class IQueryFilterableStartsWithExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new StartsWith(),
             value,
@@ -115,7 +98,8 @@ public static partial class IQueryFilterableStartsWithExtensions
         TPropertyType? value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new StartsWith(),
             [value],
@@ -133,7 +117,8 @@ public static partial class IQueryFilterableStartsWithExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ){
+    )
+    {
         var f = filter.Add(
             propertyExpression,
             new StartsWith(),
@@ -141,10 +126,7 @@ public static partial class IQueryFilterableStartsWithExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IQueryFilterable StartsWith<TPropertyType>(
@@ -153,7 +135,8 @@ public static partial class IQueryFilterableStartsWithExtensions
         TPropertyType? value,
         IFilterStatementOptions? options,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new StartsWith(),
             [value],
@@ -166,53 +149,34 @@ public static partial class IQueryFilterableStartsWithExtensions
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) => filter.Add(
-            propertyExpression,
-            new StartsWith(),
-            value,
-            options
-        );
+    ) => filter.Add(propertyExpression, new StartsWith(), value, options);
 
     public static IQueryFilterableConnection StartsWith<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
-    ) => filter.Add(
-            propertyExpression,
-            new StartsWith(),
-            [value],
-            options
-        );
+    ) => filter.Add(propertyExpression, new StartsWith(), [value], options);
 
     public static IQueryFilterableConnection StartsWith<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) => filter.Add(
-            propertyExpression,
-            new StartsWith(),
-            value,
-            null
-        );
+    ) => filter.Add(propertyExpression, new StartsWith(), value, null);
 
     public static IQueryFilterableConnection StartsWith<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType? value
-    ) => filter.Add(
-            propertyExpression,
-            new StartsWith(),
-            [value],
-            null
-        );
+    ) => filter.Add(propertyExpression, new StartsWith(), [value], null);
 
     public static IQueryFilterable StartsWith<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new StartsWith(),
             value,
@@ -225,7 +189,8 @@ public static partial class IQueryFilterableStartsWithExtensions
         string propertyExpression,
         TPropertyType? value,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new StartsWith(),
             [value],

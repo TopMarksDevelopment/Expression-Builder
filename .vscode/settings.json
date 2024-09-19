@@ -2,5 +2,6 @@
     "dotnet.defaultSolution": "ExpressionBuilder-Container.sln",
     "dotnet.unitTestDebuggingOptions": {
         "enableStepFiltering": false
-    }
+    },
+    "prettier.tabWidth": 4
 }

@@ -1,8 +1,10 @@
 namespace ExpressionBuilder.Tests;
+
 using ExpressionBuilder.Tests.Models;
 
 [Collection("Matching queries - Results")]
-public class ResultAllTests(ResultMatchSeed seed) : IClassFixture<ResultMatchSeed>
+public class ResultAllTests(ResultMatchSeed seed)
+    : IClassFixture<ResultMatchSeed>
 {
     readonly ICollection<Product> _products = seed.Products;
     readonly ICollection<Category> _categories = seed.Categories;

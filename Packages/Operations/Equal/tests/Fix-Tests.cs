@@ -3,7 +3,6 @@ namespace ExpressionBuilder.Tests;
 [Collection("Ensure old fixes are not undone")]
 public class FixTests
 {
-
     [Fact(DisplayName = "Fixed: Equal shouldn't null check the last item")]
     public void EqualShouldntNullCheck()
     {

@@ -1,4 +1,3 @@
-global using System.Linq;
 global using System.Linq.Expressions;
 global using ExpressionBuilder.Tests;
 global using ExpressionBuilder.Tests.Models;

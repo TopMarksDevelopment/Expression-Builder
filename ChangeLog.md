@@ -25,6 +25,55 @@ All notable changes to this project will be documented in this file.
 
 > ❗ Whilst in the beta phase, breaking changes will happen between "minor" releases. Because of this, patches and new features will happen between "patch" releases
 
+## UNPUBLISHED
+
+### Breaking Changes (Overview)
+
+-   `byte[]` and stream serialisation has changed, but is now significantly more robust (and simpler in its' implementation)
+    -   As JSON filtering hasn't changed, you can retain any filters saved in `byte[]` form. Before upgrading convert them to JSON and then upgrade and revert them back
+    -   Linked to this; `TypeTracker.DefaultFilterStatementTypes` has also been removed, as it is no longer required for serialisation
+
+### Changes (Overview)
+
+-   Formatted across the whole project
+-   Removed unused/unnecessary `using` statements
+
+### Package: TopMarksDevelopment.ExpressionBuilder.Api
+
+#### Breaking Changes
+
+-   `IFilterCollection`/`IFilterCollection<T?>` now expects an `AddRange` method
+
+#### Added
+
+-   Finally added all summary blocks 🎉
+    (Chore: do the same to all other packages)
+
+### Package: TopMarksDevelopment.ExpressionBuilder.Core
+
+#### Breaking Changes
+
+-   `byte[]` and stream serialisation has changed, but is now significantly more robust
+    -   As JSON filtering hasn't changed, you can retain any filters saved in `byte[]` form. Before upgrading convert them to JSON and then upgrade and revert them back
+    -   Linked to this; `TypeTracker.DefaultFilterStatementTypes` has also been removed, as it is no longer required for serialisation
+
+#### Added
+
+-   There's now a `.proto` file available [here](./Packages/Core/src/Proto/ExpressionBuilder.proto)
+-   `FilterCollection` and `FilterCollection<T?>` include an `AddRange` method - supporting API Changes
+-   Added new members for the serialisation changes
+    -   `IProtoFilterItem` interface  
+        Used on classes that build our filter (implementing the conversion between types)
+    -   `IProtoConverter` interface  
+        When your generic type is not a supported value, implementing this interface means we can still process it in `byte[]` serialisation
+    -   `ProtoFilterStatement` class  
+        The new class used for `byte[]` serialisation. This class does not have a generic type, so makes serialising a lot more simple and robust
+
+#### Changes
+
+-   Added JSON file test and renamed JSON tests
+-   Removed tests associated with `TypeTracker.DefaultFilterStatementTypes` work
+
 ## [0.4.0-beta] - 2024-04-26
 
 <small>[Compare to previous release][comp:0.4.0-beta]</small>

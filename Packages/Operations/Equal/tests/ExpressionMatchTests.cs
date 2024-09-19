@@ -1,11 +1,9 @@
-
 namespace TopMarksDevelopment.ExpressionBuilder.Operations.Tests.EqualTest;
 
 public class OperationTests
 {
     static string ApplyReplacements(string input) =>
-        input.Replace("new [] {", "[")
-            .Replace("}", "]");
+        input.Replace("new [] {", "[").Replace("}", "]");
 
     [Theory(DisplayName = "Factory")]
     [ClassData(typeof(AllTests))]

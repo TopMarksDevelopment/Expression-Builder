@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Api;
 
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -22,13 +21,13 @@ public interface IFilterGroup : IFilterItem
     /// <summary>
     /// The items within this group
     /// </summary>
-    /// <remarks>Usually <see cref="IFilterStatement"/>'s or other <see cref="IFilterGroup"/>s
+    /// <remarks>Usually <see cref="IFilterStatement"/>'s or other <see cref="IFilterGroup"/>s</remarks>
     ICollection<IFilterItem> Items { get; set; }
 
     /// <summary>
     /// A method that closes this group
     /// </summary>
-    /// <returns>The <see cref="LastGroup">, if it exists</returns>
+    /// <returns>The <see cref="LastGroup"/>, if it exists</returns>
     /// <exception cref="InvalidOperationException">No group to return</exception>
     IFilterGroup Close();
 }

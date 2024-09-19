@@ -38,7 +38,7 @@ jobs:
               run: dotnet nuget push **/Release/*.nupkg --api-key ${{ secrets.NUGET_KEY }} --source https://api.nuget.org/v3/index.json
 
             - name: Upload asset
-              uses: actions/upload-artifact@v3.1.2
+              uses: actions/upload-artifact@v4.3.3
               with:
                   path: |
                       **/Release/*.nupkg

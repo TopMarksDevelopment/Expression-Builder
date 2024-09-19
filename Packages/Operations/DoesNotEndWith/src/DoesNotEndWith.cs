@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Api.Helpers;
@@ -12,7 +11,11 @@ public struct DoesNotEndWith : IOperation
     public readonly string Name => "DoesNotEndWith";
 
     public readonly OperationDefaults Defaults =>
-        new() { Match = Matches.All, NullHandler = OperationNullHandler.IsNullOr };
+        new()
+        {
+            Match = Matches.All,
+            NullHandler = OperationNullHandler.IsNullOr,
+        };
 
     public readonly Expression Build<TPropertyType>(
         Expression member,

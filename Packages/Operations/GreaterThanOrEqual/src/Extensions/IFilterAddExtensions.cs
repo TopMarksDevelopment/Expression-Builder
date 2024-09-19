@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,7 +15,8 @@ public static partial class IFilterGreaterThanOrEqualExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
@@ -24,10 +24,7 @@ public static partial class IFilterGreaterThanOrEqualExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilter GreaterThanOrEqual<TClass, TPropertyType>(
@@ -37,7 +34,8 @@ public static partial class IFilterGreaterThanOrEqualExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             [value],
@@ -51,7 +49,8 @@ public static partial class IFilterGreaterThanOrEqualExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             value,
@@ -64,7 +63,8 @@ public static partial class IFilterGreaterThanOrEqualExtensions
         TPropertyType? value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             [value],
@@ -76,24 +76,16 @@ public static partial class IFilterGreaterThanOrEqualExtensions
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new GreaterThanOrEqual(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new GreaterThanOrEqual(), value, null);
 
     public static IFilterConnection GreaterThanOrEqual<TClass, TPropertyType>(
         this IFilter filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new GreaterThanOrEqual(),
-            [value],
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new GreaterThanOrEqual(), [value], null);
 
     public static IFilter GreaterThanOrEqual<TClass, TPropertyType>(
         this IFilter filter,
@@ -101,7 +93,8 @@ public static partial class IFilterGreaterThanOrEqualExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             value,
@@ -115,7 +108,8 @@ public static partial class IFilterGreaterThanOrEqualExtensions
         TPropertyType? value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             [value],
@@ -133,7 +127,8 @@ public static partial class IFilterGreaterThanOrEqualExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ){
+    )
+    {
         var f = filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
@@ -141,10 +136,7 @@ public static partial class IFilterGreaterThanOrEqualExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilter GreaterThanOrEqual<TPropertyType>(
@@ -153,7 +145,8 @@ public static partial class IFilterGreaterThanOrEqualExtensions
         TPropertyType? value,
         IFilterStatementOptions? options,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             [value],
@@ -166,7 +159,8 @@ public static partial class IFilterGreaterThanOrEqualExtensions
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             value,
@@ -178,7 +172,8 @@ public static partial class IFilterGreaterThanOrEqualExtensions
         string propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             [value],
@@ -189,30 +184,22 @@ public static partial class IFilterGreaterThanOrEqualExtensions
         this IFilter filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) => filter.Add(
-            propertyExpression,
-            new GreaterThanOrEqual(),
-            value,
-            null
-        );
+    ) => filter.Add(propertyExpression, new GreaterThanOrEqual(), value, null);
 
     public static IFilterConnection GreaterThanOrEqual<TPropertyType>(
         this IFilter filter,
         string propertyExpression,
         TPropertyType? value
-    ) => filter.Add(
-            propertyExpression,
-            new GreaterThanOrEqual(),
-            [value],
-            null
-        );
+    ) =>
+        filter.Add(propertyExpression, new GreaterThanOrEqual(), [value], null);
 
     public static IFilter GreaterThanOrEqual<TPropertyType>(
         this IFilter filter,
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             value,
@@ -225,7 +212,8 @@ public static partial class IFilterGreaterThanOrEqualExtensions
         string propertyExpression,
         TPropertyType? value,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             [value],

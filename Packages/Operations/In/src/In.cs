@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 
-using System;
 using System.Collections;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
@@ -15,7 +14,7 @@ public struct In : IOperation
         new()
         {
             Match = Matches.Any,
-            NullHandler = OperationNullHandler.NotNullAnd
+            NullHandler = OperationNullHandler.NotNullAnd,
         };
 
     public readonly Expression Build<TPropertyType>(

@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,18 +15,11 @@ public static partial class IQueryFilterable_TClass_EqualExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
-        var f = filter.Add(
-            propertyExpression,
-            new Equal(),
-            value,
-            options
-        );
+        where TClass : class
+    {
+        var f = filter.Add(propertyExpression, new Equal(), value, options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IQueryFilterable<TClass> Equal<TClass, TPropertyType>(
@@ -37,7 +29,8 @@ public static partial class IQueryFilterable_TClass_EqualExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new Equal(),
             [value],
@@ -45,55 +38,51 @@ public static partial class IQueryFilterable_TClass_EqualExtensions
             connector
         );
 
-    public static IQueryFilterableConnection<TClass> Equal<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Equal<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Equal(),
-            value,
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Equal(), value, options);
 
-    public static IQueryFilterableConnection<TClass> Equal<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Equal<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Equal(),
-            [value],
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Equal(), [value], options);
 
-    public static IQueryFilterableConnection<TClass> Equal<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Equal<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Equal(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Equal(), value, null);
 
-    public static IQueryFilterableConnection<TClass> Equal<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Equal<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Equal(),
-            [value],
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Equal(), [value], null);
 
     public static IQueryFilterable<TClass> Equal<TClass, TPropertyType>(
         this IQueryFilterable<TClass> filter,
@@ -101,13 +90,8 @@ public static partial class IQueryFilterable_TClass_EqualExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Equal(),
-            value,
-            null,
-            connector
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Equal(), value, null, connector);
 
     public static IQueryFilterable<TClass> Equal<TClass, TPropertyType>(
         this IQueryFilterable<TClass> filter,
@@ -115,13 +99,8 @@ public static partial class IQueryFilterable_TClass_EqualExtensions
         TPropertyType? value,
         Connector connector
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new Equal(),
-            [value],
-            null,
-            connector
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new Equal(), [value], null, connector);
 
     #endregion Expression<Func<,>> propertyExpression
 
@@ -133,18 +112,12 @@ public static partial class IQueryFilterable_TClass_EqualExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class {
-        var f = filter.Add(
-            propertyExpression,
-            new Equal(),
-            value,
-            options
-        );
+    )
+        where TClass : class
+    {
+        var f = filter.Add(propertyExpression, new Equal(), value, options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IQueryFilterable<TClass> Equal<TClass, TPropertyType>(
@@ -153,7 +126,9 @@ public static partial class IQueryFilterable_TClass_EqualExtensions
         TPropertyType? value,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class  => filter.Add(
+    )
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new Equal(),
             [value],
@@ -161,77 +136,69 @@ public static partial class IQueryFilterable_TClass_EqualExtensions
             connector
         );
 
-    public static IQueryFilterableConnection<TClass> Equal<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Equal<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new Equal(),
-            value,
-            options
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new Equal(), value, options);
 
-    public static IQueryFilterableConnection<TClass> Equal<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Equal<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new Equal(),
-            [value],
-            options
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new Equal(), [value], options);
 
-    public static IQueryFilterableConnection<TClass> Equal<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Equal<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new Equal(),
-            value,
-            null
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new Equal(), value, null);
 
-    public static IQueryFilterableConnection<TClass> Equal<TClass, TPropertyType>(
+    public static IQueryFilterableConnection<TClass> Equal<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType? value
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new Equal(),
-            [value],
-            null
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new Equal(), [value], null);
 
     public static IQueryFilterable<TClass> Equal<TClass, TPropertyType>(
         this IQueryFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new Equal(),
-            value,
-            null,
-            connector
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new Equal(), value, null, connector);
 
     public static IQueryFilterable<TClass> Equal<TClass, TPropertyType>(
         this IQueryFilterable<TClass> filter,
         string propertyExpression,
         TPropertyType? value,
         Connector connector
-    ) where TClass : class  => filter.Add(
-            propertyExpression,
-            new Equal(),
-            [value],
-            null,
-            connector
-        );
+    )
+        where TClass : class =>
+        filter.Add(propertyExpression, new Equal(), [value], null, connector);
 
     #endregion string propertyExpression
 }

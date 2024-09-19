@@ -5,7 +5,7 @@ public class AllTests : TheoryData
     public AllTests() =>
         AddRows(
             [
-                [GreaterThanOrEqualX]
+                [GreaterThanOrEqualX],
             ]
         );
 

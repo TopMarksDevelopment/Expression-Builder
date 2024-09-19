@@ -1,5 +1,8 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Api;
 
+/// <summary>
+/// The default values for operations
+/// </summary>
 public class OperationDefaults
 {
     /// <summary>

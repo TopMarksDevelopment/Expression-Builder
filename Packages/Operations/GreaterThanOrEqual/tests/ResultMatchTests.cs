@@ -1,7 +1,8 @@
 namespace ExpressionBuilder.Tests;
 
 [Collection("Matching queries - Results")]
-public class ResultAllTests(ResultMatchSeed seed) : IClassFixture<ResultMatchSeed>
+public class ResultAllTests(ResultMatchSeed seed)
+    : IClassFixture<ResultMatchSeed>
 {
     [Theory(DisplayName = "Factory")]
     [ClassData(typeof(AllTests))]

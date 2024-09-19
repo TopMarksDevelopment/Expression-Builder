@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 

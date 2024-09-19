@@ -1,7 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Api;
 
-using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder;
 
@@ -13,7 +11,7 @@ public partial interface IFilter<TClass> : IFilter
     where TClass : class
 {
     /// <summary>
-    /// Add a pre-built statement directly to <see cref="Current"/>
+    /// Add a pre-built statement directly to <see cref="IFilter.Current"/>
     /// </summary>
     /// <typeparam name="TPropertyType">The type of the values in the statement</typeparam>
     /// <param name="statement">The pre-built statement</param>
@@ -23,7 +21,7 @@ public partial interface IFilter<TClass> : IFilter
     );
 
     /// <summary>
-    /// Creates a <see cref="IFilterStatement"/> which is added to <see cref="Current"/>
+    /// Creates a <see cref="IFilterStatement"/> which is added to <see cref="IFilter.Current"/>
     /// </summary>
     /// <typeparam name="TPropertyType">The type of the values</typeparam>
     /// <param name="propertyExpression">The lambda expression to attain the property name</param>
@@ -39,7 +37,7 @@ public partial interface IFilter<TClass> : IFilter
     );
 
     /// <summary>
-    /// Creates a <see cref="IFilterStatement"/> which is added to <see cref="Current"/>
+    /// Creates a <see cref="IFilterStatement"/> which is added to <see cref="IFilter.Current"/>
     /// </summary>
     /// <typeparam name="TPropertyType">The type of the values</typeparam>
     /// <param name="propertyExpression">The string represetation of the property</param>
@@ -55,7 +53,7 @@ public partial interface IFilter<TClass> : IFilter
     );
 
     /// <summary>
-    /// Set the connector of the last item in the <see cref="Current"/> list
+    /// Set the connector of the last item in the <see cref="IFilter.Current"/> list
     /// </summary>
     /// <param name="connector">The connector to apply (And/Or)</param>
     void SetLastConnector(Connector connector);

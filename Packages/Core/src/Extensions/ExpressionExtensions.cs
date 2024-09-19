@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Extensions;
 
-using System;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -89,8 +88,14 @@ internal static class ExpressionExtensions
 
         BinaryExpression ApplyNullHandler(Expression right) =>
             nullHandler == OperationNullHandler.IsNullOr
-                ? Expression.OrElse(Expression.Equal(subMember, Expression.Constant(null)), right)
-                : Expression.AndAlso(Expression.NotEqual(subMember, Expression.Constant(null)), right);
+                ? Expression.OrElse(
+                    Expression.Equal(subMember, Expression.Constant(null)),
+                    right
+                )
+                : Expression.AndAlso(
+                    Expression.NotEqual(subMember, Expression.Constant(null)),
+                    right
+                );
     }
 
     static Expression HandleCollections(

@@ -1,8 +1,5 @@
 namespace ExpressionBuilder.Tests.Models;
 
-using System;
-using System.Collections.Generic;
-
 public class Product : IItemable
 {
     private Product()
@@ -32,8 +29,8 @@ public class Product : IItemable
                 Location = $"Location {id}",
                 Quantity = id + 10,
                 Product = this,
-                CreatedAt = createdAt ?? ResultMatchSeed.CreatedDate
-            }
+                CreatedAt = createdAt ?? ResultMatchSeed.CreatedDate,
+            },
         ];
     }
 

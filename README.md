@@ -4,7 +4,9 @@
 [![Icon for NuGet version](https://img.shields.io/nuget/v/TopMarksDevelopment.ExpressionBuilder?style=for-the-badge)](https://www.nuget.org/packages/TopMarksDevelopment.ExpressionBuilder)
 [![Icon for NuGet download count](https://img.shields.io/nuget/dt/TopMarksDevelopment.ExpressionBuilder?style=for-the-badge)](https://www.nuget.org/packages/TopMarksDevelopment.ExpressionBuilder)
 
-If you're looking for a library to help you easily build lambda expressions, look no further than the **Expression Builder** package. With this library you can quickly create a filter that can be applied to lists and database queries; even dynamically. Plus, it's packed with some great features too!
+If you're looking for a library to help you easily build lambda expressions, look no further than the **Expression Builder** package.
+
+With this library you can quickly create a filter that can be applied to a list/enumerable or database query; even dynamically. Plus, it's packed with some great features too!
 
 ## Contents
 
@@ -18,9 +20,9 @@ If you're looking for a library to help you easily build lambda expressions, loo
     -   [Complex matches](#complex-expressions)
     -   [Extending `IQueryable<TClass>` or `IEnumerable<TClass>`](#extending-iqueryabletclass-or-ienumerabletclass)
     -   [`SmartSearch`](#smartsearch)
-    -   [Serialization](#serialization)
+-   [Serialization](#serialization)
 -   [Built-in operations](#built-in-operations)
--   You can check these too:
+-   You can check these out too:
     -   [Changelog](./ChangeLog.md)
     -   [License](./LICENSE.md)
 
@@ -30,19 +32,22 @@ The Expression Builder offers a wide range of features, including:
 
 -   Chain fluently from your `IQueryable`/`IEnumerable` collections. (See examples [here](#extending-iqueryabletclass-or-ienumerabletclass))
 -   The ability to save queries for later re-execution by serializing them to JSON strings or a `byte[]` (for compact storage).
--   Method support, referred to as "manipulators". So, you can do `x => x.Name.Replace(" ", "")`!
+-   Method support, referred to as "manipulators", means you can do `x => x.Name.Replace(" ", "")`
 -   Built-in null checks
 -   The ability to handle complex expressions, including `IEnumerable<>` properties and groups (i.e. `(x || y) && z`).
 -   The ability to reference properties in two ways: by property expression (`x => x.Name`) or by string, such as "Name" (when following these [conventions](#conventions-reference-by-strings)).
--   The ability to build queries in two ways: by using the `Add` method or by using the extension methods for each operation (i.e. `.Equal(...)`), which can both be chained together or added statement by statement.
+-   The ability to build queries in two ways: by using the `.Add()` method or by operation (like `.Equal(...)`)
+    -   These calls can be chained together or added statement by statement; whichever you prefer
 -   A variety of [built-in operations](#built-in-operations), including the powerful [`SmartSearch`](#smartsearch) method
     -   plus, build your own using the API!  
-        _(All operations use the API. So any one of these can start you off on building your own)_
+         _(All operations use the API. So any one of these can start you off on building your own)_
 -   The ability to match lists of values, such as finding "John" and "Jess" (See example [here](#matching-lists))
 
 ## Installation
 
-To install the Expression Builder, you can use the .NET CLI, Package Manager console, or another method of your choice. You can find these installation methods and more information about the package on the [NuGet package](https://www.nuget.org/packages/TopMarksDevelopment.ExpressionBuilder/). For example, to install the package using the .NET CLI, run the following command:
+To install the Expression Builder, you can use the .NET CLI, Package Manager console, or another method of your choice. You can find these installation methods and more information about the package on the [NuGet package](https://www.nuget.org/packages/TopMarksDevelopment.ExpressionBuilder/).
+
+But, for example, to install the package using the .NET CLI, run the following command:
 
 > dotnet add package TopMarksDevelopment.ExpressionBuilder
 
@@ -52,12 +57,12 @@ If you find any errors or realise there's a missing feature, feel free to leave 
 
 ## Conventions (reference by strings)
 
-If you opt to add filters using `string` references you must follow these conventions to reference properties, child properties or properties of item arrays.
+If you opt to add filters using `string` references, you must follow these conventions:
 
 -   A property can be referenced by its name alone (so `Id`, `Name`, `Gender`, etc.)
 -   One-to-one relationships need only a dot to separate them. This means a persons' "Birth Country" is referenced simply by `Birth.Country` - again, with correctly referenced names
 -   A collection can also be referenced by placing `[]` after the name. So, a person (with multiple contact points) can have their "Contacts Type" referenced by `Contacts[].Type`
--   Manipulators must be applied to the `options` property
+-   Any manipulators/methods must be applied to the `options` property (like the `.Replace(.., ..)` string method)
 
 ## Examples
 
@@ -66,7 +71,7 @@ All examples are based on the below set of classes
 <details>
 <summary>Example classes</summary>
 
-```CSharp
+```csharp
 public class Person
 {
     public int Id { get; set; }
@@ -116,17 +121,33 @@ public class Company {
 
 We can use the main class of this package directly, the `Filter<TClass>` class.
 
-_These examples use the string notation on both the fluent API and `Add` notion, though you can always use the built-in `named` method calls_
+```csharp
+// Chain operation calls to build your query
+var filter = new Filter<Person>();
+filter.Between("Id", 2, 4)
+        .And()
+        .IsNotNull("Birth.Country")
+        .And()
+        .EndsWith("Contacts[].Value", "@email.com")
+        .Or()
+        .SmartSearch("Name", "\"John\"");
 
-```CSharp
-// Chain calls to build your query
+// OR
+
+// Chain Add calls to build your query
 var filter = new Filter<Person>();
 filter.Add("Id", Operation.Between, 2, 4)
-      .And().Add("Birth.Country", Operation.IsNotNull)
-      .And().Add("Contacts[].Value", Operation.EndsWith, "@email.com")
-      .Or().Add("Name", Operation.SmartSearch, "\"John\"");
+        .And()
+        .Add("Birth.Country", Operation.IsNotNull)
+        .And()
+        .Add("Contacts[].Value", Operation.EndsWith, "@email.com")
+        .Or()
+        .Add("Name", Operation.SmartSearch, "\"John\"");
+
+// OR
 
 // Add each statement line by line
+//    (this works for operation calls too)
 var filter = new Filter<Person>();
 filter.Add("Id", Operation.Between, 2, 4,  Connector.And);
 filter.Add("Contacts[].Value", Operation.EndsWith, "@email.com", Connector.And);
@@ -140,7 +161,9 @@ var people = People.Where(filter);
 
 ### Matching lists
 
-If you find yourself needing the same operation but with different terms you can save repeating lines thanks to list matching. Just pass an array of the type and it will query all those terms - on one line!
+If you find yourself needing the same operation but with different terms. Save yourself from repeating lines, thanks to list matching.
+
+Just pass an array of values and it will query all those terms - on one line!
 
 Let's say we want to find a "Bright Blue Bicycle"! Simple, split the term and filter by it.
 
@@ -167,9 +190,9 @@ filter.Contains("Name", termArr, options, Connector.And);
 
 Complex expressions are handled by grouping filter statements, like in the example below.
 
-_Here we are using the fluent API with property expressions on a filter class:_
+_Here we are using the fluent API with operation calls on a filter class:_
 
-```CSharp
+```csharp
 var filter = new Filter<People>();
 filter
     .OpenGroup()
@@ -186,7 +209,7 @@ filter
         .IsNull(p => p.Employer)
     .CloseGroup()
     .Or()
-    .Equal(p => p.Birth.Country, "USA");
+    .Equal(p => p.Birth.Country, "GB");
 
 // Now let's apply the filter to our DB Context
 var people = myDbContext.People.Where(filter);
@@ -196,10 +219,21 @@ This would produce an expression like this: (Excluding all the `NotNull` checks 
 
 ```CSharp
 myDbContext.People
-  .Where(p => ( ( !p.Name.Contains("doe") || ( p.Name.EndsWith("Doe") || p.Name.StartsWith("Jo") ) ) && p.Employer == null ) && p.Birth.Country == "USA" );
+    .Where(p =>
+        (
+            (
+                !p.Name.Contains("doe")
+                    || ( p.Name.EndsWith("Doe")
+                    || p.Name.StartsWith("Jo") )
+            ) &&
+            p.Employer == null
+        ) &&
+        p.Birth.Country == "USA"
+    );
 ```
 
-Every time you start a group that means all further statements will be at the same "parenthesis" until CloseGroup is called.
+Every time you start a group that means all further statements will be at the same "level/parenthesis" until CloseGroup is called.
+
 You can even add groups to groups! (For those super complex expressions)
 
 ### Extending `IQueryable<TClass>` or `IEnumerable<TClass>`
@@ -257,14 +291,20 @@ var filteredPeople =
         .SmartsSearch(x => x.Name, smartTerms);
 ```
 
-### Serialization
+## Serialization
 
-You can serialize an expression, getting two different outputs:
+You can serialize an expression so it can be reused later.
+
+We support two different serialization methods:
 
 -   a JSON string (for a human-friendly version)
--   a `byte[]` (for more compact storage on disk or a DB)
+-   a `byte[]`/stream (for more compact storage on disk or a DB)
 
-#### JSON serialisation
+### JSON serialisation
+
+If you wanted to store the filter in a human-friendly way, you can use JSON serialisation.
+
+#### Example
 
 ```CSharp
 using System.Text.Json;
@@ -275,13 +315,17 @@ var filter = new Filter<Category>();
 // Build the filter
 filter
     .OpenCollection(x => x.Products)
-        .Equal(x => x.Name, "Product 2").Or
-        .Equal(x => x.Id, 2).Or
+        .Equal(x => x.Name, "Product 2")
+        .Or()
+        .Equal(x => x.Id, 2)
+        .Or()
         .OpenCollection(x => x.Categories)
-            .Equal(x => x.Id, 1).Or
+            .Equal(x => x.Id, 1)
+            .Or()
             .Equal(x => x.Id, 2)
         .CloseCollection<Category>()
-    .CloseCollection<Category>().And
+    .CloseCollection<Category>()
+    .And()
     .Equal(x => x.Id, 2);
 
 // To serialise the filter
@@ -293,60 +337,20 @@ var filterFromJson =
     JsonSerializer.Deserialize<Filter<Category>>(jsonString);
 ```
 
-#### `Byte[]` serialisation (ProtoBuf)
+### `Byte[]`/Stream serialisation (Protobuf)
 
-> ⚠ Important: For now serialization is under development. I'm looking at ways to improve/simplify further customisation.
+When you want to optimise the storage size of your expression, you can serialise it into a `byte[]` or stream.
 
-As the `FilterStatment<>` expects generic types, we wanted to ensure that the serialization order is maintained for the proper deserialization of data. To this there is a default order of the most generic types (detailed below). If your type isn't listed below then you must access the `TypeTracker.FilterStatementTypes` static property and add to it - you can also decide to create your own set by replacing the values once at runtime.
-
-<details>
-<summary>Default Type Order</summary>
-
-Default numeric order of statement types
-
-| FieldNumber | Filter Statement Type                  |
-| :---------: | -------------------------------------- |
-|     50      | FilterStatement&lt;string&gt;          |
-|     51      | FilterStatement&lt;string?&gt;         |
-|     52      | FilterStatement&lt;int&gt;             |
-|     53      | FilterStatement&lt;int?&gt;            |
-|     54      | FilterStatement&lt;short&gt;           |
-|     55      | FilterStatement&lt;short?&gt;          |
-|     56      | FilterStatement&lt;long&gt;            |
-|     57      | FilterStatement&lt;long?&gt;           |
-|     58      | FilterStatement&lt;uint&gt;            |
-|     59      | FilterStatement&lt;uint?&gt;           |
-|     60      | FilterStatement&lt;ushort&gt;          |
-|     61      | FilterStatement&lt;ushort?&gt;         |
-|     62      | FilterStatement&lt;ulong&gt;           |
-|     63      | FilterStatement&lt;ulong?&gt;          |
-|     64      | FilterStatement&lt;byte&gt;            |
-|     65      | FilterStatement&lt;byte?&gt;           |
-|     66      | FilterStatement&lt;bool&gt;            |
-|     67      | FilterStatement&lt;bool?&gt;           |
-|     68      | FilterStatement&lt;DateTime&gt;        |
-|     69      | FilterStatement&lt;DateTime?&gt;       |
-|     70      | FilterStatement&lt;DateTimeOffset&gt;  |
-|     71      | FilterStatement&lt;DateTimeOffset?&gt; |
-|     72      | FilterStatement&lt;DateOnly&gt;        |
-|     73      | FilterStatement&lt;DateOnly?&gt;       |
-|     74      | FilterStatement&lt;TimeOnly&gt;        |
-|     75      | FilterStatement&lt;TimeOnly?&gt;       |
-|     76      | FilterStatement&lt;float&gt;           |
-|     77      | FilterStatement&lt;float?&gt;          |
-|     78      | FilterStatement&lt;double&gt;          |
-|     79      | FilterStatement&lt;double?&gt;         |
-
-</details>
+#### Example
 
 ```CSharp
 // Using the `filter` that was built above
 
-// Serialize to a file
+// Serialize to a Stream (specifically a FileStream)
 using (var file = File.Create("./MyPath/File.dat"))
     filter.SerializeTo(file);
 
-// Deserialize from a file
+// Deserialize from a Stream (specifically a FileStream)
 using var rFile = File.OpenRead("./MyPath/File.dat");
 var filterFromFile = Filter<Category>.DeserializeFrom(rFile);
 
@@ -356,6 +360,10 @@ filter.SerializeTo(out var bytes);
 // Deserialize from a byte[]
 var filterFromBytes = Filter<Category>.DeserializeFrom(bytes);
 ```
+
+#### GRPC / Protobuf
+
+This storage method, combined with the [`.proto`](./Packages/Core/src/Proto/ExpressionBuilder.proto) file means you can actually transfer this data through a GRPC message. Just create a service that consumes the `FilterGroup` message and you're away.
 
 ## Built-in operations
 

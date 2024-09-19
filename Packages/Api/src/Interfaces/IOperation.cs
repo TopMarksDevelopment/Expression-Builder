@@ -21,7 +21,7 @@ public interface IOperation
     /// The method that builds/applies the operation we're performing
     /// </summary>
     /// <remarks>
-    /// Note: the <see cref="member"/> has already had any and all
+    /// Note: the <paramref name="member"/> has already had any and all
     /// <see cref="IEntityManipulator"/>'s applied
     /// </remarks>
     /// <param name="member">

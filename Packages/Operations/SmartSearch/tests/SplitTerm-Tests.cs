@@ -44,7 +44,7 @@ public class SplitTermTests
                 "Term2",
                 "-IgnoreTerm3",
                 "\"Exact term\"",
-                "-\"Ignore exact term\""
+                "-\"Ignore exact term\"",
             ],
             SmartSearch.SplitTerm(term)
         );

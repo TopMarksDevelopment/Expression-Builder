@@ -6,7 +6,7 @@ internal class ExpressionStringTestData : TheoryData
         AddRows(
             [
                 [CollectionExpressionMatchesString],
-                [PropertyChainExpressionMatchesString]
+                [PropertyChainExpressionMatchesString],
             ]
         );
 

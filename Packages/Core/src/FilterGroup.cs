@@ -1,19 +1,35 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 using System.Text.Json.Serialization;
 using ProtoBuf;
-using ProtoBuf.Meta;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Extensions;
 using TopMarksDevelopment.ExpressionBuilder.Serialization;
 
 [ProtoContract(UseProtoMembersOnly = true)]
-public class FilterGroup : IFilterGroup, ISerializer
+public class FilterGroup : IFilterGroup, IProtoFilterItem
 {
+    [ProtoMember(3)]
+    List<IProtoFilterItem> Statements
+    {
+        get =>
+            Items
+                .Select(i =>
+                    i is FilterGroup
+                        ? (IProtoFilterItem)i
+                        : (i as IProtoFilterItem)!.Pack()
+                )
+                .ToList();
+        set =>
+            Items = new List<IFilterItem>(
+                value.Select(i =>
+                    i is FilterGroup ? (IFilterItem)i : i.Unpack()
+                )
+            );
+    }
+
     public string typeRef => "G";
 
     [JsonIgnore]
@@ -23,7 +39,6 @@ public class FilterGroup : IFilterGroup, ISerializer
     public string? ParentPropertyExpression { get; set; }
 
     [JsonConverter(typeof(FilterItemCollectionJsonConverter))]
-    [ProtoMember(3)]
     public ICollection<IFilterItem> Items { get; set; } = [];
 
     [ProtoMember(1)]
@@ -104,13 +119,7 @@ public class FilterGroup : IFilterGroup, ISerializer
         return $"{sBString} ) {Connector:g} ";
     }
 
-    public void PrepForSerialisation(
-        MetaType ifilterBase,
-        ref ICollection<Type> fTypes
-    )
-    {
-        foreach (var item in Items)
-            if (item is ISerializer ss)
-                ss.PrepForSerialisation(ifilterBase, ref fTypes);
-    }
+    public IFilterItem Unpack() => this;
+
+    public IProtoFilterItem Pack() => this;
 }

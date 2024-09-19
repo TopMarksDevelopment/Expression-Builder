@@ -36,12 +36,9 @@ public class QueryFilterableConnection<TClass>
 
     IQueryFilterable IQueryFilterableConnection.Or() => Or();
 
-    IQueryFilterableConnection IQueryFilterableConnection.CloseGroup() => CloseGroup();
+    IQueryFilterableConnection IQueryFilterableConnection.CloseGroup() =>
+        CloseGroup();
 
-    IQueryFilterableConnection IQueryFilterableConnection.CloseCollection() => CloseCollection<object>();
-/*
-    Expression<Func<TClass1, bool>> IQueryFilterableConnection.ToExpression<TClass1>()
-    {
-        throw new NotImplementedException();
-    }*/
+    IQueryFilterableConnection IQueryFilterableConnection.CloseCollection() =>
+        CloseCollection<object>();
 }

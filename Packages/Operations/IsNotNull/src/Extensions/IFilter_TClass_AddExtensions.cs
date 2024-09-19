@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -15,18 +14,11 @@ public static partial class IFilter_TClass_IsNotNullExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
-        var f = filter.Add(
-            propertyExpression,
-            new IsNotNull(),
-            [],
-            options
-        );
+        where TClass : class
+    {
+        var f = filter.Add(propertyExpression, new IsNotNull(), [], options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterConnection<TClass> IsNotNull<TClass, TPropertyType>(
@@ -34,36 +26,23 @@ public static partial class IFilter_TClass_IsNotNullExtensions
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsNotNull(),
-            [],
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsNotNull(), [], options);
 
     public static IFilterConnection<TClass> IsNotNull<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsNotNull(),
-            [],
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsNotNull(), [], null);
 
     public static IFilter<TClass> IsNotNull<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         Connector connector
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsNotNull(),
-            [],
-            null,
-            connector
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsNotNull(), [], null, connector);
 
     #endregion Expression<Func<,>> propertyExpression
 
@@ -74,7 +53,9 @@ public static partial class IFilter_TClass_IsNotNullExtensions
         string propertyExpression,
         IFilterStatementOptions? options,
         Connector connector
-    ) where TClass : class {
+    )
+        where TClass : class
+    {
         var f = filter.Add<TPropertyType>(
             propertyExpression,
             new IsNotNull(),
@@ -82,17 +63,16 @@ public static partial class IFilter_TClass_IsNotNullExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterConnection<TClass> IsNotNull<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         string propertyExpression,
         IFilterStatementOptions? options
-    ) where TClass : class  => filter.Add<TPropertyType>(
+    )
+        where TClass : class =>
+        filter.Add<TPropertyType>(
             propertyExpression,
             new IsNotNull(),
             [],
@@ -102,7 +82,9 @@ public static partial class IFilter_TClass_IsNotNullExtensions
     public static IFilterConnection<TClass> IsNotNull<TClass, TPropertyType>(
         this IFilter<TClass> filter,
         string propertyExpression
-    ) where TClass : class  => filter.Add<TPropertyType>(
+    )
+        where TClass : class =>
+        filter.Add<TPropertyType>(
             propertyExpression,
             new IsNotNull(),
             [],
@@ -113,7 +95,9 @@ public static partial class IFilter_TClass_IsNotNullExtensions
         this IFilter<TClass> filter,
         string propertyExpression,
         Connector connector
-    ) where TClass : class  => filter.Add<TClass, TPropertyType>(
+    )
+        where TClass : class =>
+        filter.Add<TClass, TPropertyType>(
             propertyExpression,
             new IsNotNull(),
             [],

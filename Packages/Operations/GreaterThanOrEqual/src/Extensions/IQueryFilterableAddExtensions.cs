@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -16,7 +15,8 @@ public static partial class IQueryFilterableGreaterThanOrEqualExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
@@ -24,10 +24,7 @@ public static partial class IQueryFilterableGreaterThanOrEqualExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IQueryFilterable GreaterThanOrEqual<TClass, TPropertyType>(
@@ -37,7 +34,8 @@ public static partial class IQueryFilterableGreaterThanOrEqualExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             [value],
@@ -45,55 +43,61 @@ public static partial class IQueryFilterableGreaterThanOrEqualExtensions
             connector
         );
 
-    public static IQueryFilterableConnection GreaterThanOrEqual<TClass, TPropertyType>(
+    public static IQueryFilterableConnection GreaterThanOrEqual<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             value,
             options
         );
 
-    public static IQueryFilterableConnection GreaterThanOrEqual<TClass, TPropertyType>(
+    public static IQueryFilterableConnection GreaterThanOrEqual<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             [value],
             options
         );
 
-    public static IQueryFilterableConnection GreaterThanOrEqual<TClass, TPropertyType>(
+    public static IQueryFilterableConnection GreaterThanOrEqual<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType?[] value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new GreaterThanOrEqual(),
-            value,
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new GreaterThanOrEqual(), value, null);
 
-    public static IQueryFilterableConnection GreaterThanOrEqual<TClass, TPropertyType>(
+    public static IQueryFilterableConnection GreaterThanOrEqual<
+        TClass,
+        TPropertyType
+    >(
         this IQueryFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         TPropertyType? value
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new GreaterThanOrEqual(),
-            [value],
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new GreaterThanOrEqual(), [value], null);
 
     public static IQueryFilterable GreaterThanOrEqual<TClass, TPropertyType>(
         this IQueryFilterable filter,
@@ -101,7 +105,8 @@ public static partial class IQueryFilterableGreaterThanOrEqualExtensions
         TPropertyType?[] value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             value,
@@ -115,7 +120,8 @@ public static partial class IQueryFilterableGreaterThanOrEqualExtensions
         TPropertyType? value,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             [value],
@@ -133,7 +139,8 @@ public static partial class IQueryFilterableGreaterThanOrEqualExtensions
         TPropertyType?[] value,
         IFilterStatementOptions? options,
         Connector connector
-    ){
+    )
+    {
         var f = filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
@@ -141,10 +148,7 @@ public static partial class IQueryFilterableGreaterThanOrEqualExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IQueryFilterable GreaterThanOrEqual<TPropertyType>(
@@ -153,7 +157,8 @@ public static partial class IQueryFilterableGreaterThanOrEqualExtensions
         TPropertyType? value,
         IFilterStatementOptions? options,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             [value],
@@ -166,7 +171,8 @@ public static partial class IQueryFilterableGreaterThanOrEqualExtensions
         string propertyExpression,
         TPropertyType?[] value,
         IFilterStatementOptions? options
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             value,
@@ -178,7 +184,8 @@ public static partial class IQueryFilterableGreaterThanOrEqualExtensions
         string propertyExpression,
         TPropertyType? value,
         IFilterStatementOptions? options
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             [value],
@@ -189,30 +196,22 @@ public static partial class IQueryFilterableGreaterThanOrEqualExtensions
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType?[] value
-    ) => filter.Add(
-            propertyExpression,
-            new GreaterThanOrEqual(),
-            value,
-            null
-        );
+    ) => filter.Add(propertyExpression, new GreaterThanOrEqual(), value, null);
 
     public static IQueryFilterableConnection GreaterThanOrEqual<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType? value
-    ) => filter.Add(
-            propertyExpression,
-            new GreaterThanOrEqual(),
-            [value],
-            null
-        );
+    ) =>
+        filter.Add(propertyExpression, new GreaterThanOrEqual(), [value], null);
 
     public static IQueryFilterable GreaterThanOrEqual<TPropertyType>(
         this IQueryFilterable filter,
         string propertyExpression,
         TPropertyType?[] value,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             value,
@@ -225,7 +224,8 @@ public static partial class IQueryFilterableGreaterThanOrEqualExtensions
         string propertyExpression,
         TPropertyType? value,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new GreaterThanOrEqual(),
             [value],

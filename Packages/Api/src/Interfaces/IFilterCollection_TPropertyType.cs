@@ -1,7 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Api;
 
-using System.Collections.Generic;
-
 /// <summary>
 /// A collection applied on a <see cref="IFilterStatement"/>
 /// </summary>
@@ -17,4 +15,10 @@ public interface IFilterCollection<TPropertyType>
     /// The number of elements contained in the collection
     /// </returns>
     new int Count { get; }
+
+    /// <summary>
+    /// Adds a set of items to the collection.
+    /// </summary>
+    /// <param name="items">The item set we're adding</param>
+    void AddRange(IEnumerable<TPropertyType?> items);
 }

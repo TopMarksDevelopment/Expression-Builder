@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 
-using System;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
@@ -16,7 +15,7 @@ public partial struct SmartSearch : IOperation
         new()
         {
             Match = Matches.All,
-            NullHandler = OperationNullHandler.NotNullAnd
+            NullHandler = OperationNullHandler.NotNullAnd,
         };
 
     public readonly Expression Build<TPropertyType>(

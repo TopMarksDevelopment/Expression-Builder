@@ -6,7 +6,7 @@ public class AllTests : TheoryData
         AddRows(
             [
                 [NotBetweenXY],
-                [NullCheck]
+                [NullCheck],
             ]
         );
 
@@ -23,7 +23,9 @@ public class AllTests : TheoryData
     static TestBuilder<Product> NullCheck =>
         new(
             "NotBetween on nullable",
-            x => x.BrandId == null || !(x.BrandId.Value >= 1 && x.BrandId.Value <= 2),
+            x =>
+                x.BrandId == null
+                || !(x.BrandId.Value >= 1 && x.BrandId.Value <= 2),
             x => x.NotBetween<Product, int?>(x => x.BrandId, 1, 2),
             x => x.NotBetween(x => x.BrandId, 1, 2),
             x => x.NotBetween(x => x.BrandId, 1, 2),

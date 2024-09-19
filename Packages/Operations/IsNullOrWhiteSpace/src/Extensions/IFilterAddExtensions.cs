@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -15,7 +14,8 @@ public static partial class IFilterIsNullOrWhiteSpaceExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new IsNullOrWhiteSpace(),
@@ -23,10 +23,7 @@ public static partial class IFilterIsNullOrWhiteSpaceExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterConnection IsNullOrWhiteSpace<TClass, TPropertyType>(
@@ -34,30 +31,23 @@ public static partial class IFilterIsNullOrWhiteSpaceExtensions
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsNullOrWhiteSpace(),
-            [],
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsNullOrWhiteSpace(), [], options);
 
     public static IFilterConnection IsNullOrWhiteSpace<TClass, TPropertyType>(
         this IFilter filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsNullOrWhiteSpace(),
-            [],
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsNullOrWhiteSpace(), [], null);
 
     public static IFilter IsNullOrWhiteSpace<TClass, TPropertyType>(
         this IFilter filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new IsNullOrWhiteSpace(),
             [],
@@ -74,7 +64,8 @@ public static partial class IFilterIsNullOrWhiteSpaceExtensions
         string propertyExpression,
         IFilterStatementOptions? options,
         Connector connector
-    ){
+    )
+    {
         var f = filter.Add(
             propertyExpression,
             new IsNullOrWhiteSpace(),
@@ -82,17 +73,15 @@ public static partial class IFilterIsNullOrWhiteSpaceExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterConnection IsNullOrWhiteSpace(
         this IFilter filter,
         string propertyExpression,
         IFilterStatementOptions? options
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new IsNullOrWhiteSpace(),
             Array.Empty<dynamic?>(),
@@ -102,7 +91,8 @@ public static partial class IFilterIsNullOrWhiteSpaceExtensions
     public static IFilterConnection IsNullOrWhiteSpace(
         this IFilter filter,
         string propertyExpression
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new IsNullOrWhiteSpace(),
             Array.Empty<dynamic?>(),
@@ -113,7 +103,8 @@ public static partial class IFilterIsNullOrWhiteSpaceExtensions
         this IFilter filter,
         string propertyExpression,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new IsNullOrWhiteSpace(),
             Array.Empty<dynamic?>(),

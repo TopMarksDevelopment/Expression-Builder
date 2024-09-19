@@ -1,7 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 
-using System;
-using System.Linq;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
@@ -15,7 +13,7 @@ public struct BetweenExclusive : IOperation
         new()
         {
             Match = Matches.All,
-            NullHandler = OperationNullHandler.NotNullAnd
+            NullHandler = OperationNullHandler.NotNullAnd,
         };
 
     public readonly Expression Build<TPropertyType>(

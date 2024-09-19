@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -15,18 +14,11 @@ public static partial class IFilterIsEmptyExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
-        var f = filter.Add(
-            propertyExpression,
-            new IsEmpty(),
-            [],
-            options
-        );
+        where TClass : class
+    {
+        var f = filter.Add(propertyExpression, new IsEmpty(), [], options);
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterConnection IsEmpty<TClass, TPropertyType>(
@@ -34,36 +26,23 @@ public static partial class IFilterIsEmptyExtensions
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsEmpty(),
-            [],
-            options
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsEmpty(), [], options);
 
     public static IFilterConnection IsEmpty<TClass, TPropertyType>(
         this IFilter filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsEmpty(),
-            [],
-            null
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsEmpty(), [], null);
 
     public static IFilter IsEmpty<TClass, TPropertyType>(
         this IFilter filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         Connector connector
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsEmpty(),
-            [],
-            null,
-            connector
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsEmpty(), [], null, connector);
 
     #endregion Expression<Func<,>> propertyExpression
 
@@ -74,7 +53,8 @@ public static partial class IFilterIsEmptyExtensions
         string propertyExpression,
         IFilterStatementOptions? options,
         Connector connector
-    ){
+    )
+    {
         var f = filter.Add(
             propertyExpression,
             new IsEmpty(),
@@ -82,17 +62,15 @@ public static partial class IFilterIsEmptyExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterConnection IsEmpty(
         this IFilter filter,
         string propertyExpression,
         IFilterStatementOptions? options
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new IsEmpty(),
             Array.Empty<dynamic?>(),
@@ -102,7 +80,8 @@ public static partial class IFilterIsEmptyExtensions
     public static IFilterConnection IsEmpty(
         this IFilter filter,
         string propertyExpression
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new IsEmpty(),
             Array.Empty<dynamic?>(),
@@ -113,7 +92,8 @@ public static partial class IFilterIsEmptyExtensions
         this IFilter filter,
         string propertyExpression,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new IsEmpty(),
             Array.Empty<dynamic?>(),

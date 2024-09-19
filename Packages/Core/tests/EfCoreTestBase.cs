@@ -24,8 +24,8 @@ public class EfCoreTestBase
 
         if (context.Database.EnsureCreated())
         {
-            using var viewCommand = context.Database
-                .GetDbConnection()
+            using var viewCommand = context
+                .Database.GetDbConnection()
                 .CreateCommand();
             viewCommand.CommandText =
                 @"
@@ -49,7 +49,7 @@ FROM Product;";
             {
                 1 => 3,
                 3 => 6,
-                _ => 1
+                _ => 1,
             };
 
             foreach (
@@ -73,25 +73,26 @@ FROM Product;";
     internal IQueryable<T> GetCollection<T>()
         where T : class =>
         typeof(T) == typeof(Product)
-            ? (IQueryable<T>)CreateContext()
-                .Products
-                .Include(x => x.Categories)
-                .ThenInclude(x => x.Products)
-                .ThenInclude(x => x.Categories)
-            : (typeof(T) == typeof(StockLocation)
-            ? (IQueryable<T>)CreateContext()
-                .StockLocations
-                .Include(x => x.Product)
-            : (IQueryable<T>)CreateContext()
-                .Categories
-                .Include(x => x.Products)
-                .ThenInclude(x => x.Categories)
-                .ThenInclude(x => x.Products));
+            ? (IQueryable<T>)
+                CreateContext()
+                    .Products.Include(x => x.Categories)
+                    .ThenInclude(x => x.Products)
+                    .ThenInclude(x => x.Categories)
+            : (
+                typeof(T) == typeof(StockLocation)
+                    ? (IQueryable<T>)
+                        CreateContext().StockLocations.Include(x => x.Product)
+                    : (IQueryable<T>)
+                        CreateContext()
+                            .Categories.Include(x => x.Products)
+                            .ThenInclude(x => x.Categories)
+                            .ThenInclude(x => x.Products)
+            );
 
     internal IQueryable<IItemable> GetCollection(Type testType) =>
         testType == typeof(Product)
-            ? CreateContext().Products
-                .Include<
+            ? CreateContext()
+                .Products.Include<
                     global::ExpressionBuilder.Tests.Models.Product,
                     global::System.Collections.Generic.ICollection<global::ExpressionBuilder.Tests.Models.Category>
                 >(x => x.Categories)
@@ -108,15 +109,15 @@ FROM Product;";
             : GetCategory();
 
     internal IQueryable<Category> GetCategory() =>
-        CreateContext().Categories
-            .Include(x => x.Products)
+        CreateContext()
+            .Categories.Include(x => x.Products)
             .ThenInclude(x => x.Categories)
             .ThenInclude(x => x.Products)
             .ThenInclude(x => x.StockLocations);
 
     internal IQueryable<Product> GetProducts() =>
-        CreateContext().Products
-            .Include(x => x.Categories)
+        CreateContext()
+            .Products.Include(x => x.Categories)
             .ThenInclude(x => x.Products)
             .ThenInclude(x => x.StockLocations);
 }

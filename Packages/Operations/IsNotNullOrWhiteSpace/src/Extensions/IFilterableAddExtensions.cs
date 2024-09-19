@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder;
 
-using System;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Operations;
@@ -15,7 +14,8 @@ public static partial class IFilterableIsNotNullOrWhiteSpaceExtensions
         IFilterStatementOptions? options,
         Connector connector
     )
-        where TClass : class{
+        where TClass : class
+    {
         var f = filter.Add(
             propertyExpression,
             new IsNotNullOrWhiteSpace(),
@@ -23,40 +23,42 @@ public static partial class IFilterableIsNotNullOrWhiteSpaceExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
-    public static IFilterableConnection IsNotNullOrWhiteSpace<TClass, TPropertyType>(
+    public static IFilterableConnection IsNotNullOrWhiteSpace<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         IFilterStatementOptions? options
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new IsNotNullOrWhiteSpace(),
             [],
             options
         );
 
-    public static IFilterableConnection IsNotNullOrWhiteSpace<TClass, TPropertyType>(
+    public static IFilterableConnection IsNotNullOrWhiteSpace<
+        TClass,
+        TPropertyType
+    >(
         this IFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression
     )
-        where TClass : class => filter.Add(
-            propertyExpression,
-            new IsNotNullOrWhiteSpace(),
-            []
-        );
+        where TClass : class =>
+        filter.Add(propertyExpression, new IsNotNullOrWhiteSpace(), []);
 
     public static IFilterable IsNotNullOrWhiteSpace<TClass, TPropertyType>(
         this IFilterable filter,
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         Connector connector
     )
-        where TClass : class => filter.Add(
+        where TClass : class =>
+        filter.Add(
             propertyExpression,
             new IsNotNullOrWhiteSpace(),
             [],
@@ -73,7 +75,8 @@ public static partial class IFilterableIsNotNullOrWhiteSpaceExtensions
         string propertyExpression,
         IFilterStatementOptions? options,
         Connector connector
-    ){
+    )
+    {
         var f = filter.Add(
             propertyExpression,
             new IsNotNullOrWhiteSpace(),
@@ -81,17 +84,15 @@ public static partial class IFilterableIsNotNullOrWhiteSpaceExtensions
             options
         );
 
-        return 
-            connector == Connector.Or
-                ? f.Or()
-                : f.And();
+        return connector == Connector.Or ? f.Or() : f.And();
     }
 
     public static IFilterableConnection IsNotNullOrWhiteSpace(
         this IFilterable filter,
         string propertyExpression,
         IFilterStatementOptions? options
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new IsNotNullOrWhiteSpace(),
             Array.Empty<dynamic?>(),
@@ -101,7 +102,8 @@ public static partial class IFilterableIsNotNullOrWhiteSpaceExtensions
     public static IFilterableConnection IsNotNullOrWhiteSpace(
         this IFilterable filter,
         string propertyExpression
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new IsNotNullOrWhiteSpace(),
             Array.Empty<dynamic?>(),
@@ -112,7 +114,8 @@ public static partial class IFilterableIsNotNullOrWhiteSpaceExtensions
         this IFilterable filter,
         string propertyExpression,
         Connector connector
-    ) => filter.Add(
+    ) =>
+        filter.Add(
             propertyExpression,
             new IsNotNullOrWhiteSpace(),
             Array.Empty<dynamic?>(),
