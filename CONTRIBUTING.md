@@ -6,7 +6,7 @@ Thank you for helping. This page gets you from a clone to a pull request. The co
 
 ## Set up
 
-You need the **.NET 8 SDK** (a newer SDK works; the projects target `net8.0`) and, only if you change the web filter builder's
+You need the **.NET 10 SDK** (the projects target `net10.0`) and, only if you change the web filter builder's
 script, **Node 22**.
 
 ```powershell
@@ -16,6 +16,9 @@ dotnet tool restore        # CSharpier, at the version the code was formatted wi
 dotnet build ExpressionBuilder.sln
 dotnet test ExpressionBuilder.sln
 ```
+
+CSharpier is pinned to a version built for .NET 8, so on a machine with only the .NET 10 runtime set `DOTNET_ROLL_FORWARD=Major`
+before running `dotnet csharpier` (see [docs/standards/code-style.md](docs/standards/code-style.md)).
 
 The first build also builds the source generator and the test probe app; it takes a minute. Open `ExpressionBuilder.sln` in your
 editor of choice (the repo includes VS Code tasks).

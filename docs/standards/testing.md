@@ -69,7 +69,7 @@ branch:
 
 ```powershell
 dotnet build ExpressionBuilder.sln
-dotnet run --project tools/ExpressionBuilder.ApiSnapshot -- tests/ExpressionBuilder.Tests/bin/Debug/net8.0 > api-after.txt
+dotnet run --project tools/ExpressionBuilder.ApiSnapshot -- tests/ExpressionBuilder.Tests/bin/Debug/net10.0 > api-after.txt
 # ...the same on the base commit, into api-before.txt, then:
 git diff --no-index api-before.txt api-after.txt
 ```

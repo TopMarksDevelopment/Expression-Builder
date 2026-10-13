@@ -48,6 +48,8 @@ The Expression Builder offers a wide range of features, including:
 
 ## Installation
 
+Requires **.NET 10** or later.
+
 To install the Expression Builder, you can use the .NET CLI, Package Manager console, or another method of your choice. You can find these installation methods and more information about the package on the [NuGet package](https://www.nuget.org/packages/TopMarksDevelopment.ExpressionBuilder/).
 
 But, for example, to install the package using the .NET CLI, run the following command:
