@@ -10,6 +10,7 @@ ai/
 ├── README.md          — this file
 ├── skills/            — reusable procedures (adding an operation, cutting a release)
 ├── instructions/      — task-specific instruction sets that don't fit the "skill" shape
+│                        (next-steps.md: the roadmap prompt for the next sessions)
 └── memories/          — durable, shared agent memory — facts worth carrying between sessions
 ```
 
