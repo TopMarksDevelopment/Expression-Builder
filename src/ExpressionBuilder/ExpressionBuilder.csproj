@@ -34,5 +34,8 @@
     <ProjectReference Include="..\Operations\StartsWith\ExpressionBuilder.Operations.StartsWith.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="build\TopMarksDevelopment.ExpressionBuilder.props" Pack="true" PackagePath="build;buildTransitive" />
+  </ItemGroup>
 
 </Project>
