@@ -5,12 +5,17 @@ using TopMarksDevelopment.ExpressionBuilder.Serialization;
 
 namespace TopMarksDevelopment.ExpressionBuilder;
 
+/// <summary>
+/// The options of a statement: how it matches several values and the manipulators it applies.
+/// </summary>
 [ProtoContract(UseProtoMembersOnly = true)]
 public class FilterStatementOptions : IFilterStatementOptions
 {
+    /// <inheritdoc />
     [JsonIgnore]
     public IEnumerable<IEntityManipulator>? Manipulators { get; set; }
 
+    /// <inheritdoc />
     [ProtoMember(1)]
     public Matches? Match { get; set; }
 
@@ -30,13 +35,9 @@ public class FilterStatementOptions : IFilterStatementOptions
         {
             List<IEntityManipulator> manipulators = [];
 
-            var i = TypeTracker.ManipulatorTypes;
-
             if (value != null)
                 foreach (var item in value)
-                    manipulators.Add(
-                        SerializerBase.FindManipulator(item, ref i)
-                    );
+                    manipulators.Add(SerializerBase.FindManipulator(item));
 
             Manipulators = manipulators;
         }

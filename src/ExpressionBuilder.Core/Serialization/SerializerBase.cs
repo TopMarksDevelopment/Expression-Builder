@@ -6,42 +6,14 @@ using TopMarksDevelopment.ExpressionBuilder.Api;
 
 internal static class SerializerBase
 {
-    internal static IOperation FindOperationByName(
-        string? operationName,
-        ref ICollection<Type> _foundTypes
-    )
+    internal static IOperation FindOperationByName(string? operationName)
     {
         ArgumentNullException.ThrowIfNull(operationName);
 
-        if (_foundTypes.Count == 0)
-            _foundTypes = AppDomain
-                .CurrentDomain.GetAssemblies()
-                .SelectMany(a =>
-                    a.GetTypes()
-                        .Where(asyType =>
-                            asyType.GetInterfaces().Contains(typeof(IOperation))
-                        )
-                )
-                .Where(t => t != null)
-                .ToList()!;
-
-        var operationType = _foundTypes.FirstOrDefault(t =>
-            t.Name == operationName
-        );
-
-        if (operationType == null)
-            throw new TypeLoadException(nameof(operationType));
-
-        if (Activator.CreateInstance(operationType) is not IOperation operation)
-            throw new TypeLoadException(nameof(operation));
-
-        return operation;
+        return OperationRegistry.Get(operationName);
     }
 
-    internal static IEntityManipulator FindManipulator(
-        ManipulatorInfo info,
-        ref ICollection<Type> _foundTypes
-    )
+    internal static IEntityManipulator FindManipulator(ManipulatorInfo info)
     {
         IEntityManipulator manipulator;
 
@@ -54,7 +26,7 @@ internal static class SerializerBase
             );
         else
         {
-            manipulator = FindManipulatorByName(info.Name, ref _foundTypes);
+            manipulator = FindManipulatorByName(info.Name);
 
             if (manipulator.ExpectedTypes.Length != info.Arguments.Length)
                 throw new OverflowException(
@@ -71,40 +43,18 @@ internal static class SerializerBase
 
         return manipulator;
 
-        static IEntityManipulator FindManipulatorByName(
-            string? manipulatorName,
-            ref ICollection<Type> _foundTypes
-        )
+        static IEntityManipulator FindManipulatorByName(string? manipulatorName)
         {
             ArgumentNullException.ThrowIfNull(manipulatorName);
 
-            if (_foundTypes.Count == 0)
-                _foundTypes = AppDomain
-                    .CurrentDomain.GetAssemblies()
-                    .SelectMany(a =>
-                        a.GetTypes()
-                            .Where(asyType =>
-                                asyType
-                                    .GetInterfaces()
-                                    .Contains(typeof(IEntityManipulator))
-                            )
-                    )
-                    .Where(t => t != null)
-                    .ToList()!;
-
-            var manipulatorType =
-                _foundTypes.FirstOrDefault(t => t.Name == manipulatorName)
-                ?? throw new TypeLoadException(
+            return ManipulatorRegistry.TryGet(
+                manipulatorName,
+                out var manipulator
+            )
+                ? manipulator
+                : throw new TypeLoadException(
                     "Could not find the manipulator: " + manipulatorName
                 );
-
-            if (
-                Activator.CreateInstance(manipulatorType)
-                is not IEntityManipulator manipulator
-            )
-                throw new Exception(nameof(manipulator));
-
-            return manipulator;
         }
 
         static IEntityManipulator FindMethodManipulator(
