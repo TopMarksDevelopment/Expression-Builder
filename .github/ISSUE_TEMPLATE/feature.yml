@@ -1,0 +1,15 @@
+name: Feature request
+description: A missing operation, method or option
+labels: [enhancement]
+body:
+    - type: textarea
+      id: problem
+      attributes:
+          label: What are you trying to do?
+          description: The goal, not the solution. An example of the filter you would like to write is ideal.
+      validations:
+          required: true
+    - type: textarea
+      id: ideas
+      attributes:
+          label: What have you tried, or what would you like it to look like?
