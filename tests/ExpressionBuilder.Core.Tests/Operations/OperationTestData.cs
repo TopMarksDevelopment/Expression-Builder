@@ -26,7 +26,11 @@ internal class OperationTestData : TheoryData<TestBuilder<Product>>
     static TestBuilder<Product> NullPropertyHasNullCheck =>
         new(
             "A null property should have null checks",
-            x => new[] { createdDate, otherDate }.Contains(x.CreatedAt),
+            x =>
+                Enumerable.Contains(
+                    new[] { createdDate, otherDate },
+                    x.CreatedAt
+                ),
             x =>
                 x.Equal<Product, DateTime?>(
                     x => x.CreatedAt,
@@ -40,7 +44,7 @@ internal class OperationTestData : TheoryData<TestBuilder<Product>>
     static TestBuilder<Product> NonNullableHasNoNullCheck =>
         new(
             "No Null Check On Non-Nullables",
-            x => (nonNullSource.Contains(x.Id)),
+            x => Enumerable.Contains(nonNullSource, x.Id),
             x => x.In<Product, int>(x => x.Id, nonNullSource),
             x => x.In(x => x.Id, nonNullSource),
             x => x.In(x => x.Id, nonNullSource),
@@ -53,7 +57,7 @@ internal class OperationTestData : TheoryData<TestBuilder<Product>>
     // static TestBuilder<Product> SkipNullCheck =>
     //     new(
     //         "A null check can be skipped",
-    //         x => new[] { createdDate, otherDate }.Contains(x.CreatedAt),
+    //         x => Enumerable.Contains(new[] { createdDate, otherDate }, x.CreatedAt),
     //         x =>
     //             x.Equal<Product, DateTime?>(
     //                 x => x.CreatedAt,
