@@ -20,7 +20,7 @@ on:
     workflow_dispatch:
 
 env:
-    DOTNET_VERSION: "8.0.x"
+    DOTNET_VERSION: "10.0.x"
     DOTNET_NOLOGO: true
     DOTNET_CLI_TELEMETRY_OPTOUT: true
 
@@ -73,7 +73,10 @@ jobs:
               with:
                   dotnet-version: ${{ env.DOTNET_VERSION }}
 
+            # The pinned CSharpier is a .NET 8 tool; only .NET 10 is installed, so let it roll forward
             - name: CSharpier (version pinned in .config/dotnet-tools.json)
+              env:
+                  DOTNET_ROLL_FORWARD: Major
               run: |
                   dotnet tool restore
                   dotnet csharpier --check src tests samples tools

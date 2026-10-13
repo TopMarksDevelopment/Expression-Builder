@@ -29,6 +29,7 @@ All notable changes to this project will be documented in this file.
 
 ### Breaking Changes (Overview)
 
+-   The packages now target `net10.0` only; `net8.0` is no longer supported (its support ends in November 2026). Apps on .NET 8 or 9 should stay on the previous release or move to .NET 10
 -   The assemblies now have the same names as their packages (`TopMarksDevelopment.ExpressionBuilder.Core.dll`, not `Core.Src.dll`). Types and namespaces are unchanged, so code recompiles as it is; anything that refers to an assembly by name (`InternalsVisibleTo`, `Assembly.Load("Core.Src")`) needs updating
 -   `Operation` and `HelperMethods` are now `static class`es (they were `struct`s that only held static members). Source compatible; binary compatible code must be rebuilt
 -   `TypeTracker` is obsolete and does nothing. Operations and manipulators are found by `OperationRegistry` / `ManipulatorRegistry`

@@ -6,7 +6,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/samples/ExpressionBuilder.Web.Sample/bin/Debug/net8.0/ExpressionBuilder.Web.Sample.dll",
+            "program": "${workspaceFolder}/samples/ExpressionBuilder.Web.Sample/bin/Debug/net10.0/ExpressionBuilder.Web.Sample.dll",
             "cwd": "${workspaceFolder}/samples/ExpressionBuilder.Web.Sample",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",

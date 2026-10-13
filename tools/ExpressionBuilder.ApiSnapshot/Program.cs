@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 //   dotnet run --project tools/ExpressionBuilder.ApiSnapshot -- <folder> [assembly-name-regex] > api.txt
 //
 // The folder is any build output that holds the assemblies (such as tests/ExpressionBuilder.Tests/bin/
-// Debug/net8.0). It reads them without loading them, so it works on assemblies that fail to run.
+// Debug/net10.0). It reads them without loading them, so it works on assemblies that fail to run.
 // Assembly names are matched with a regular expression; the default is every Expression Builder package.
 if (args.Length < 1)
 {
