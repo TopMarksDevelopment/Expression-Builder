@@ -276,3 +276,5 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 /CoverageAnalysis
+# NuGet content that is packed on purpose (the package's own MSBuild props)
+!src/ExpressionBuilder/build/
