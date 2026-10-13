@@ -21,7 +21,7 @@ public class AllTests : TheoryData
     static TestBuilder<Product> MultiMatcher =>
         new(
             "Matches multiple values",
-            x => _values.Contains(x.Id),
+            x => Enumerable.Contains(_values, x.Id),
             x => x.In("Id", _values),
             x => x.In(x => x.Id, _values),
             x => x.In(x => x.Id, _values),
@@ -33,7 +33,10 @@ public class AllTests : TheoryData
             "Normal manipulation works",
             x =>
                 x.Name != null
-                && _inputManipValues.Contains(x.Name.Replace("2", "4")),
+                && Enumerable.Contains(
+                    _inputManipValues,
+                    x.Name.Replace("2", "4")
+                ),
             x => x.In("Name", _manipValues, _manipsOptions),
             x => x.In(x => x.Name, _manipValues, _manipsOptions),
             x => x.In(x => x.Name, _manipValues, _manipsOptions),
@@ -43,7 +46,11 @@ public class AllTests : TheoryData
     static TestBuilder<Product> ManipulatedTypeCheck =>
         new(
             "Manipulation of type works",
-            x => _manipValues.Contains(x.Id.ToString().Replace("2", "4")),
+            x =>
+                Enumerable.Contains(
+                    _manipValues,
+                    x.Id.ToString().Replace("2", "4")
+                ),
             x => x.In("Id", _values, _manipTypeOptions),
             x => x.In(x => x.Id, _values, _manipTypeOptions),
             x => x.In(x => x.Id, _values, _manipTypeOptions),

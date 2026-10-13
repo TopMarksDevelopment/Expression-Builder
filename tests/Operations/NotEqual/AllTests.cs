@@ -23,7 +23,9 @@ public class AllTests : TheoryData
     static TestBuilder<Product> NotEqualsCallsIn =>
         new(
             "NotEquals with [] should call In",
-            x => x.Category != null && !new[] { 2, 4 }.Contains(x.Category.Id),
+            x =>
+                x.Category != null
+                && !Enumerable.Contains(new[] { 2, 4 }, x.Category.Id),
             x => x.NotEqual<Product, int>(x => x.Category!.Id, [2, 4]),
             x => x.NotEqual(x => x.Category!.Id, [2, 4]),
             x => x.NotEqual(x => x.Category!.Id, [2, 4]),

@@ -18,7 +18,7 @@ public class AllTests : TheoryData
     static TestBuilder<Product> MultiMatcher =>
         new(
             "Matches multiple values",
-            x => !values.Contains(x.Id),
+            x => !Enumerable.Contains(values, x.Id),
             x => x.NotIn("Id", values),
             x => x.NotIn(x => x.Id, values),
             x => x.NotIn(x => x.Id, values),
@@ -28,7 +28,9 @@ public class AllTests : TheoryData
     static TestBuilder<Product> MultiNullMatcher =>
         new(
             "Matches multiple values",
-            x => x.BrandId == null || !nullValues.Contains(x.BrandId.Value),
+            x =>
+                x.BrandId == null
+                || !Enumerable.Contains(nullValues, x.BrandId.Value),
             x => x.NotIn("BrandId", nullValues),
             x => x.NotIn(x => x.BrandId, nullValues),
             x => x.NotIn(x => x.BrandId, nullValues),
