@@ -5,8 +5,12 @@ on:
         types:
             - published
 
-        # ALLOW MANUAL RUNS
-        workflow_dispatch:
+    # Allow manual runs
+    workflow_dispatch:
+
+env:
+    DOTNET_NOLOGO: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
     build:
@@ -24,23 +28,20 @@ jobs:
               run: dotnet restore
 
             - name: Build
-              run: dotnet build --no-restore
+              run: dotnet build --configuration Release --no-restore
 
             - name: Test
-              run: dotnet test --no-build --verbosity normal
+              run: dotnet test --configuration Release --no-build --verbosity normal
 
+            # Every packable project in src/ (the tests, sample, tools and generator are not packable)
             - name: Create the packages
-              if: success()
-              run: dotnet pack
+              run: dotnet pack --configuration Release --no-build
 
             - name: Publish Nuget
-              if: success()
-              run: dotnet nuget push **/Release/*.nupkg --api-key ${{ secrets.NUGET_KEY }} --source https://api.nuget.org/v3/index.json
+              run: dotnet nuget push **/Release/*.nupkg --api-key ${{ secrets.NUGET_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
-            - name: Upload asset
-              uses: actions/upload-artifact@v4.3.3
+            - name: Upload packages
+              uses: actions/upload-artifact@v4
               with:
-                  path: |
-                      **/Release/*.nupkg
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  name: packages
+                  path: "**/Release/*.nupkg"

@@ -6,30 +6,100 @@ on:
         paths:
             - "**.cs"
             - "**.csproj"
+            - "**.props"
+            - "**.sln"
+            - "**.cshtml"
+            - "**.template"
+            - "**.ts"
+            - "**/package*.json"
+            - "src/ExpressionBuilder.Web/wwwroot/**"
+            - ".config/dotnet-tools.json"
+            - ".github/workflows/**"
+    push:
+        branches: [main]
+    workflow_dispatch:
 
 env:
-    DOTNET_VERSION: "8.0.*"
+    DOTNET_VERSION: "8.0.x"
+    DOTNET_NOLOGO: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
-    build-and-test:
-        name: build-and-test-${{matrix.os}}
+    dotnet:
+        name: dotnet (${{ matrix.os }})
         runs-on: ${{ matrix.os }}
         strategy:
+            fail-fast: false
             matrix:
-                os: [ubuntu-latest, windows-latest, macOS-latest]
+                os: [ubuntu-latest, windows-latest, macos-latest]
 
         steps:
             - uses: actions/checkout@v4
-            - name: Setup .NET Core
-              uses: actions/setup-dotnet@v3
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
               with:
                   dotnet-version: ${{ env.DOTNET_VERSION }}
 
-            - name: Install dependencies
+            - name: Restore
               run: dotnet restore
 
+            # GITHUB_ACTIONS=true turns on ContinuousIntegrationBuild, which makes warnings errors in src/
             - name: Build
               run: dotnet build --configuration Release --no-restore
 
             - name: Test
-              run: dotnet test --configuration Release --no-build --verbosity normal
+              run: >
+                  dotnet test --configuration Release --no-build --verbosity normal
+                  --collect:"XPlat Code Coverage" --results-directory ./TestResults
+
+            - name: Upload coverage
+              if: matrix.os == 'ubuntu-latest'
+              uses: actions/upload-artifact@v4
+              with:
+                  name: coverage
+                  path: TestResults/**/coverage.cobertura.xml
+                  if-no-files-found: warn
+
+    format:
+        name: formatting
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: ${{ env.DOTNET_VERSION }}
+
+            - name: CSharpier (version pinned in .config/dotnet-tools.json)
+              run: |
+                  dotnet tool restore
+                  dotnet csharpier --check src tests samples tools
+
+    client:
+        name: web client
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: src/ExpressionBuilder.Web/client
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: npm
+                  cache-dependency-path: src/ExpressionBuilder.Web/client/package-lock.json
+
+            - run: npm ci
+
+            - name: Type-check, bundle and test
+              run: npm run check
+
+            # The bundle is committed so consumers (and the .NET build) never need node. If this fails,
+            # run `npm run build` and commit the result.
+            - name: The committed bundle is up to date
+              run: git diff --exit-code -- ../wwwroot/js/filter-builder.js
