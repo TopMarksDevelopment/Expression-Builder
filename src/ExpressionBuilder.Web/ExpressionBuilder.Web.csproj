@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <Title>Expression Builder (Web filter builder)</Title>
+    <Description>A ready-made, click-to-build filter editor for ASP.NET Core (MVC and Razor Pages). Users pick a property or collection, a condition, a value and how it connects to the next - with groups and advanced options a click away - and you post the result to a page and apply it to your data. $(ExpressionBuilderBlurb)</Description>
+    <PackageTags>$(PackageTags) AspNetCore Razor MVC TagHelper FilterBuilder QueryBuilder</PackageTags>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <PackageReadmeSource>$(MSBuildThisFileDirectory)README.md</PackageReadmeSource>
+    <!-- The compiled client script is committed (see docs/web-filter-builder.md), so nothing here needs node. -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ExpressionBuilder.Core\ExpressionBuilder.Core.csproj" />
+    <ProjectReference Include="..\ExpressionBuilder\ExpressionBuilder.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ExpressionBuilder.Web.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- TypeScript sources and tooling are not part of the package -->
+    <Content Remove="client\**" />
+    <None Remove="client\**" />
+  </ItemGroup>
+
+</Project>

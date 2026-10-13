@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "root": {
+    "type": "group",
+    "connector": "And",
+    "items": [
+      {
+        "type": "group",
+        "connector": "And",
+        "items": [
+          {
+            "type": "condition",
+            "connector": "And",
+            "field": "Type",
+            "operation": "Equal",
+            "values": [
+              "Email"
+            ]
+          }
+        ],
+        "collection": "Contacts"
+      },
+      {
+        "type": "condition",
+        "connector": "And",
+        "field": "Home.Postcode",
+        "operation": "StartsWith",
+        "values": [
+          "M1"
+        ]
+      },
+      {
+        "type": "group",
+        "connector": "And",
+        "items": [
+          {
+            "type": "condition",
+            "connector": "And",
+            "field": "Email",
+            "operation": "IsNotNull",
+            "values": []
+          }
+        ]
+      }
+    ]
+  }
+}

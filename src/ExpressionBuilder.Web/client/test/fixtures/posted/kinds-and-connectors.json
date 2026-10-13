@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "root": {
+    "type": "group",
+    "connector": "And",
+    "items": [
+      {
+        "type": "condition",
+        "connector": "And",
+        "field": "Age",
+        "operation": "Between",
+        "values": [
+          "20",
+          "45"
+        ]
+      },
+      {
+        "type": "condition",
+        "connector": "Or",
+        "field": "Born",
+        "operation": "LessThan",
+        "values": [
+          "1915-01-01"
+        ]
+      },
+      {
+        "type": "condition",
+        "connector": "And",
+        "field": "Favourite",
+        "operation": "In",
+        "values": [
+          "Red",
+          "Blue"
+        ]
+      },
+      {
+        "type": "condition",
+        "connector": "And",
+        "field": "Active",
+        "operation": "Equal",
+        "values": [
+          "true"
+        ]
+      },
+      {
+        "type": "condition",
+        "connector": "And",
+        "field": "Reference",
+        "operation": "NotEqual",
+        "values": [
+          "22222222-2222-2222-2222-222222222222"
+        ]
+      }
+    ]
+  }
+}
