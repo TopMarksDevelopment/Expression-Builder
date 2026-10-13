@@ -4,12 +4,17 @@ using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using H = Api.Helpers.HelperMethods;
 
+/// <summary>The text ends with the value.</summary>
+[GenerateFilterExtensions(FilterExtensionShape.Values)]
 public struct EndsWith : IOperation
 {
+    /// <summary>Creates the <see cref="EndsWith"/> operation.</summary>
     public EndsWith() { }
 
+    /// <inheritdoc />
     public readonly string Name => "EndsWith";
 
+    /// <inheritdoc />
     public readonly OperationDefaults Defaults =>
         new()
         {
@@ -17,6 +22,7 @@ public struct EndsWith : IOperation
             NullHandler = OperationNullHandler.NotNullAnd,
         };
 
+    /// <inheritdoc />
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
@@ -35,6 +41,7 @@ public struct EndsWith : IOperation
                     )
             );
 
+    /// <inheritdoc />
     public readonly void Validate(IFilterStatement statement)
     {
         if (!statement.Values.Any())

@@ -4,12 +4,17 @@ using System.Collections;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
+/// <summary>The value is one of a list of values.</summary>
+[GenerateFilterExtensions(FilterExtensionShape.Values)]
 public struct In : IOperation
 {
+    /// <summary>Creates the <see cref="In"/> operation.</summary>
     public In() { }
 
+    /// <inheritdoc />
     public readonly string Name => "In";
 
+    /// <inheritdoc />
     public readonly OperationDefaults Defaults =>
         new()
         {
@@ -17,6 +22,7 @@ public struct In : IOperation
             NullHandler = OperationNullHandler.NotNullAnd,
         };
 
+    /// <inheritdoc />
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
@@ -79,6 +85,7 @@ public struct In : IOperation
         );
     }
 
+    /// <inheritdoc />
     public readonly void Validate(IFilterStatement statement)
     {
         if (statement.Options?.Match == Matches.All)

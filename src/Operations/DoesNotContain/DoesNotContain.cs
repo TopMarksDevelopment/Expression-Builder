@@ -4,12 +4,17 @@ using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Api.Helpers;
 
+/// <summary>The text does not contain the value.</summary>
+[GenerateFilterExtensions(FilterExtensionShape.Values)]
 public struct DoesNotContain : IOperation
 {
+    /// <summary>Creates the <see cref="DoesNotContain"/> operation.</summary>
     public DoesNotContain() { }
 
+    /// <inheritdoc />
     public readonly string Name => "DoesNotContain";
 
+    /// <inheritdoc />
     public readonly OperationDefaults Defaults =>
         new()
         {
@@ -17,6 +22,7 @@ public struct DoesNotContain : IOperation
             NullHandler = OperationNullHandler.IsNullOr,
         };
 
+    /// <inheritdoc />
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
@@ -39,6 +45,7 @@ public struct DoesNotContain : IOperation
                     )
             );
 
+    /// <inheritdoc />
     public readonly void Validate(IFilterStatement statement)
     {
         if (!statement.Values.Any())

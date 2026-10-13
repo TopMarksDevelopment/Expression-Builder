@@ -5,12 +5,17 @@ using System.Text.RegularExpressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using H = Api.Helpers.HelperMethods;
 
+/// <summary>Searches text for terms: <c>term</c> contains it, <c>"term"</c> matches the exact word and <c>-term</c> excludes it.</summary>
+[GenerateFilterExtensions(FilterExtensionShape.Values)]
 public partial struct SmartSearch : IOperation
 {
+    /// <summary>Creates the <see cref="SmartSearch"/> operation.</summary>
     public SmartSearch() { }
 
+    /// <inheritdoc />
     public readonly string Name => "SmartSearch";
 
+    /// <inheritdoc />
     public readonly OperationDefaults Defaults =>
         new()
         {
@@ -18,6 +23,7 @@ public partial struct SmartSearch : IOperation
             NullHandler = OperationNullHandler.NotNullAnd,
         };
 
+    /// <inheritdoc />
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
@@ -82,6 +88,7 @@ public partial struct SmartSearch : IOperation
         return expr;
     }
 
+    /// <inheritdoc />
     public readonly void Validate(IFilterStatement statement)
     {
         if (!statement.Values.Any())
@@ -91,6 +98,7 @@ public partial struct SmartSearch : IOperation
             );
     }
 
+    /// <inheritdoc />
     public static string[] SplitTerm(string input) =>
         SplitTermRegex().Split(input);
 

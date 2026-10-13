@@ -3,12 +3,17 @@ namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
+/// <summary>The value is between a minimum and a maximum (neither included).</summary>
+[GenerateFilterExtensions(FilterExtensionShape.Range)]
 public struct BetweenExclusive : IOperation
 {
+    /// <summary>Creates the <see cref="BetweenExclusive"/> operation.</summary>
     public BetweenExclusive() { }
 
+    /// <inheritdoc />
     public readonly string Name => "BetweenExclusive";
 
+    /// <inheritdoc />
     public readonly OperationDefaults Defaults =>
         new()
         {
@@ -16,6 +21,7 @@ public struct BetweenExclusive : IOperation
             NullHandler = OperationNullHandler.NotNullAnd,
         };
 
+    /// <inheritdoc />
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
@@ -36,6 +42,7 @@ public struct BetweenExclusive : IOperation
             )
         );
 
+    /// <inheritdoc />
     public readonly void Validate(IFilterStatement statement)
     {
         if (statement.Values.Count != 2)

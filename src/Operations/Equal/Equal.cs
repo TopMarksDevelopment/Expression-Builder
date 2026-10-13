@@ -3,15 +3,21 @@ namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
+/// <summary>The value equals the given value (or, with several values, any of them).</summary>
+[GenerateFilterExtensions(FilterExtensionShape.Values)]
 public partial struct Equal : IOperation
 {
+    /// <summary>Creates the <see cref="Equal"/> operation.</summary>
     public Equal() { }
 
+    /// <inheritdoc />
     public readonly string Name => "Equal";
 
+    /// <inheritdoc />
     public readonly OperationDefaults Defaults =>
         new() { Match = Matches.Any, NullHandler = OperationNullHandler.Skip };
 
+    /// <inheritdoc />
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
@@ -32,6 +38,7 @@ public partial struct Equal : IOperation
         return Expression.Equal(member, value);
     }
 
+    /// <inheritdoc />
     public readonly void Validate(IFilterStatement statement)
     {
         if (!statement.Values.Any())

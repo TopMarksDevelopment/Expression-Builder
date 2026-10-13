@@ -3,12 +3,17 @@ namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
+/// <summary>The text is not empty.</summary>
+[GenerateFilterExtensions(FilterExtensionShape.None)]
 public struct IsNotEmpty : IOperation
 {
+    /// <summary>Creates the <see cref="IsNotEmpty"/> operation.</summary>
     public IsNotEmpty() { }
 
+    /// <inheritdoc />
     public readonly string Name => "IsNotEmpty";
 
+    /// <inheritdoc />
     public readonly OperationDefaults Defaults =>
         new()
         {
@@ -16,6 +21,7 @@ public struct IsNotEmpty : IOperation
             NullHandler = OperationNullHandler.IsNullOr,
         };
 
+    /// <inheritdoc />
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> _,
@@ -26,6 +32,7 @@ public struct IsNotEmpty : IOperation
             Expression.Constant("")
         );
 
+    /// <inheritdoc />
     public readonly void Validate(IFilterStatement statement)
     {
         if (statement.Values.Any())

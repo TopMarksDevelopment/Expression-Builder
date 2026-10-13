@@ -4,12 +4,17 @@ using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using H = Api.Helpers.HelperMethods;
 
+/// <summary>The text starts with the value.</summary>
+[GenerateFilterExtensions(FilterExtensionShape.Values)]
 public struct StartsWith : IOperation
 {
+    /// <summary>Creates the <see cref="StartsWith"/> operation.</summary>
     public StartsWith() { }
 
+    /// <inheritdoc />
     public readonly string Name => "StartsWith";
 
+    /// <inheritdoc />
     public readonly OperationDefaults Defaults =>
         new()
         {
@@ -17,6 +22,7 @@ public struct StartsWith : IOperation
             NullHandler = OperationNullHandler.NotNullAnd,
         };
 
+    /// <inheritdoc />
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
@@ -40,6 +46,7 @@ public struct StartsWith : IOperation
                         )
                 );
 
+    /// <inheritdoc />
     public readonly void Validate(IFilterStatement statement)
     {
         if (!statement.Values.Any())
