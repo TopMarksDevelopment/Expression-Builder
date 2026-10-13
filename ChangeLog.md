@@ -23,6 +23,73 @@ Types of changes
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+<small>[Compare to the latest release][comp:unreleased]</small>
+
+### Breaking Changes (Overview)
+
+-   The assemblies now have the same names as their packages (`TopMarksDevelopment.ExpressionBuilder.Core.dll`, not `Core.Src.dll`). Types and namespaces are unchanged, so code recompiles as it is; anything that refers to an assembly by name (`InternalsVisibleTo`, `Assembly.Load("Core.Src")`) needs updating
+-   `Operation` and `HelperMethods` are now `static class`es (they were `struct`s that only held static members). Source compatible; binary compatible code must be rebuilt
+-   `TypeTracker` is obsolete and does nothing. Operations and manipulators are found by `OperationRegistry` / `ManipulatorRegistry`
+
+### Changes (Overview)
+
+-   Repository restructured: `src/` and `tests/` (mirroring each other), `samples/`, `docs/` and `ai/`. Package metadata, versions and the repetitive parts of the projects are declared once (`Directory.Build.props`, `Directory.Packages.props`)
+-   The fluent methods of the operations (about 28,000 lines of copied code) are now generated at build time from templates. The public API is identical
+-   XML documentation on the whole public API, with warnings treated as errors in CI
+-   CI: formatting check, the web client's checks, coverage, and a check that the committed script is current. Dependabot and issue/PR templates added
+
+### Package: TopMarksDevelopment.ExpressionBuilder.Web (new)
+
+A ready-made filter builder for ASP.NET Core, for MVC and Razor Pages. Users pick a property or collection, a condition, a value and a connector, with groups and advanced options (match any/all, adjusting text) a click away; the form is posted to a page and `FilterBuilderModel.Build<T>()` turns it into a `Filter<T>`. See the [guide](./docs/web-filter-builder.md).
+
+-   `<filter-builder for="Filter" type="typeof(Product)" />` tag helper, `FilterBuilder` view component and an overridable Razor view
+-   `FilterBuilderModel`, `FilterBuilderOptions`, `FilterBuilderLabels`, `[FilterBuilderIgnore]`, `FilterSchema`, `OperationCatalog`
+-   `FilterBuilderModel.FromFilter` to show a saved filter in the builder
+-   The TypeScript front end ships as one script and stylesheet, served from the package. Light/dark themes, keyboard accessible, no framework
+-   A posted filter is validated against the class being filtered, and sizes are limited. See [SECURITY.md](./SECURITY.md)
+
+### Package: TopMarksDevelopment.ExpressionBuilder.Core
+
+#### Added
+
+-   `OperationRegistry` and `ManipulatorRegistry`: find operations and manipulators by name, and register your own
+
+#### Fixed
+
+-   Saved filters (JSON and `byte[]`) failed to load if the operation they used had not been used in code yet: operations were only found among the assemblies that were already loaded. They are now found whether or not anything has used them yet
+-   `IFilterable` and `IQueryFilterable`'s non-generic `OpenCollection(string)`, `CloseCollection()` and `CloseGroup()` called themselves until the stack overflowed
+-   `FilterCollection` could not be given the values of another collection, and threw from `SyncRoot`/`IsSynchronized`
+-   A manipulator argument that is a variable (`x => x.Name.Replace(term, "")`) threw an `InvalidCastException`; it can now be any value that does not depend on the item being filtered
+-   Deserialising a filter no longer re-scans the assembly for each group, and its errors say what was wrong
+
+#### Security
+
+-   A saved filter can no longer name a static method as a manipulator (`System.Environment.GetEnvironmentVariable`, ...): only methods of the value being changed are accepted
+
+### Package: TopMarksDevelopment.ExpressionBuilder.Api
+
+#### Added
+
+-   `ExpressionExtensions.ConstantFor`, to compare a member with a value of a type that suits it
+
+### Packages: Operations.Equal and Operations.NotEqual
+
+#### Fixed
+
+-   `Equal` and `NotEqual` threw "The binary operator Equal is not defined for Nullable&lt;int&gt; and Int32" for a nullable property (`int?`, `DateTime?`, `bool?`) compared with a plain value
+
+### Package: TopMarksDevelopment.ExpressionBuilder
+
+#### Added
+
+-   Opt-in `<ExpressionBuilderImplicitUsings>true</ExpressionBuilderImplicitUsings>` project property, which adds `using TopMarksDevelopment.ExpressionBuilder.Operations;` (and the root namespace) to the whole project. Only needed to use operation types directly (`new Equal()`, `SmartSearch.SplitTerm`); fluent methods and `Operation.X` only ever needed the root namespace
+
+#### Fixed
+
+-   The README listed `IsNotNullNorWhiteSpace` (the operation is `IsNotNullOrWhiteSpace`) and left out `In` and `NotIn`
+
 ## [1.0.0-rc.1] - 2024-09-19
 
 <small>[Compare to previous release][comp:1.0.0-rc.1]</small>
@@ -61,7 +128,7 @@ All notable changes to this project will be documented in this file.
 
 #### Added
 
--   There's now a `.proto` file available [here](./Packages/Core/src/Proto/ExpressionBuilder.proto)
+-   There's now a `.proto` file available [here](./src/ExpressionBuilder.Core/Proto/ExpressionBuilder.proto)
 -   `FilterCollection` and `FilterCollection<T?>` include an `AddRange` method - supporting API Changes
 -   Added new members for the serialisation changes
     -   `IProtoFilterItem` interface  
@@ -340,6 +407,8 @@ All notable changes to this project will be documented in this file.
 
 **Initial release**
 
+[unreleased]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v1.0.0-rc.1...HEAD
+[comp:unreleased]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v1.0.0-rc.1...HEAD
 [1.0.0-rc.1]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v1.0.0-rc.1
 [comp:1.0.0-rc.1]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v0.4.0-beta...v1.0.0-rc.1
 [0.4.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v0.4.0-beta
