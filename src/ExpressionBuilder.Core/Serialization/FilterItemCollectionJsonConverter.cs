@@ -1,6 +1,5 @@
 namespace TopMarksDevelopment.ExpressionBuilder.Serialization;
 
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TopMarksDevelopment.ExpressionBuilder.Api;
@@ -8,6 +7,39 @@ using TopMarksDevelopment.ExpressionBuilder.Api;
 internal class FilterItemCollectionJsonConverter
     : JsonConverter<ICollection<IFilterItem>>
 {
+    /// <summary>
+    /// The filter item types, by their <see cref="IFilterItem.typeRef"/>. Built once, as it
+    /// only depends on this assembly.
+    /// </summary>
+    static readonly Lazy<Dictionary<string, Type>> ItemTypes =
+        new(() =>
+        {
+            var typeDictionary = new Dictionary<string, Type>();
+
+            var types = typeof(FilterItemCollectionJsonConverter)
+                .Assembly.GetTypes()
+                .Where(typeof(IFilterItem).IsAssignableFrom)
+                .Where(p => !p.IsInterface && !p.IsAbstract);
+
+            foreach (var type in types)
+            {
+                // Generic items (statements) are closed with any type, just to read their typeRef
+                var typeToUse = IsAssignableToGenericType(
+                    type,
+                    typeof(IFilterStatement<>)
+                )
+                    ? type.MakeGenericType([typeof(string)])
+                    : type;
+
+                typeDictionary.Add(
+                    ((IFilterItem)Activator.CreateInstance(typeToUse)!).typeRef,
+                    type
+                );
+            }
+
+            return typeDictionary;
+        });
+
     public override ICollection<IFilterItem> Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
@@ -20,33 +52,6 @@ internal class FilterItemCollectionJsonConverter
             JsonSerializer.Deserialize<List<JsonDocument>>(ref reader, options)
             ?? throw new JsonException("Failed to parse array");
 
-        var typeDictionary = new Dictionary<string, Type>();
-
-        try
-        {
-            var earlyTypes = Assembly.GetExecutingAssembly().GetTypes();
-
-            var types = Assembly
-                .GetExecutingAssembly()
-                .GetTypes()
-                .Where(typeof(IFilterItem).IsAssignableFrom)
-                .Where(p => !p.IsInterface);
-
-            foreach (var type in types)
-            {
-                var typeToUse = type;
-
-                if (IsAssignableToGenericType(type, typeof(IFilterStatement<>)))
-                    typeToUse = type.MakeGenericType([typeof(string)]);
-
-                typeDictionary.Add(
-                    ((IFilterItem)Activator.CreateInstance(typeToUse)!).typeRef,
-                    type
-                );
-            }
-        }
-        catch { }
-
         foreach (var item in items)
         {
             var itemJson =
@@ -56,9 +61,9 @@ internal class FilterItemCollectionJsonConverter
                 item.RootElement.GetProperty("typeRef").GetString()
                 ?? throw new JsonException("A typeRef was not found");
 
-            if (!typeDictionary.TryGetValue(typeString, out Type? value))
+            if (!ItemTypes.Value.TryGetValue(typeString, out Type? value))
                 throw new JsonException(
-                    "Could not find type from \"$type\" property"
+                    $"Could not find the item type for the \"typeRef\" value \"{typeString}\""
                 );
 
             var typeToUse = value;
@@ -73,7 +78,12 @@ internal class FilterItemCollectionJsonConverter
                 )!;
 
                 typeToUse = typeToUse.MakeGenericType(
-                    [Type.GetType(dynamicParse.propertyType)!]
+                    [
+                        Type.GetType(dynamicParse.propertyType)
+                            ?? throw new JsonException(
+                                $"Could not find the type \"{dynamicParse.propertyType}\""
+                            ),
+                    ]
                 );
             }
 

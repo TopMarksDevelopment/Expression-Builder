@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    A console app that the tests run in a separate process. Operations are found by name when a
+    saved filter is loaded, and whether an operation's assembly is already loaded depends on what has
+    run before, which is not something a test sharing a process with other tests can control.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ExpressionBuilder\ExpressionBuilder.csproj" />
+  </ItemGroup>
+
+</Project>
