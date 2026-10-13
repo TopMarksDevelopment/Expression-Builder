@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ExpressionBuilder.Web\ExpressionBuilder.Web.csproj" />
+
+    <!-- The sample app is also what the page tests run against -->
+    <ProjectReference Include="..\..\samples\ExpressionBuilder.Web.Sample\ExpressionBuilder.Web.Sample.csproj" />
+  </ItemGroup>
+
+</Project>

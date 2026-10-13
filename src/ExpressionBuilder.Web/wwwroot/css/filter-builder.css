@@ -1,0 +1,337 @@
+/*
+ * Expression Builder filter builder.
+ *
+ * Everything is scoped to .eb and themed through custom properties, so it can be matched to a site by
+ * overriding them, e.g.  .eb { --eb-accent: #0a7; }
+ * It follows the visitor's light/dark setting unless the page says otherwise with data-theme="light"
+ * or data-theme="dark" on <html>.
+ */
+
+.eb {
+    --eb-text: #1f2328;
+    --eb-muted: #59636e;
+    --eb-surface: #ffffff;
+    --eb-surface-raised: #f6f8fa;
+    --eb-border: #d1d9e0;
+    --eb-accent: #0969da;
+    --eb-accent-text: #ffffff;
+    --eb-danger: #cf222e;
+    --eb-danger-surface: #ffebe9;
+    --eb-radius: 6px;
+    --eb-gap: 0.5rem;
+
+    color: var(--eb-text);
+    font: inherit;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .eb {
+        --eb-text: #e6edf3;
+        --eb-muted: #9198a1;
+        --eb-surface: #0d1117;
+        --eb-surface-raised: #151b23;
+        --eb-border: #3d444d;
+        --eb-accent: #4493f8;
+        --eb-accent-text: #0d1117;
+        --eb-danger: #ff7b72;
+        --eb-danger-surface: #3d1d20;
+    }
+}
+
+:root[data-theme="dark"] .eb {
+    --eb-text: #e6edf3;
+    --eb-muted: #9198a1;
+    --eb-surface: #0d1117;
+    --eb-surface-raised: #151b23;
+    --eb-border: #3d444d;
+    --eb-accent: #4493f8;
+    --eb-accent-text: #0d1117;
+    --eb-danger: #ff7b72;
+    --eb-danger-surface: #3d1d20;
+}
+
+.eb *,
+.eb *::before,
+.eb *::after {
+    box-sizing: border-box;
+}
+
+.eb [hidden] {
+    display: none !important;
+}
+
+/* -- Groups --------------------------------------------------------------------------- */
+
+.eb-group {
+    background: var(--eb-surface);
+    border: 1px solid var(--eb-border);
+    border-left: 4px solid var(--eb-accent);
+    border-radius: var(--eb-radius);
+    padding: var(--eb-gap) calc(var(--eb-gap) * 1.5);
+}
+
+.eb-group .eb-group {
+    background: var(--eb-surface-raised);
+}
+
+.eb-group.eb-invalid {
+    border-color: var(--eb-danger);
+}
+
+.eb-group-header {
+    align-items: center;
+    display: flex;
+    gap: var(--eb-gap);
+    justify-content: space-between;
+    min-height: 1.75rem;
+}
+
+.eb-group-title {
+    color: var(--eb-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.eb-items {
+    display: grid;
+    gap: 0;
+    list-style: none;
+    margin: var(--eb-gap) 0;
+    padding: 0;
+}
+
+.eb-empty {
+    color: var(--eb-muted);
+    font-size: 0.875rem;
+    margin: var(--eb-gap) 0;
+}
+
+.eb-group.eb-invalid > .eb-empty {
+    color: var(--eb-danger);
+}
+
+.eb-group-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--eb-gap);
+}
+
+/* -- Connectors ------------------------------------------------------------------------ */
+
+.eb-item-connector {
+    align-items: center;
+    display: flex;
+    gap: var(--eb-gap);
+    padding: 0.125rem 0;
+}
+
+.eb-item-connector::before,
+.eb-item-connector::after {
+    border-top: 1px dashed var(--eb-border);
+    content: "";
+    flex: 1;
+}
+
+.eb-connector-select {
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.125rem 0.5rem;
+    text-transform: uppercase;
+}
+
+/* -- Conditions ------------------------------------------------------------------------ */
+
+.eb-condition {
+    border-radius: var(--eb-radius);
+}
+
+.eb-condition.eb-invalid {
+    outline: 2px solid var(--eb-danger);
+    outline-offset: 2px;
+}
+
+.eb-row {
+    align-items: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--eb-gap);
+}
+
+.eb-field,
+.eb-operation {
+    flex: 0 1 14rem;
+    min-width: 9rem;
+}
+
+.eb-values {
+    align-items: flex-start;
+    display: flex;
+    flex: 1 1 14rem;
+    flex-wrap: wrap;
+    gap: var(--eb-gap);
+    min-width: 9rem;
+}
+
+.eb-value {
+    align-items: center;
+    display: inline-flex;
+    flex: 1 1 8rem;
+    gap: 0.25rem;
+}
+
+.eb-value .eb-input {
+    flex: 1;
+    min-width: 0;
+}
+
+.eb-value-joiner {
+    color: var(--eb-muted);
+    font-size: 0.875rem;
+}
+
+/* -- Options (the click-to-reveal advanced part) ------------------------------------ */
+
+.eb-options {
+    background: var(--eb-surface-raised);
+    border: 1px solid var(--eb-border);
+    border-radius: var(--eb-radius);
+    display: grid;
+    gap: var(--eb-gap);
+    margin-top: var(--eb-gap);
+    padding: var(--eb-gap) calc(var(--eb-gap) * 1.5);
+}
+
+.eb-option {
+    border: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--eb-gap);
+    margin: 0;
+    padding: 0;
+}
+
+.eb-option legend {
+    color: var(--eb-muted);
+    float: left;
+    font-size: 0.8125rem;
+    padding: 0;
+    width: 100%;
+}
+
+.eb-option label {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.25rem;
+}
+
+.eb-replace {
+    align-items: center;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+[data-eb-active]::after {
+    background: var(--eb-accent);
+    border-radius: 50%;
+    content: "";
+    display: inline-block;
+    height: 0.4rem;
+    margin-left: 0.25rem;
+    vertical-align: super;
+    width: 0.4rem;
+}
+
+/* -- Controls ------------------------------------------------------------------------- */
+
+.eb-select,
+.eb-input {
+    background: var(--eb-surface);
+    border: 1px solid var(--eb-border);
+    border-radius: var(--eb-radius);
+    color: inherit;
+    font: inherit;
+    min-height: 2rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.eb-select:disabled {
+    opacity: 0.55;
+}
+
+.eb-btn {
+    background: var(--eb-surface);
+    border: 1px solid var(--eb-border);
+    border-radius: var(--eb-radius);
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    min-height: 2rem;
+    padding: 0.25rem 0.75rem;
+}
+
+.eb-btn:hover {
+    border-color: var(--eb-accent);
+}
+
+.eb-btn-icon {
+    min-width: 2rem;
+    padding: 0.25rem;
+}
+
+.eb-btn-text {
+    background: transparent;
+    border-color: transparent;
+    color: var(--eb-accent);
+}
+
+.eb-btn-remove:hover,
+.eb-btn-remove-value:hover {
+    border-color: var(--eb-danger);
+    color: var(--eb-danger);
+}
+
+.eb :is(.eb-select, .eb-input, .eb-btn, input[type="checkbox"]):focus-visible {
+    outline: 2px solid var(--eb-accent);
+    outline-offset: 1px;
+}
+
+/* -- Messages --------------------------------------------------------------------------- */
+
+.eb-error {
+    background: var(--eb-danger-surface);
+    border-radius: var(--eb-radius);
+    color: var(--eb-danger);
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0;
+    padding: 0.125rem 0.5rem;
+}
+
+.eb-summary {
+    color: var(--eb-muted);
+    font-size: 0.875rem;
+    margin: var(--eb-gap) 0 0;
+}
+
+.eb-noscript {
+    color: var(--eb-danger);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .eb-btn,
+    .eb-select,
+    .eb-input {
+        transition: border-color 0.12s ease-in-out;
+    }
+}
+
+@media (max-width: 40rem) {
+    .eb-field,
+    .eb-operation,
+    .eb-values {
+        flex-basis: 100%;
+    }
+}

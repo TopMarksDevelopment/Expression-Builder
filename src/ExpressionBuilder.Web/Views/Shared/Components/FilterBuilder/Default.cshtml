@@ -1,0 +1,83 @@
+@using TopMarksDevelopment.ExpressionBuilder.Web
+@model FilterBuilderViewModel
+@*
+    The markup of the filter builder.
+
+    To change how it looks, copy this file to Views/Shared/Components/FilterBuilder/Default.cshtml in your
+    own app (or Pages/Shared/Components/FilterBuilder/Default.cshtml for Razor Pages) and edit it: your
+    copy is used instead of this one. Change classes, wrapping elements and text freely, but keep the
+    data-eb-* attributes - they are how the script finds each part - and the <template>s, which the
+    script copies for every condition, group and connector.
+*@
+@{
+    var l = Model.Labels;
+}
+<div class="eb" id="@Model.Id" data-eb-filter-builder>
+    <input type="hidden" name="@Model.Name" value="@Model.Json" data-eb-input />
+    <script type="application/json" data-eb-schema>@Html.Raw(Model.SchemaJson)</script>
+
+    <div class="eb-root" data-eb-root></div>
+    <p class="eb-summary" data-eb-summary role="status"></p>
+    <noscript><p class="eb-noscript">@l.NeedsScript</p></noscript>
+
+    @* A group of conditions: the top level, a bracketed group or the items of a collection *@
+    <template data-eb-template="group">
+        <section class="eb-group" role="group" data-eb-group>
+            <header class="eb-group-header">
+                <span class="eb-group-title" data-eb-title></span>
+                <button type="button" class="eb-btn eb-btn-text eb-btn-remove" data-eb-remove-group>@l.RemoveGroup</button>
+            </header>
+            <ol class="eb-items" data-eb-items></ol>
+            <p class="eb-empty" data-eb-empty>@l.EmptyGroup</p>
+            <footer class="eb-group-actions">
+                <button type="button" class="eb-btn" data-eb-add-condition>@l.AddCondition</button>
+                <button type="button" class="eb-btn" data-eb-add-group>@l.AddGroup</button>
+            </footer>
+        </section>
+    </template>
+
+    @* One condition: the property, the condition and its value(s), with the advanced options a click away *@
+    <template data-eb-template="condition">
+        <div class="eb-condition" data-eb-condition>
+            <div class="eb-row">
+                <select class="eb-select eb-field" data-eb-field aria-label="@l.Field"></select>
+                <select class="eb-select eb-operation" data-eb-operation aria-label="@l.Operation"></select>
+                <div class="eb-values" data-eb-values></div>
+                <button type="button" class="eb-btn eb-btn-icon" data-eb-toggle-options aria-expanded="false" aria-label="@l.Options" title="@l.Options">&#9881;</button>
+                <button type="button" class="eb-btn eb-btn-icon eb-btn-remove" data-eb-remove aria-label="@l.RemoveCondition" title="@l.RemoveCondition">&#10005;</button>
+            </div>
+            <div class="eb-options" data-eb-options hidden>
+                <label class="eb-option" data-eb-match-wrap>
+                    <span>@l.Match</span>
+                    <select class="eb-select" data-eb-match>
+                        <option value="Any">@l.MatchAny</option>
+                        <option value="All">@l.MatchAll</option>
+                    </select>
+                </label>
+                <fieldset class="eb-option" data-eb-manipulators-wrap>
+                    <legend>@l.Manipulators</legend>
+                    <label><input type="checkbox" data-eb-manipulator="Trim" /> @l.Trim</label>
+                    <label><input type="checkbox" data-eb-manipulator="ToLower" /> @l.ToLower</label>
+                    <label><input type="checkbox" data-eb-manipulator="ToUpper" /> @l.ToUpper</label>
+                    <label><input type="checkbox" data-eb-manipulator="Replace" /> @l.Replace</label>
+                    <span class="eb-replace" data-eb-replace hidden>
+                        <input type="text" class="eb-input" data-eb-replace-find placeholder="@l.ReplaceFind" aria-label="@l.ReplaceFind" />
+                        <span aria-hidden="true">&rarr;</span>
+                        <input type="text" class="eb-input" data-eb-replace-with placeholder="@l.ReplaceWith" aria-label="@l.ReplaceWith" />
+                    </span>
+                </fieldset>
+            </div>
+            <p class="eb-error" data-eb-error hidden></p>
+        </div>
+    </template>
+
+    @* What joins one item to the next *@
+    <template data-eb-template="connector">
+        <div class="eb-connector" data-eb-connector-row>
+            <select class="eb-select eb-connector-select" data-eb-connector aria-label="@l.Connector">
+                <option value="And">@l.And</option>
+                <option value="Or">@l.Or</option>
+            </select>
+        </div>
+    </template>
+</div>
