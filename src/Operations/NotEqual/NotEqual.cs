@@ -26,7 +26,7 @@ public struct NotEqual : IOperation
         values.Count == 1
             ? Expression.NotEqual(
                 member,
-                Expression.Constant(
+                member.ConstantFor(
                     options.ApplyManipulators(values.ElementAt(0))
                 )
             )
@@ -37,7 +37,7 @@ public struct NotEqual : IOperation
                 (m, v) =>
                     Expression.NotEqual(
                         m,
-                        Expression.Constant(options?.ApplyManipulators(v))
+                        m.ConstantFor(options?.ApplyManipulators(v))
                     )
             )
         : Expression.Not(new In().Build(member, values, options));

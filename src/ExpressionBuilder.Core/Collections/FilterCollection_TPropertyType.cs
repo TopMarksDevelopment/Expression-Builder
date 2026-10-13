@@ -15,11 +15,7 @@ internal class FilterCollection<TPropertyType>
 
     internal FilterCollection(IFilterCollection values)
     {
-        TPropertyType?[] list = [];
-
-        values.CopyTo(list, 0);
-
-        _values = [.. list];
+        _values = [.. values.Cast<TPropertyType?>()];
     }
 
     public FilterCollection() { }
@@ -35,9 +31,9 @@ internal class FilterCollection<TPropertyType>
 
     public bool IsReadOnly => _values.IsReadOnly;
 
-    public bool IsSynchronized => throw new NotImplementedException();
+    public bool IsSynchronized => false;
 
-    public object SyncRoot => throw new NotImplementedException();
+    public object SyncRoot => ((ICollection)_values).SyncRoot;
 
     public void Add(TPropertyType? item) => _values.Add(item);
 

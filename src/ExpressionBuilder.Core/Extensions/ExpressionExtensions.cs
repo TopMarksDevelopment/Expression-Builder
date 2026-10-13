@@ -5,6 +5,34 @@ using System.Reflection;
 
 internal static class ExpressionExtensions
 {
+    /// <summary>
+    /// Gets the value of an expression that does not depend on the item being filtered, such as a
+    /// literal or a captured variable (the <c>term</c> in <c>x => x.Name.Replace(term, "")</c>).
+    /// </summary>
+    /// <param name="expression">The expression to evaluate</param>
+    /// <returns>The value as a constant</returns>
+    /// <exception cref="NotSupportedException">The expression uses the item being filtered</exception>
+    internal static ConstantExpression ToConstant(this Expression expression)
+    {
+        if (expression is ConstantExpression constant)
+            return constant;
+
+        try
+        {
+            return Expression.Constant(
+                Expression.Lambda(expression).Compile().DynamicInvoke(),
+                expression.Type
+            );
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new NotSupportedException(
+                "A method's arguments can't use the item being filtered, only values that are known up front",
+                ex
+            );
+        }
+    }
+
     internal static Expression GetExpression(
         this ParameterExpression param,
         string? propertyChain,
@@ -20,11 +48,15 @@ internal static class ExpressionExtensions
         );
 
     /// <summary>
-    /// Gets a member expression for an specific property
+    /// Builds the expression for a property of <paramref name="member"/>, adding the null checks
+    /// and collection handling that its chain (<c>Birth.Country</c>, <c>Contacts[].Value</c>) needs
     /// </summary>
-    /// <param name="param"></param>
-    /// <param name="propertyChain"></param>
-    /// <returns></returns>
+    /// <param name="member">The expression the property belongs to</param>
+    /// <param name="propertyChain">The property, or chain of properties</param>
+    /// <param name="parameterLog">The log of parameter names used so far</param>
+    /// <param name="applyExpressions">Builds the expression to apply to the property found</param>
+    /// <param name="nullHandler">How null checks are done on the chain</param>
+    /// <returns>The expression for the property</returns>
     internal static Expression GetExpression(
         this Expression member,
         string? propertyChain,

@@ -29,11 +29,13 @@ public partial struct Equal : IOperation
 
         Expression value = Expression.Constant(values.First());
 
+        // The member's own type is the one to compare as: a nullable member (`int?`) can't be compared to
+        // a plain value (`int`), and `TPropertyType?` is just `int` when the type isn't known to be nullable
         if (
             member.Type != value.Type
             && Nullable.GetUnderlyingType(value.Type) == null
         )
-            value = Expression.Convert(value, typeof(TPropertyType?));
+            value = Expression.Convert(value, member.Type);
 
         return Expression.Equal(member, value);
     }
