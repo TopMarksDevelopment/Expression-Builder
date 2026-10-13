@@ -53,6 +53,11 @@ jobs:
                   dotnet test --configuration Release --no-build --verbosity normal
                   --collect:"XPlat Code Coverage" --results-directory ./TestResults
 
+            # Proves every package can be built (a file the main package packs once went missing from git)
+            - name: Pack
+              if: matrix.os == 'ubuntu-latest'
+              run: dotnet pack --configuration Release --no-build
+
             - name: Upload coverage
               if: matrix.os == 'ubuntu-latest'
               uses: actions/upload-artifact@v4
