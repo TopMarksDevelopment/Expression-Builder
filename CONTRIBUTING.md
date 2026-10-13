@@ -17,9 +17,6 @@ dotnet build ExpressionBuilder.sln
 dotnet test ExpressionBuilder.sln
 ```
 
-CSharpier is pinned to a version built for .NET 8, so on a machine with only the .NET 10 runtime set `DOTNET_ROLL_FORWARD=Major`
-before running `dotnet csharpier` (see [docs/standards/code-style.md](docs/standards/code-style.md)).
-
 The first build also builds the source generator and the test probe app; it takes a minute. Open `ExpressionBuilder.sln` in your
 editor of choice (the repo includes VS Code tasks).
 
@@ -42,7 +39,7 @@ editor of choice (the repo includes VS Code tasks).
    ```powershell
    dotnet build ExpressionBuilder.sln -c Release       # no warnings: they are errors in CI
    dotnet test ExpressionBuilder.sln -c Release --no-build
-   dotnet csharpier --check src tests samples tools
+   dotnet csharpier check src tests samples tools
    ```
    and, if you changed `src/ExpressionBuilder.Web/client`: `npm ci && npm run check`, then commit the rebuilt
    `wwwroot/js/filter-builder.js`.

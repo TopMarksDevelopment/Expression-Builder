@@ -18,7 +18,7 @@ and verify.
 7. Copy the matching test project to `tests/Operations/<Name>/` (rename the project; keep its content `<Project Sdk=… />`) and
    write cases: each supported value type, null values/members, several values with Any/All, manipulators, a nullable property.
 8. Update `README.md` (built-in operations) and `ChangeLog.md`.
-9. Verify: `dotnet build ExpressionBuilder.sln` (no warnings), `dotnet test ExpressionBuilder.sln`, `dotnet csharpier --check
+9. Verify: `dotnet build ExpressionBuilder.sln` (no warnings), `dotnet test ExpressionBuilder.sln`, `dotnet csharpier check
    src tests samples tools`. The Web matrix test runs the new operation against every kind in its catalog entry — if it fails for a
    kind, remove that kind from the entry (the operation doesn't suit it).
 

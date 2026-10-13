@@ -22,10 +22,8 @@ CSS alike.
 ## C#
 
 - **CSharpier owns formatting** (`.csharpierrc`, pinned in `.config/dotnet-tools.json`):
-  `dotnet csharpier src tests samples tools` to write, `dotnet csharpier --check src tests samples tools` to verify. The pinned version is the
+  `dotnet csharpier format src tests samples tools` to write, `dotnet csharpier check src tests samples tools` to verify. The pinned version is the
   one the code was formatted with; bump it deliberately, in its own commit, because a new version reformats existing files.
-  The pinned version is a .NET 8 tool and only the .NET 10 runtime is required by the repo, so run it with `DOTNET_ROLL_FORWARD=Major`
-  (set in the CI formatting job) until the pin is bumped.
 - **Nullable reference types are on.** Don't suppress with `!` unless the line below proves it; say why in a comment if it isn't
   obvious.
 - **File-scoped namespaces**, one top-level type per file, file named after the type (`Filter_TClass.cs` for `Filter<TClass>`).
