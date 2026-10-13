@@ -16,6 +16,13 @@
   <ItemGroup>
     <ProjectReference Include="$(MSBuildThisFileDirectory)../ExpressionBuilder.Api/ExpressionBuilder.Api.csproj" />
 
+    <!-- Generates the fluent extension methods of every operation marked [GenerateFilterExtensions]. -->
+    <ProjectReference
+      Include="$(MSBuildThisFileDirectory)../ExpressionBuilder.Generators/ExpressionBuilder.Generators.csproj"
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false"
+      PrivateAssets="all"
+    />
   </ItemGroup>
 
 </Project>

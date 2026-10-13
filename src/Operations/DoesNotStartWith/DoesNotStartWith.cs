@@ -4,12 +4,17 @@ using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Api.Helpers;
 
+/// <summary>The text does not start with the value.</summary>
+[GenerateFilterExtensions(FilterExtensionShape.Values)]
 public struct DoesNotStartWith : IOperation
 {
+    /// <summary>Creates the <see cref="DoesNotStartWith"/> operation.</summary>
     public DoesNotStartWith() { }
 
+    /// <inheritdoc />
     public readonly string Name => "DoesNotStartWith";
 
+    /// <inheritdoc />
     public readonly OperationDefaults Defaults =>
         new()
         {
@@ -17,6 +22,7 @@ public struct DoesNotStartWith : IOperation
             NullHandler = OperationNullHandler.IsNullOr,
         };
 
+    /// <inheritdoc />
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
@@ -37,6 +43,7 @@ public struct DoesNotStartWith : IOperation
                     )
             );
 
+    /// <inheritdoc />
     public readonly void Validate(IFilterStatement statement)
     {
         if (!statement.Values.Any())

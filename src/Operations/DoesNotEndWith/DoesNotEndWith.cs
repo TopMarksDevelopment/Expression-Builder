@@ -4,12 +4,17 @@ using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Api.Helpers;
 
+/// <summary>The text does not end with the value.</summary>
+[GenerateFilterExtensions(FilterExtensionShape.Values)]
 public struct DoesNotEndWith : IOperation
 {
+    /// <summary>Creates the <see cref="DoesNotEndWith"/> operation.</summary>
     public DoesNotEndWith() { }
 
+    /// <inheritdoc />
     public readonly string Name => "DoesNotEndWith";
 
+    /// <inheritdoc />
     public readonly OperationDefaults Defaults =>
         new()
         {
@@ -17,6 +22,7 @@ public struct DoesNotEndWith : IOperation
             NullHandler = OperationNullHandler.IsNullOr,
         };
 
+    /// <inheritdoc />
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
@@ -37,6 +43,7 @@ public struct DoesNotEndWith : IOperation
                     )
             );
 
+    /// <inheritdoc />
     public readonly void Validate(IFilterStatement statement)
     {
         if (!statement.Values.Any())

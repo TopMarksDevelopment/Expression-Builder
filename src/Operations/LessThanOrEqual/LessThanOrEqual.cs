@@ -3,12 +3,17 @@ namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
+/// <summary>The value is less than, or equal to, the given value.</summary>
+[GenerateFilterExtensions(FilterExtensionShape.Values)]
 public struct LessThanOrEqual : IOperation
 {
+    /// <summary>Creates the <see cref="LessThanOrEqual"/> operation.</summary>
     public LessThanOrEqual() { }
 
+    /// <inheritdoc />
     public readonly string Name => "LessThanOrEqual";
 
+    /// <inheritdoc />
     public readonly OperationDefaults Defaults =>
         new()
         {
@@ -16,6 +21,7 @@ public struct LessThanOrEqual : IOperation
             NullHandler = OperationNullHandler.NotNullAnd,
         };
 
+    /// <inheritdoc />
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
@@ -32,6 +38,7 @@ public struct LessThanOrEqual : IOperation
                 (m, v) => Expression.LessThanOrEqual(m, Expression.Constant(v))
             );
 
+    /// <inheritdoc />
     public readonly void Validate(IFilterStatement statement)
     {
         if (!statement.Values.Any())

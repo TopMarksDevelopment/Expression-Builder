@@ -3,12 +3,17 @@ namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
+/// <summary>The value is not between a minimum and a maximum (the minimum and maximum are not matched).</summary>
+[GenerateFilterExtensions(FilterExtensionShape.Range)]
 public struct NotBetween : IOperation
 {
+    /// <summary>Creates the <see cref="NotBetween"/> operation.</summary>
     public NotBetween() { }
 
+    /// <inheritdoc />
     public readonly string Name => "NotBetween";
 
+    /// <inheritdoc />
     public readonly OperationDefaults Defaults =>
         new()
         {
@@ -16,6 +21,7 @@ public struct NotBetween : IOperation
             NullHandler = OperationNullHandler.IsNullOr,
         };
 
+    /// <inheritdoc />
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
@@ -38,6 +44,7 @@ public struct NotBetween : IOperation
             )
         );
 
+    /// <inheritdoc />
     public readonly void Validate(IFilterStatement statement)
     {
         if (statement.Values.Count != 2)

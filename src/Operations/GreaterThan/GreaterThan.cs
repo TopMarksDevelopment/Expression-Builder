@@ -3,12 +3,17 @@ namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
+/// <summary>The value is greater than the given value.</summary>
+[GenerateFilterExtensions(FilterExtensionShape.Values)]
 public struct GreaterThan : IOperation
 {
+    /// <summary>Creates the <see cref="GreaterThan"/> operation.</summary>
     public GreaterThan() { }
 
+    /// <inheritdoc />
     public readonly string Name => "GreaterThan";
 
+    /// <inheritdoc />
     public readonly OperationDefaults Defaults =>
         new()
         {
@@ -16,6 +21,7 @@ public struct GreaterThan : IOperation
             NullHandler = OperationNullHandler.NotNullAnd,
         };
 
+    /// <inheritdoc />
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
@@ -36,6 +42,7 @@ public struct GreaterThan : IOperation
                     )
             );
 
+    /// <inheritdoc />
     public readonly void Validate(IFilterStatement statement)
     {
         if (!statement.Values.Any())

@@ -3,15 +3,21 @@ namespace TopMarksDevelopment.ExpressionBuilder.Operations;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
+/// <summary>The value does not equal the given value (or, with several values, none of them).</summary>
+[GenerateFilterExtensions(FilterExtensionShape.Values)]
 public struct NotEqual : IOperation
 {
+    /// <summary>Creates the <see cref="NotEqual"/> operation.</summary>
     public NotEqual() { }
 
+    /// <inheritdoc />
     public readonly string Name => "NotEqual";
 
+    /// <inheritdoc />
     public readonly OperationDefaults Defaults =>
         new() { Match = Matches.All, NullHandler = OperationNullHandler.Skip };
 
+    /// <inheritdoc />
     public readonly Expression Build<TPropertyType>(
         Expression member,
         IFilterCollection<TPropertyType?> values,
@@ -36,6 +42,7 @@ public struct NotEqual : IOperation
             )
         : Expression.Not(new In().Build(member, values, options));
 
+    /// <inheritdoc />
     public readonly void Validate(IFilterStatement statement)
     {
         if (!statement.Values.Any())
