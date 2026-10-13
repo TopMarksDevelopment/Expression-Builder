@@ -23,15 +23,14 @@ sealed class FilterDocument
 {
     public const int CurrentVersion = 1;
 
-    public static readonly JsonSerializerOptions JsonOptions =
-        new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            PropertyNameCaseInsensitive = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            WriteIndented = false,
-            MaxDepth = 64,
-        };
+    public static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        WriteIndented = false,
+        MaxDepth = 64,
+    };
 
     public int Version { get; set; } = CurrentVersion;
 

@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <Title>Expression Builder (Core Functionality)</Title>
     <Description>Core package, with no operations included - pick and choose what you use. $(ExpressionBuilderBlurb)</Description>
@@ -16,5 +15,4 @@
   <ItemGroup>
     <InternalsVisibleTo Include="ExpressionBuilder.Core.Tests" />
   </ItemGroup>
-
 </Project>

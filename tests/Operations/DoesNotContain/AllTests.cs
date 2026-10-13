@@ -3,14 +3,12 @@ namespace ExpressionBuilder.Tests;
 public class AllTests : TheoryData
 {
     public AllTests() =>
-        AddRows(
-            [
-                [DoesNotContain],
-                [DoesNotContainEither],
-                [DoesNotContainEitherAny],
-                [DoesNotContainEitherAll],
-            ]
-        );
+        AddRows([
+            [DoesNotContain],
+            [DoesNotContainEither],
+            [DoesNotContainEitherAny],
+            [DoesNotContainEitherAll],
+        ]);
 
     static TestBuilder<Product> DoesNotContain =>
         new(

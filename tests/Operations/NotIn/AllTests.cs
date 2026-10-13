@@ -3,12 +3,10 @@ namespace ExpressionBuilder.Tests;
 public class AllTests : TheoryData
 {
     public AllTests() =>
-        AddRows(
-            [
-                [MultiMatcher],
-                [MultiNullMatcher],
-            ]
-        );
+        AddRows([
+            [MultiMatcher],
+            [MultiNullMatcher],
+        ]);
 
     internal static string ApplyReplacements(string input) =>
         input

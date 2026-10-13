@@ -10,11 +10,10 @@ public class OperationTests
     [InlineData(new int[] { 1 })]
     [InlineData(new int[] { 1, 2, 3 })]
     public void CheckValidationThrows(int[]? values) =>
-        Assert.Throws<ArgumentOutOfRangeException>(
-            () =>
-                new Between().Validate(
-                    new FilterStatement<int>("", new Between(), values)
-                )
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new Between().Validate(
+                new FilterStatement<int>("", new Between(), values)
+            )
         );
 
     [Fact(DisplayName = "2 values is fine")]

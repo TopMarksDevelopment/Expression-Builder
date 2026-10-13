@@ -318,21 +318,12 @@ public class FilterBuilderModelTests
         Assert.Equal<int>(
             [1, 2],
             Run(
-                Group(
-                    [
-                        Group(
-                            [
-                                Cond(
-                                    "Name",
-                                    "Contains",
-                                    ["alan"],
-                                    connector: "Or"
-                                ),
-                                Cond("Name", "Contains", ["grace"]),
-                            ]
-                        ),
-                    ]
-                )
+                Group([
+                    Group([
+                        Cond("Name", "Contains", ["alan"], connector: "Or"),
+                        Cond("Name", "Contains", ["grace"]),
+                    ]),
+                ])
             )
         );
 
@@ -504,8 +495,8 @@ public class FilterBuilderModelTests
 
         // And as a database would see it: only the expression, not a compiled delegate
         Assert.Null(
-            Record.Exception(
-                () => People.AsQueryable().Where(result.Filter!).ToList()
+            Record.Exception(() =>
+                People.AsQueryable().Where(result.Filter!).ToList()
             )
         );
     }
@@ -736,12 +727,10 @@ public class FilterBuilderModelTests
         var result = Build(
             Doc(
                 Cond("Name", "Equal", ["fine"]),
-                Group(
-                    [
-                        Cond("Age", "Equal", ["5"]),
-                        Cond("Age", "Equal", ["not a number"]),
-                    ]
-                )
+                Group([
+                    Cond("Age", "Equal", ["5"]),
+                    Cond("Age", "Equal", ["not a number"]),
+                ])
             )
         );
 
@@ -969,8 +958,8 @@ public class FilterBuilderModelTests
         var filter = new Filter<Person>();
         filter.Equal(x => x.Secret, "enigma");
 
-        Assert.Throws<NotSupportedException>(
-            () => FilterBuilderModel.FromFilter(filter)
+        Assert.Throws<NotSupportedException>(() =>
+            FilterBuilderModel.FromFilter(filter)
         );
     }
 
@@ -982,8 +971,8 @@ public class FilterBuilderModelTests
         var filter = new Filter<Person>();
         filter.Equal(x => x.Name.Substring(1), "lan Turing");
 
-        Assert.Throws<NotSupportedException>(
-            () => FilterBuilderModel.FromFilter(filter)
+        Assert.Throws<NotSupportedException>(() =>
+            FilterBuilderModel.FromFilter(filter)
         );
     }
 
@@ -998,8 +987,8 @@ public class FilterBuilderModelTests
 
     [Fact(DisplayName = "A null filter is rejected")]
     public void NullFilter() =>
-        Assert.Throws<ArgumentNullException>(
-            () => FilterBuilderModel.FromFilter<Person>(null!)
+        Assert.Throws<ArgumentNullException>(() =>
+            FilterBuilderModel.FromFilter<Person>(null!)
         );
 
     #endregion Showing a saved filter

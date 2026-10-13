@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <Title>Expression Builder</Title>
     <Description>Easily build a filter that can be applied to lists and database queries (even dynamically). Packed with features, you can: easily convert API requests into expressions, save and re-run filters, have `NULL` checks done automatically, build complex queries with groups and so much more!</Description>
@@ -35,7 +34,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="build\TopMarksDevelopment.ExpressionBuilder.props" Pack="true" PackagePath="build;buildTransitive" />
+    <None
+      Include="build\TopMarksDevelopment.ExpressionBuilder.props"
+      Pack="true"
+      PackagePath="build;buildTransitive"
+    />
   </ItemGroup>
-
 </Project>

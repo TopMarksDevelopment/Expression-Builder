@@ -1,11 +1,11 @@
 <Project>
-
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
   <!-- Projects named *.Probe are helper apps that the tests run, not test projects. -->
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <IsTestProject Condition="!$(MSBuildProjectName.EndsWith('.Probe'))">true</IsTestProject>
+    <IsTestProject Condition="!$(MSBuildProjectName.EndsWith('.Probe'))"
+      >true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup Condition="!$(MSBuildProjectName.EndsWith('.Probe'))">
@@ -24,5 +24,4 @@
   <ItemGroup Condition="!$(MSBuildProjectName.EndsWith('.Probe'))">
     <Using Include="Xunit" />
   </ItemGroup>
-
 </Project>

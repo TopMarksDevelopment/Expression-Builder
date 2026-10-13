@@ -171,17 +171,16 @@ static class TestData
             },
         ];
 
-    static readonly JsonSerializerOptions Json =
-        new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = System
-                .Text
-                .Json
-                .Serialization
-                .JsonIgnoreCondition
-                .WhenWritingNull,
-        };
+    static readonly JsonSerializerOptions Json = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = System
+            .Text
+            .Json
+            .Serialization
+            .JsonIgnoreCondition
+            .WhenWritingNull,
+    };
 
     /// <summary>A document with the given items at the top.</summary>
     public static string Doc(params object[] items) =>

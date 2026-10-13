@@ -17,8 +17,9 @@ sealed class NamedTypeRegistry<TContract>(
 )
     where TContract : class
 {
-    readonly ConcurrentDictionary<string, Type> _types =
-        new(StringComparer.Ordinal);
+    readonly ConcurrentDictionary<string, Type> _types = new(
+        StringComparer.Ordinal
+    );
     readonly object _discoveryLock = new();
     int _scannedAssemblyCount = -1;
 

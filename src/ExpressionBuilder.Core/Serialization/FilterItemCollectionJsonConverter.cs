@@ -11,34 +11,33 @@ internal class FilterItemCollectionJsonConverter
     /// The filter item types, by their <see cref="IFilterItem.typeRef"/>. Built once, as it
     /// only depends on this assembly.
     /// </summary>
-    static readonly Lazy<Dictionary<string, Type>> ItemTypes =
-        new(() =>
+    static readonly Lazy<Dictionary<string, Type>> ItemTypes = new(() =>
+    {
+        var typeDictionary = new Dictionary<string, Type>();
+
+        var types = typeof(FilterItemCollectionJsonConverter)
+            .Assembly.GetTypes()
+            .Where(typeof(IFilterItem).IsAssignableFrom)
+            .Where(p => !p.IsInterface && !p.IsAbstract);
+
+        foreach (var type in types)
         {
-            var typeDictionary = new Dictionary<string, Type>();
+            // Generic items (statements) are closed with any type, just to read their typeRef
+            var typeToUse = IsAssignableToGenericType(
+                type,
+                typeof(IFilterStatement<>)
+            )
+                ? type.MakeGenericType([typeof(string)])
+                : type;
 
-            var types = typeof(FilterItemCollectionJsonConverter)
-                .Assembly.GetTypes()
-                .Where(typeof(IFilterItem).IsAssignableFrom)
-                .Where(p => !p.IsInterface && !p.IsAbstract);
+            typeDictionary.Add(
+                ((IFilterItem)Activator.CreateInstance(typeToUse)!).typeRef,
+                type
+            );
+        }
 
-            foreach (var type in types)
-            {
-                // Generic items (statements) are closed with any type, just to read their typeRef
-                var typeToUse = IsAssignableToGenericType(
-                    type,
-                    typeof(IFilterStatement<>)
-                )
-                    ? type.MakeGenericType([typeof(string)])
-                    : type;
-
-                typeDictionary.Add(
-                    ((IFilterItem)Activator.CreateInstance(typeToUse)!).typeRef,
-                    type
-                );
-            }
-
-            return typeDictionary;
-        });
+        return typeDictionary;
+    });
 
     public override ICollection<IFilterItem> Read(
         ref Utf8JsonReader reader,
@@ -77,14 +76,12 @@ internal class FilterItemCollectionJsonConverter
                     options
                 )!;
 
-                typeToUse = typeToUse.MakeGenericType(
-                    [
-                        Type.GetType(dynamicParse.propertyType)
-                            ?? throw new JsonException(
-                                $"Could not find the type \"{dynamicParse.propertyType}\""
-                            ),
-                    ]
-                );
+                typeToUse = typeToUse.MakeGenericType([
+                    Type.GetType(dynamicParse.propertyType)
+                        ?? throw new JsonException(
+                            $"Could not find the type \"{dynamicParse.propertyType}\""
+                        ),
+                ]);
             }
 
             if (

@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
@@ -14,5 +13,4 @@
     <ProjectReference Include="..\..\src\Operations\NotEqual\ExpressionBuilder.Operations.NotEqual.csproj" />
     <ProjectReference Include="..\ExpressionBuilder.TestBase\ExpressionBuilder.TestBase.csproj" />
   </ItemGroup>
-
 </Project>

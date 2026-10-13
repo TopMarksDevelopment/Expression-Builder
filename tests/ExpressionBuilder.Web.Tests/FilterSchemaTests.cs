@@ -221,8 +221,8 @@ public class FilterSchemaTests
         DisplayName = "Excluding something that is not a property is rejected"
     )]
     public void ExcludeNeedsAProperty() =>
-        Assert.Throws<ArgumentException>(
-            () => new FilterBuilderOptions().Exclude<Person>(p => p.Name.Length)
+        Assert.Throws<ArgumentException>(() =>
+            new FilterBuilderOptions().Exclude<Person>(p => p.Name.Length)
         );
 
     [Theory(DisplayName = "Things that can't be filtered are left out")]

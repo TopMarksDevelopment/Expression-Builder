@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
     <PackageReference Include="protobuf-net" />
   </ItemGroup>
@@ -14,5 +13,4 @@
       ReferenceOutputAssembly="false"
     />
   </ItemGroup>
-
 </Project>

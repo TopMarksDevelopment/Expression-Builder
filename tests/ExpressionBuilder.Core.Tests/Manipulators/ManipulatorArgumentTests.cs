@@ -35,8 +35,8 @@ public class ManipulatorArgumentTests
     {
         var filter = new Filter<Product>();
 
-        Assert.Throws<NotSupportedException>(
-            () => filter.Equal(x => x.Name.Replace(x.Name, ""), "")
+        Assert.Throws<NotSupportedException>(() =>
+            filter.Equal(x => x.Name.Replace(x.Name, ""), "")
         );
     }
 
