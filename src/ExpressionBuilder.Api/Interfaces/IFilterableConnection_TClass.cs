@@ -46,7 +46,6 @@ public interface IFilterableConnection<TClass> : IFilterableConnection
     /// <remarks>This must be specified if you plan to do fluent calls</remarks>
     /// <returns>A connection for fluent calls</returns>
     /// <exception cref="InvalidOperationException">No group/collection to close</exception>
-
     IFilterableConnection<TParentClass> CloseCollection<TParentClass>(
         Func<TClass, TParentClass> expression
     )

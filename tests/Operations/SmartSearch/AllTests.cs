@@ -3,11 +3,9 @@ namespace ExpressionBuilder.Tests;
 public class AllTests : TheoryData
 {
     public AllTests() =>
-        AddRows(
-            [
-                [SmartSearchOneCharacter],
-            ]
-        );
+        AddRows([
+            [SmartSearchOneCharacter],
+        ]);
 
     static TestBuilder<Product> SmartSearchOneCharacter =>
         new(

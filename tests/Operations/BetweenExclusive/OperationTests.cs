@@ -8,10 +8,9 @@ public class OperationTests
     [InlineData(new int[] { 1 })]
     [InlineData(new int[] { 1, 2, 3 })]
     public void CheckFactoryStrings(int[]? values) =>
-        Assert.Throws<ArgumentOutOfRangeException>(
-            () =>
-                new Operations.BetweenExclusive().Validate(
-                    new FilterStatement<int>("", new BetweenExclusive(), values)
-                )
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new Operations.BetweenExclusive().Validate(
+                new FilterStatement<int>("", new BetweenExclusive(), values)
+            )
         );
 }

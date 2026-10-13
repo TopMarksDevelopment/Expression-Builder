@@ -3,11 +3,9 @@ namespace ExpressionBuilder.Tests;
 public class AllTests : TheoryData
 {
     public AllTests() =>
-        AddRows(
-            [
-                [EqualsCallsIn],
-            ]
-        );
+        AddRows([
+            [EqualsCallsIn],
+        ]);
 
     static TestBuilder<Product> EqualsCallsIn =>
         new(

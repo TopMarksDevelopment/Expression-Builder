@@ -3,12 +3,10 @@ namespace ExpressionBuilder.Tests;
 public class AllTests : TheoryData
 {
     public AllTests() =>
-        AddRows(
-            [
-                [BetweenXY],
-                [NullCheck],
-            ]
-        );
+        AddRows([
+            [BetweenXY],
+            [NullCheck],
+        ]);
 
     static TestBuilder<Product> BetweenXY =>
         new(

@@ -1,5 +1,4 @@
 <Project>
-
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
   <!--
@@ -30,19 +29,35 @@
     <NeutralLanguage>en-GB</NeutralLanguage>
 
     <!-- The readme shown on nuget.org; a package can point this at its own. -->
-    <PackageReadmeSource Condition="'$(PackageReadmeSource)' == ''">$(MSBuildThisFileDirectory)../README.md</PackageReadmeSource>
+    <PackageReadmeSource Condition="'$(PackageReadmeSource)' == ''"
+      >$(MSBuildThisFileDirectory)../README.md</PackageReadmeSource>
 
     <!-- Public API must be documented, and a build in CI must be free of warnings -->
-    <TreatWarningsAsErrors Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors Condition="'$(ContinuousIntegrationBuild)' == 'true'"
+      >true</TreatWarningsAsErrors>
 
     <!-- The shared sentence that every package description ends with. -->
     <ExpressionBuilderBlurb>ExpressionBuilder allows you to easily build a filter that can be applied to lists and database queries (even dynamically). Packed with features, you can: easily convert API requests into expressions, save and re-run filters, have `NULL` checks done automatically, build complex queries with groups and so much more!</ExpressionBuilderBlurb>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(PackageReadmeSource)" Pack="true" PackagePath="\" Visible="false" />
-    <None Include="$(MSBuildThisFileDirectory)../LICENSE.md" Pack="true" PackagePath="\" Visible="false" />
-    <None Include="$(MSBuildThisFileDirectory)../assets/icon.png" Pack="true" PackagePath="\" Visible="false" />
+    <None
+      Include="$(PackageReadmeSource)"
+      Pack="true"
+      PackagePath="\"
+      Visible="false"
+    />
+    <None
+      Include="$(MSBuildThisFileDirectory)../LICENSE.md"
+      Pack="true"
+      PackagePath="\"
+      Visible="false"
+    />
+    <None
+      Include="$(MSBuildThisFileDirectory)../assets/icon.png"
+      Pack="true"
+      PackagePath="\"
+      Visible="false"
+    />
   </ItemGroup>
-
 </Project>

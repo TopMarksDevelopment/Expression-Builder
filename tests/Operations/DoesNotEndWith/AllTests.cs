@@ -3,12 +3,10 @@ namespace ExpressionBuilder.Tests;
 public class AllTests : TheoryData
 {
     public AllTests() =>
-        AddRows(
-            [
-                [NotEndWith],
-                [NotEndWithEither],
-            ]
-        );
+        AddRows([
+            [NotEndWith],
+            [NotEndWithEither],
+        ]);
 
     static TestBuilder<Product> NotEndWith =>
         new(

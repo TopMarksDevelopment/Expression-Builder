@@ -59,8 +59,7 @@ public class GeneratedOverloadTests
 
         switch (receiver)
         {
-            case "IFilter"
-            or "IFilter_TClass_":
+            case "IFilter" or "IFilter_TClass_":
                 var filter = new Filter<Product>();
 
                 return (filter, () => filter);

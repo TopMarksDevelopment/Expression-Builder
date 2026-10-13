@@ -13,17 +13,16 @@ using System.Text.Json.Serialization;
 /// </remarks>
 public sealed class FilterSchema
 {
-    static readonly JsonSerializerOptions JsonOptions =
-        new()
+    static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Converters =
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            Converters =
-            {
-                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase),
-            },
-        };
+            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase),
+        },
+    };
 
     internal FilterSchema(
         string root,

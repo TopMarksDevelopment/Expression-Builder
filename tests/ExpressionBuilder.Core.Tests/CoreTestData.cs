@@ -14,23 +14,21 @@ internal class CoreTestData : TheoryData
             );
 
     public CoreTestData() =>
-        AddRows(
-            [
-                [DeepNullChecker],
-                [SimpleAddMethod],
-                [SimpleEqual],
-                [SimpleGroupEqual],
-                [SimpleEqualOrEqualCollectionAndEqual],
-                [SimpleNullCheck],
-                [VariousLevelNullChecks],
-                [ComplexCollection],
-                [NullableDateTimeCheck],
-                [DateTimeYearCheck],
-                [NullableDateTimeYearCheck],
-                [ReplaceMethodCheck],
-                [ReplaceManipulatorCheck],
-            ]
-        );
+        AddRows([
+            [DeepNullChecker],
+            [SimpleAddMethod],
+            [SimpleEqual],
+            [SimpleGroupEqual],
+            [SimpleEqualOrEqualCollectionAndEqual],
+            [SimpleNullCheck],
+            [VariousLevelNullChecks],
+            [ComplexCollection],
+            [NullableDateTimeCheck],
+            [DateTimeYearCheck],
+            [NullableDateTimeYearCheck],
+            [ReplaceMethodCheck],
+            [ReplaceManipulatorCheck],
+        ]);
 
     static TestBuilder<Product> DeepNullChecker =>
         new(

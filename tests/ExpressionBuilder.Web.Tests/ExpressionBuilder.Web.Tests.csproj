@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
@@ -14,5 +13,4 @@
     <!-- The sample app is also what the page tests run against -->
     <ProjectReference Include="..\..\samples\ExpressionBuilder.Web.Sample\ExpressionBuilder.Web.Sample.csproj" />
   </ItemGroup>
-
 </Project>

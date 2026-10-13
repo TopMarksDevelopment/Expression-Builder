@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
-
   <PropertyGroup>
     <Title>Expression Builder (Web filter builder)</Title>
     <Description>A ready-made, click-to-build filter editor for ASP.NET Core (MVC and Razor Pages). Users pick a property or collection, a condition, a value and how it connects to the next - with groups and advanced options a click away - and you post the result to a page and apply it to your data. $(ExpressionBuilderBlurb)</Description>
@@ -27,5 +26,4 @@
     <Content Remove="client\**" />
     <None Remove="client\**" />
   </ItemGroup>
-
 </Project>

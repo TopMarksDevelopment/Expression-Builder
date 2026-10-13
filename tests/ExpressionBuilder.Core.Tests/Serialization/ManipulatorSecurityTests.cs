@@ -78,8 +78,8 @@ public class ManipulatorSecurityTests
     {
         var json = Tampered(type, method, argumentType, argument);
 
-        Assert.ThrowsAny<Exception>(
-            () => JsonSerializer.Deserialize<Filter<Category>>(json)
+        Assert.ThrowsAny<Exception>(() =>
+            JsonSerializer.Deserialize<Filter<Category>>(json)
         );
     }
 
@@ -107,8 +107,8 @@ public class ManipulatorSecurityTests
     {
         var info = new ManipulatorInfo("NoSuchManipulator", []);
 
-        Assert.Throws<TypeLoadException>(
-            () => SerializerBase.FindManipulator(info)
+        Assert.Throws<TypeLoadException>(() =>
+            SerializerBase.FindManipulator(info)
         );
     }
 }

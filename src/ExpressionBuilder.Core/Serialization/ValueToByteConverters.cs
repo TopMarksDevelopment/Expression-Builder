@@ -146,14 +146,12 @@ internal static class ValueToByteConverters
             return new Guid(bytes);
 
         if (type == typeof(decimal))
-            return new decimal(
-                [
-                    BitConverter.ToInt32(bytes, 0),
-                    BitConverter.ToInt32(bytes, 4),
-                    BitConverter.ToInt32(bytes, 8),
-                    BitConverter.ToInt32(bytes, 12),
-                ]
-            );
+            return new decimal([
+                BitConverter.ToInt32(bytes, 0),
+                BitConverter.ToInt32(bytes, 4),
+                BitConverter.ToInt32(bytes, 8),
+                BitConverter.ToInt32(bytes, 12),
+            ]);
 
         if (type == typeof(byte[]))
             return bytes;

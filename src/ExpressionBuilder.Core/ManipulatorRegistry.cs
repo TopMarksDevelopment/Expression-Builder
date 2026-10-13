@@ -13,11 +13,10 @@ using TopMarksDevelopment.ExpressionBuilder.Registry;
 /// </remarks>
 public static class ManipulatorRegistry
 {
-    static readonly NamedTypeRegistry<IEntityManipulator> _registry =
-        new(
-            m => m.Name,
-            exclude: t => t == typeof(ExpressionMethodManipulator)
-        );
+    static readonly NamedTypeRegistry<IEntityManipulator> _registry = new(
+        m => m.Name,
+        exclude: t => t == typeof(ExpressionMethodManipulator)
+    );
 
     /// <summary>
     /// Registers a manipulator so it can be found by its <see cref="IEntityManipulator.Name"/>.

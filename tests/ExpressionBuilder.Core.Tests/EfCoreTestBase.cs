@@ -76,8 +76,8 @@ FROM Product;";
             ? (IQueryable<T>)
                 CreateContext()
                     .Products.Include(x => x.Categories)
-                    .ThenInclude(x => x.Products)
-                    .ThenInclude(x => x.Categories)
+                        .ThenInclude(x => x.Products)
+                            .ThenInclude(x => x.Categories)
             : (
                 typeof(T) == typeof(StockLocation)
                     ? (IQueryable<T>)
@@ -85,8 +85,8 @@ FROM Product;";
                     : (IQueryable<T>)
                         CreateContext()
                             .Categories.Include(x => x.Products)
-                            .ThenInclude(x => x.Categories)
-                            .ThenInclude(x => x.Products)
+                                .ThenInclude(x => x.Categories)
+                                    .ThenInclude(x => x.Products)
             );
 
     internal IQueryable<IItemable> GetCollection(Type testType) =>
@@ -111,13 +111,13 @@ FROM Product;";
     internal IQueryable<Category> GetCategory() =>
         CreateContext()
             .Categories.Include(x => x.Products)
-            .ThenInclude(x => x.Categories)
-            .ThenInclude(x => x.Products)
-            .ThenInclude(x => x.StockLocations);
+                .ThenInclude(x => x.Categories)
+                    .ThenInclude(x => x.Products)
+                        .ThenInclude(x => x.StockLocations);
 
     internal IQueryable<Product> GetProducts() =>
         CreateContext()
             .Products.Include(x => x.Categories)
-            .ThenInclude(x => x.Products)
-            .ThenInclude(x => x.StockLocations);
+                .ThenInclude(x => x.Products)
+                    .ThenInclude(x => x.StockLocations);
 }

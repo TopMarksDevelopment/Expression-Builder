@@ -3,11 +3,9 @@ namespace ExpressionBuilder.Tests;
 public class AllTests : TheoryData
 {
     public AllTests() =>
-        AddRows(
-            [
-                [LessThanOrEqualX],
-            ]
-        );
+        AddRows([
+            [LessThanOrEqualX],
+        ]);
 
     static TestBuilder<Product> LessThanOrEqualX =>
         new(

@@ -10,13 +10,11 @@ public class AllTests : TheoryData
             .Replace("AllTests._inputManipValues.", "[1, 4].");
 
     public AllTests() =>
-        AddRows(
-            [
-                [MultiMatcher],
-                [ManipulationCheck],
-                [ManipulatedTypeCheck],
-            ]
-        );
+        AddRows([
+            [MultiMatcher],
+            [ManipulationCheck],
+            [ManipulatedTypeCheck],
+        ]);
 
     static TestBuilder<Product> MultiMatcher =>
         new(
@@ -61,19 +59,17 @@ public class AllTests : TheoryData
     static readonly string[] _inputManipValues = ["1", "2"];
     static readonly string[] _manipValues = ["1", "4"];
 
-    static readonly FilterStatementOptions _manipsOptions =
-        new()
-        {
-            Manipulators = ExpressionMethodManipulator.GetAll<string>(x =>
-                x.Replace("2", "4")
-            ),
-        };
+    static readonly FilterStatementOptions _manipsOptions = new()
+    {
+        Manipulators = ExpressionMethodManipulator.GetAll<string>(x =>
+            x.Replace("2", "4")
+        ),
+    };
 
-    static readonly FilterStatementOptions _manipTypeOptions =
-        new()
-        {
-            Manipulators = ExpressionMethodManipulator.GetAll<int>(x =>
-                x.ToString().Replace("2", "4")
-            ),
-        };
+    static readonly FilterStatementOptions _manipTypeOptions = new()
+    {
+        Manipulators = ExpressionMethodManipulator.GetAll<int>(x =>
+            x.ToString().Replace("2", "4")
+        ),
+    };
 }

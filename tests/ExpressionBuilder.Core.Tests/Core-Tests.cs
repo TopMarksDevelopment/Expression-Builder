@@ -8,8 +8,8 @@ public class CoreTests : EfCoreTestBase
     [InlineData(typeof(Product))]
     public void MultiCollectionTest(Type testType)
     {
-        var exception = Record.Exception(
-            () => GetCollection(testType).Where(new Filter<IItemable>())
+        var exception = Record.Exception(() =>
+            GetCollection(testType).Where(new Filter<IItemable>())
         );
 
         Assert.Null(exception);

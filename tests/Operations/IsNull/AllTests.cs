@@ -3,11 +3,9 @@ namespace ExpressionBuilder.Tests;
 public class AllTests : TheoryData
 {
     public AllTests() =>
-        AddRows(
-            [
-                [IsNullOnNullable],
-            ]
-        );
+        AddRows([
+            [IsNullOnNullable],
+        ]);
 
     static TestBuilder<Product> IsNullOnNullable =>
         new(

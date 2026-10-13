@@ -1,5 +1,4 @@
 <Project>
-
   <!--
     Opt-in: <ExpressionBuilderImplicitUsings>true</ExpressionBuilderImplicitUsings> adds the namespaces below to every file
     of the referencing project. Off by default because names such as Equal and In could clash with the project's own types.
@@ -8,5 +7,4 @@
     <Using Include="TopMarksDevelopment.ExpressionBuilder" />
     <Using Include="TopMarksDevelopment.ExpressionBuilder.Operations" />
   </ItemGroup>
-
 </Project>

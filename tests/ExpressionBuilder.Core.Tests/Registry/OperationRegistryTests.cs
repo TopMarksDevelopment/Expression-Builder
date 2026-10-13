@@ -47,8 +47,8 @@ public class OperationRegistryTests
     [Fact(DisplayName = "Get explains how to fix an unknown operation")]
     public void GetUnknownThrowsHelpfully()
     {
-        var exception = Assert.Throws<TypeLoadException>(
-            () => OperationRegistry.Get("NoSuchOperation")
+        var exception = Assert.Throws<TypeLoadException>(() =>
+            OperationRegistry.Get("NoSuchOperation")
         );
 
         Assert.Contains("NoSuchOperation", exception.Message);
@@ -74,15 +74,15 @@ public class OperationRegistryTests
     [Fact(DisplayName = "An assembly can be registered as a whole")]
     public void RegisterAssembly() =>
         Assert.Null(
-            Record.Exception(
-                () => OperationRegistry.RegisterAssembly(typeof(Equal).Assembly)
+            Record.Exception(() =>
+                OperationRegistry.RegisterAssembly(typeof(Equal).Assembly)
             )
         );
 
     [Fact(DisplayName = "A null assembly is rejected")]
     public void RegisterNullAssemblyThrows() =>
-        Assert.Throws<ArgumentNullException>(
-            () => OperationRegistry.RegisterAssembly(null!)
+        Assert.Throws<ArgumentNullException>(() =>
+            OperationRegistry.RegisterAssembly(null!)
         );
 
     [Fact(DisplayName = "GetAll lists every operation once, in name order")]

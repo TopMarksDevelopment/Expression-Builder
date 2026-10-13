@@ -3,12 +3,10 @@ namespace ExpressionBuilder.Tests;
 internal class ExpressionStringTestData : TheoryData
 {
     public ExpressionStringTestData() =>
-        AddRows(
-            [
-                [CollectionExpressionMatchesString],
-                [PropertyChainExpressionMatchesString],
-            ]
-        );
+        AddRows([
+            [CollectionExpressionMatchesString],
+            [PropertyChainExpressionMatchesString],
+        ]);
 
     static ExpressionTestBuilder<
         Product,

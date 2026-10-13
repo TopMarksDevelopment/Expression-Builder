@@ -3,12 +3,10 @@ namespace ExpressionBuilder.Tests;
 public class AllTests : TheoryData
 {
     public AllTests() =>
-        AddRows(
-            [
-                [NotEqualsCheck],
-                [NotEqualsCallsIn],
-            ]
-        );
+        AddRows([
+            [NotEqualsCheck],
+            [NotEqualsCallsIn],
+        ]);
 
     static TestBuilder<Product> NotEqualsCheck =>
         new(

@@ -19,8 +19,8 @@ internal class FilterCollectionJsonConverterFactory : JsonConverterFactory
     ) =>
         (JsonConverter?)
             Activator.CreateInstance(
-                typeof(FilterCollectionJsonConverter<>).MakeGenericType(
-                    [typeToConvert.GetGenericArguments()[0]]
-                )
+                typeof(FilterCollectionJsonConverter<>).MakeGenericType([
+                    typeToConvert.GetGenericArguments()[0],
+                ])
             );
 }
