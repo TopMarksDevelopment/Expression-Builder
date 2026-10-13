@@ -4,12 +4,17 @@ using System.Collections;
 using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 
+/// <summary>
+/// An <see cref="IEnumerable{T}"/> that is filtered by the statements added to it.
+/// Enumerating it applies the filter to the underlying list.
+/// </summary>
 public class Filterable<TClass> : IFilterable<TClass>
     where TClass : class
 {
     readonly IEnumerable? _oList;
     readonly IEnumerable<TClass> _list;
 
+    /// <inheritdoc />
     public IFilter<TClass> Filter { get; set; }
 
     Filterable()
@@ -27,6 +32,9 @@ public class Filterable<TClass> : IFilterable<TClass>
         Filter = filter;
     }
 
+    /// <summary>
+    /// Filters a list
+    /// </summary>
     public Filterable(IEnumerable<TClass> list)
     {
         _list = list;
@@ -43,6 +51,7 @@ public class Filterable<TClass> : IFilterable<TClass>
 
     #region Add methods
 
+    /// <inheritdoc />
     public IFilterable<TClass> Add<TPropertyType>(
         IFilterStatement<TPropertyType> statement
     )
@@ -52,6 +61,7 @@ public class Filterable<TClass> : IFilterable<TClass>
         return this;
     }
 
+    /// <inheritdoc />
     public IFilterableConnection<TClass> Add<TPropertyType>(
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         IOperation operation,
@@ -71,6 +81,7 @@ public class Filterable<TClass> : IFilterable<TClass>
         return new FilterableConnection<TClass>(this);
     }
 
+    /// <inheritdoc />
     public IFilterableConnection<TClass> Add<TPropertyType>(
         string propertyExpression,
         IOperation operation,
@@ -92,6 +103,7 @@ public class Filterable<TClass> : IFilterable<TClass>
 
     #endregion Add methods
 
+    /// <inheritdoc />
     public IFilterable<TClass> OpenGroup()
     {
         Filter.OpenGroup();
@@ -99,6 +111,7 @@ public class Filterable<TClass> : IFilterable<TClass>
         return this;
     }
 
+    /// <inheritdoc />
     public IFilterableConnection<TClass> CloseGroup()
     {
         Filter.CloseGroup();
@@ -106,6 +119,7 @@ public class Filterable<TClass> : IFilterable<TClass>
         return new FilterableConnection<TClass>(this);
     }
 
+    /// <inheritdoc />
     public IFilterable<TClass> SetConnector(Connector connector)
     {
         Filter.SetLastConnector(connector);
@@ -113,6 +127,7 @@ public class Filterable<TClass> : IFilterable<TClass>
         return this;
     }
 
+    /// <inheritdoc />
     public IFilterable<T> OpenCollection<T>(
         Expression<Func<TClass, IEnumerable<T>>> propertyExpression
     )
@@ -122,17 +137,20 @@ public class Filterable<TClass> : IFilterable<TClass>
             Filter.OpenCollection(propertyExpression)
         );
 
+    /// <inheritdoc />
     public IFilterableConnection<T> CloseCollection<T>()
         where T : class =>
         new FilterableConnection<T>(
             new Filterable<T>(_oList!, Filter.CloseCollection<T>().And())
         );
 
+    /// <inheritdoc />
     public IFilterableConnection<T> CloseCollection<T>(
         Func<TClass, T> expression
     )
         where T : class => CloseCollection<T>();
 
+    /// <inheritdoc />
     public IEnumerator<TClass> GetEnumerator() =>
         (_oList as IEnumerable<TClass> ?? _list)
             .Where(ToExpression().Compile())
@@ -140,6 +158,7 @@ public class Filterable<TClass> : IFilterable<TClass>
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+    /// <inheritdoc />
     public Expression<Func<TClass, bool>> ToExpression() =>
         Filter.ToExpression();
 
@@ -184,13 +203,25 @@ public class Filterable<TClass> : IFilterable<TClass>
 
     IFilterable IFilterable.OpenGroup() => OpenGroup();
 
-    IFilterableConnection IFilterable.CloseGroup() => CloseCollection();
+    IFilterableConnection IFilterable.CloseGroup() => CloseGroup();
 
-    public IFilterable OpenCollection(string propertyExpression) =>
-        OpenCollection(propertyExpression);
+    /// <inheritdoc />
+    public IFilterable OpenCollection(string propertyExpression)
+    {
+        Filter.OpenCollection(propertyExpression);
 
-    public IFilterableConnection CloseCollection() => CloseCollection();
+        return this;
+    }
 
+    /// <inheritdoc />
+    public IFilterableConnection CloseCollection()
+    {
+        Filter.CloseCollection();
+
+        return new FilterableConnection<TClass>(this);
+    }
+
+    /// <inheritdoc />
     public Expression<Func<TClass1, bool>> ToExpression<TClass1>() =>
         (Filter.ToExpression() as Expression<Func<TClass1, bool>>)!;
 }

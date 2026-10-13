@@ -36,6 +36,32 @@ public static class ExpressionExtensions
     }
 
     /// <summary>
+    /// Create a constant to compare a member to, of a type that suits it
+    /// </summary>
+    /// <remarks>
+    /// A value of <c>5</c> can't be compared to an <c>int?</c> member as it is: the constant has to be an
+    /// <c>int?</c> too. This makes it one, and does nothing when no change is needed.
+    /// </remarks>
+    /// <param name="member">The member the constant is compared to</param>
+    /// <param name="value">The value to compare to</param>
+    /// <returns>A constant that can be compared to the member</returns>
+    public static ConstantExpression ConstantFor(
+        this Expression member,
+        object? value
+    )
+    {
+        var underlying = Nullable.GetUnderlyingType(member.Type);
+
+        if (underlying == null)
+            return Expression.Constant(value);
+
+        // The member can be null: a null value, or one of its underlying type, fits as it is
+        return value == null || value.GetType() == underlying
+            ? Expression.Constant(value, member.Type)
+            : Expression.Constant(value);
+    }
+
+    /// <summary>
     /// Join the left and right expressions with a connector
     /// </summary>
     /// <param name="left">The left hand side of the join</param>

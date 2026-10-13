@@ -186,8 +186,17 @@ internal class QueryFilterable<TClass> : IQueryFilterable<TClass>
 
     IQueryFilterableConnection IQueryFilterable.CloseGroup() => CloseGroup();
 
-    public IQueryFilterable OpenCollection(string propertyExpression) =>
-        OpenCollection(propertyExpression);
+    public IQueryFilterable OpenCollection(string propertyExpression)
+    {
+        Filter.OpenCollection(propertyExpression);
 
-    public IQueryFilterableConnection CloseCollection() => CloseCollection();
+        return this;
+    }
+
+    public IQueryFilterableConnection CloseCollection()
+    {
+        Filter.CloseCollection();
+
+        return new QueryFilterableConnection<TClass>(this);
+    }
 }

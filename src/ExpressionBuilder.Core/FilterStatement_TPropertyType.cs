@@ -7,26 +7,38 @@ using TopMarksDevelopment.ExpressionBuilder.Collections;
 using TopMarksDevelopment.ExpressionBuilder.Extensions;
 using TopMarksDevelopment.ExpressionBuilder.Serialization;
 
+/// <summary>
+/// A single condition: a property, the operation to perform on it and the value(s) to use.
+/// </summary>
 public class FilterStatement<TPropertyType>
     : IFilterStatement<TPropertyType>,
         IProtoFilterItem
 {
+    /// <inheritdoc />
     public string typeRef => "S";
 
+    /// <summary>
+    /// The full name of <typeparamref name="TPropertyType"/>, so a saved statement can be rebuilt
+    /// </summary>
     public string propertyType { get; set; }
 
+    /// <inheritdoc />
     public string PropertyId { get; set; }
 
+    /// <inheritdoc />
     [JsonConverter(typeof(IOperationJsonConverter))]
     public IOperation Operation { get; set; }
 
+    /// <inheritdoc />
     [JsonConverter(typeof(FilterCollectionJsonConverterFactory))]
     public IFilterCollection<TPropertyType?> Values { get; set; } =
         new FilterCollection<TPropertyType?>();
 
+    /// <inheritdoc />
     [JsonConverter(typeof(FilterStatementOptionsJsonConverter))]
     public IFilterStatementOptions? Options { get; set; }
 
+    /// <inheritdoc />
     public Connector Connector { get; set; } = Connector.And;
 
     IFilterCollection IFilterStatement.Values
@@ -35,6 +47,7 @@ public class FilterStatement<TPropertyType>
         set => Values = new FilterCollection<TPropertyType>(value);
     }
 
+    /// <inheritdoc />
     public Expression Build(
         Expression member,
         Dictionary<string, uint> parameterLog
@@ -53,6 +66,9 @@ public class FilterStatement<TPropertyType>
 
     #region Ctr.
 
+    /// <summary>
+    /// Creates an empty statement, for serialisers
+    /// </summary>
     public FilterStatement()
     {
         var t = typeof(TPropertyType);
@@ -62,6 +78,14 @@ public class FilterStatement<TPropertyType>
         Operation = null!;
     }
 
+    /// <summary>
+    /// Creates a statement
+    /// </summary>
+    /// <param name="propertyId">The property, such as <c>Birth.Country</c></param>
+    /// <param name="operation">The operation to perform</param>
+    /// <param name="values">The values to use</param>
+    /// <param name="options">Options for the statement</param>
+    /// <param name="connector">How the statement connects to the next</param>
     public FilterStatement(
         string propertyId,
         IOperation operation,
@@ -82,6 +106,14 @@ public class FilterStatement<TPropertyType>
         Operation.Validate(this);
     }
 
+    /// <summary>
+    /// Creates a statement
+    /// </summary>
+    /// <param name="propertyId">The property, such as <c>Birth.Country</c></param>
+    /// <param name="operation">The operation to perform</param>
+    /// <param name="values">The values to use</param>
+    /// <param name="options">Options for the statement</param>
+    /// <param name="connector">How the statement connects to the next</param>
     public FilterStatement(
         string propertyId,
         IOperation operation,
@@ -97,6 +129,12 @@ public class FilterStatement<TPropertyType>
             connector
         ) { }
 
+    /// <summary>
+    /// Creates a statement that has no values
+    /// </summary>
+    /// <param name="propertyId">The property, such as <c>Birth.Country</c></param>
+    /// <param name="operation">The operation to perform</param>
+    /// <param name="connector">How the statement connects to the next</param>
     public FilterStatement(
         string propertyId,
         IOperation operation,
@@ -112,6 +150,16 @@ public class FilterStatement<TPropertyType>
 
     #endregion Ctr.
 
+    /// <summary>
+    /// Creates a statement from a property expression (<c>x => x.Name</c>). A method call on the
+    /// property (<c>x => x.Name.Trim()</c>) becomes a manipulator.
+    /// </summary>
+    /// <param name="propertyExpression">The property</param>
+    /// <param name="operation">The operation to perform</param>
+    /// <param name="values">The values to use</param>
+    /// <param name="options">Options for the statement</param>
+    /// <param name="connector">How the statement connects to the next</param>
+    /// <returns>The statement</returns>
     public static IFilterStatement<TPropertyType> Create<TClass>(
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         IOperation operation,
@@ -169,7 +217,7 @@ public class FilterStatement<TPropertyType>
                 options.Manipulators = options.Manipulators.Prepend(
                     new ExpressionMethodManipulator(
                         mcExp.Method,
-                        mcExp.Arguments.Select(x => (ConstantExpression)x)
+                        mcExp.Arguments.Select(x => x.ToConstant()).ToArray()
                     )
                 );
 
@@ -197,6 +245,7 @@ public class FilterStatement<TPropertyType>
         return retStr[..^1];
     }
 
+    /// <inheritdoc />
     public override string ToString()
     {
         var outputString = PropertyId;
@@ -217,6 +266,7 @@ public class FilterStatement<TPropertyType>
         return $"{outputString} {Connector:g} ";
     }
 
+    /// <inheritdoc />
     public IProtoFilterItem Pack() =>
         new ProtoFilterStatement()
         {
@@ -228,5 +278,6 @@ public class FilterStatement<TPropertyType>
             Options = Options as FilterStatementOptions,
         };
 
+    /// <inheritdoc />
     public IFilterItem Unpack() => this;
 }
