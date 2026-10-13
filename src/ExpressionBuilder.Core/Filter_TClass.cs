@@ -1,4 +1,4 @@
-﻿namespace TopMarksDevelopment.ExpressionBuilder;
+namespace TopMarksDevelopment.ExpressionBuilder;
 
 using System.Linq.Expressions;
 using System.Text;
@@ -9,6 +9,10 @@ using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Extensions;
 using TopMarksDevelopment.ExpressionBuilder.Serialization;
 
+/// <summary>
+/// A filter for <typeparamref name="TClass"/>, built from statements (and groups of them)
+/// and converted to a LINQ expression to use with <c>Where()</c>.
+/// </summary>
 public class Filter<TClass> : IFilter<TClass>, IFilter
     where TClass : class
 {
@@ -16,6 +20,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
     readonly IFilter? _oldFilter;
     IFilterGroup _current;
 
+    /// <inheritdoc />
     [JsonConverter(typeof(FilterItemCollectionJsonConverter))]
     public ICollection<IFilterItem> Items
     {
@@ -23,6 +28,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         set { _group.Items = value; }
     }
 
+    /// <inheritdoc />
     [JsonIgnore]
     public ICollection<IFilterItem> Current
     {
@@ -41,6 +47,10 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         }
     }
 
+    /// <summary>
+    /// Saves the filter in its compact binary (protobuf) form
+    /// </summary>
+    /// <param name="stream">The stream to write to</param>
     public void SerializeTo(Stream stream)
     {
         PrepareForSerialization();
@@ -48,6 +58,10 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         Serializer.Serialize(stream, _group as FilterGroup);
     }
 
+    /// <summary>
+    /// Saves the filter in its compact binary (protobuf) form
+    /// </summary>
+    /// <param name="bytes">The saved filter</param>
     public void SerializeTo(out byte[] bytes)
     {
         using var memStream = new MemoryStream();
@@ -55,6 +69,11 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         bytes = memStream.ToArray();
     }
 
+    /// <summary>
+    /// Loads a filter that was saved with <c>SerializeTo</c>
+    /// </summary>
+    /// <param name="stream">The stream to read from</param>
+    /// <returns>The saved filter</returns>
     public static Filter<TClass> DeserializeFrom(Stream stream)
     {
         var group = Serializer.Deserialize<FilterGroup>(stream);
@@ -62,6 +81,11 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         return new Filter<TClass>(group, group, null);
     }
 
+    /// <summary>
+    /// Loads a filter that was saved with <c>SerializeTo</c>
+    /// </summary>
+    /// <param name="bytes">The saved filter</param>
+    /// <returns>The saved filter</returns>
     public static Filter<TClass> DeserializeFrom(byte[] bytes)
     {
         using var memStream = new MemoryStream(bytes);
@@ -70,6 +94,9 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         return new Filter<TClass>(group, group, null);
     }
 
+    /// <summary>
+    /// Creates an empty filter
+    /// </summary>
     public Filter()
     {
         _group = new FilterGroup();
@@ -85,6 +112,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
 
     #region Add methods
 
+    /// <inheritdoc />
     public IFilter<TClass> Add<TPropertyType>(
         IFilterStatement<TPropertyType> statement
     )
@@ -94,6 +122,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         return this;
     }
 
+    /// <inheritdoc />
     public IFilterConnection<TClass> Add<TPropertyType>(
         Expression<Func<TClass, TPropertyType?>> propertyExpression,
         IOperation operation,
@@ -114,6 +143,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         return new FilterConnection<TClass>(this, _current.Items.Last());
     }
 
+    /// <inheritdoc />
     public IFilterConnection<TClass> Add<TPropertyType>(
         string propertyExpression,
         IOperation operation,
@@ -136,11 +166,13 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
 
     #endregion Add methods
 
+    /// <inheritdoc />
     public void SetLastConnector(Connector connector)
     {
         _current.Items.Last().Connector = connector;
     }
 
+    /// <inheritdoc />
     public IFilter<TClass> OpenGroup()
     {
         var newGroup = new FilterGroup(_current);
@@ -151,6 +183,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         return this;
     }
 
+    /// <inheritdoc />
     public IFilterConnection<TClass> CloseGroup()
     {
         var connection = new FilterConnection<TClass>(this, _current);
@@ -167,6 +200,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         return connection;
     }
 
+    /// <inheritdoc />
     public virtual IFilter<T> OpenCollection<T>(
         Expression<Func<TClass, IEnumerable<T>>> propertyExpression
     )
@@ -190,6 +224,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         return new Filter<T>(_group, _current, this);
     }
 
+    /// <inheritdoc />
     public virtual IFilterConnection<T> CloseCollection<T>()
         where T : class
     {
@@ -201,11 +236,13 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         );
     }
 
+    /// <inheritdoc />
     public virtual IFilterConnection<T> CloseCollection<T>(
         Func<TClass, T> expression
     )
         where T : class => CloseCollection<T>();
 
+    /// <inheritdoc />
     public Expression<Func<TClass, bool>> ToExpression()
     {
         var parameterLog = new Dictionary<string, uint>() { };
@@ -233,6 +270,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
             );
     }
 
+    /// <inheritdoc />
     public override string ToString()
     {
         var sB = new StringBuilder();
@@ -293,6 +331,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
 
     IFilterConnection IFilter.CloseGroup() => CloseGroup();
 
+    /// <inheritdoc />
     public IFilter OpenCollection(string propertyExpression)
     {
         var x = OpenGroup();
@@ -305,6 +344,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
         return x;
     }
 
+    /// <inheritdoc />
     public IFilterConnection CloseCollection() => CloseGroup();
 
     Expression<Func<T, bool>> IFilter.ToExpression<T>() =>
@@ -313,7 +353,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
     #region Operators
 
     /// <summary>
-    /// Implicitly converts a <see cref="Filter{TClass}" /> into a <see cref="System.Linq.Expressions.Expression{Func{TClass, TResult}}" />.
+    /// Implicitly converts a <see cref="Filter{TClass}" /> into an <c>Expression&lt;Func&lt;TClass, bool&gt;&gt;</c>.
     /// </summary>
     /// <param name="filter"></param>
     public static implicit operator Expression<Func<TClass, bool>>(

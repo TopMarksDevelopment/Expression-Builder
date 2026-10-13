@@ -8,6 +8,10 @@ using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Extensions;
 using TopMarksDevelopment.ExpressionBuilder.Serialization;
 
+/// <summary>
+/// A set of statements that are evaluated together, as if wrapped in parentheses.
+/// When it has a <see cref="ParentPropertyExpression"/> it applies to the items of a collection.
+/// </summary>
 [ProtoContract(UseProtoMembersOnly = true)]
 public class FilterGroup : IFilterGroup, IProtoFilterItem
 {
@@ -30,22 +34,34 @@ public class FilterGroup : IFilterGroup, IProtoFilterItem
             );
     }
 
+    /// <inheritdoc />
     public string typeRef => "G";
 
+    /// <inheritdoc />
     [JsonIgnore]
     public IFilterGroup? LastGroup { get; set; }
 
+    /// <inheritdoc />
     [ProtoMember(2)]
     public string? ParentPropertyExpression { get; set; }
 
+    /// <inheritdoc />
     [JsonConverter(typeof(FilterItemCollectionJsonConverter))]
     public ICollection<IFilterItem> Items { get; set; } = [];
 
+    /// <inheritdoc />
     [ProtoMember(1)]
     public Connector Connector { get; set; } = Connector.And;
 
+    /// <summary>
+    /// Creates an empty group
+    /// </summary>
     public FilterGroup() { }
 
+    /// <summary>
+    /// Creates an empty group for the items of a collection
+    /// </summary>
+    /// <param name="parentExpression">The collection property, such as <c>Contacts[]</c></param>
     public FilterGroup(string parentExpression)
     {
         ParentPropertyExpression = parentExpression;
@@ -63,9 +79,11 @@ public class FilterGroup : IFilterGroup, IProtoFilterItem
         LastGroup = lastGroup;
     }
 
+    /// <inheritdoc />
     public IFilterGroup Close() =>
         LastGroup ?? throw new InvalidOperationException("No group to close");
 
+    /// <inheritdoc />
     public Expression Build(
         Expression member,
         Dictionary<string, uint> parameterLog
@@ -100,6 +118,7 @@ public class FilterGroup : IFilterGroup, IProtoFilterItem
         return expr;
     }
 
+    /// <inheritdoc />
     public override string ToString()
     {
         var sB = new StringBuilder(
@@ -119,7 +138,9 @@ public class FilterGroup : IFilterGroup, IProtoFilterItem
         return $"{sBString} ) {Connector:g} ";
     }
 
+    /// <inheritdoc />
     public IFilterItem Unpack() => this;
 
+    /// <inheritdoc />
     public IProtoFilterItem Pack() => this;
 }
