@@ -3,6 +3,9 @@ namespace TopMarksDevelopment.ExpressionBuilder;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Enumerables;
 
+/// <summary>
+/// Extensions to start filtering an <see cref="IQueryable{T}"/>.
+/// </summary>
 public static partial class IQueryFilterable_TClass_Extensions
 {
     /// <summary>

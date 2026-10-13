@@ -4,6 +4,9 @@ using System.Linq.Expressions;
 using TopMarksDevelopment.ExpressionBuilder.Api;
 using TopMarksDevelopment.ExpressionBuilder.Enumerables;
 
+/// <summary>
+/// Extensions to start filtering an <see cref="IEnumerable{T}"/>.
+/// </summary>
 public static class IFilterableExtensions
 {
     /// <summary>

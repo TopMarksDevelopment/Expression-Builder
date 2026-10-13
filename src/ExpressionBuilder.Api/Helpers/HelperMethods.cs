@@ -5,7 +5,7 @@ using System.Reflection;
 /// <summary>
 /// Helper class for expression methods
 /// </summary>
-public struct HelperMethods
+public static class HelperMethods
 {
     /// <summary>
     /// The method info for the Contains method
