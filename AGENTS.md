@@ -37,7 +37,7 @@ operation's title, description and references come from its project name), `test
 - **Comments explain why, not what.** Public API gets XML docs (the build turns missing ones into warnings, and
   warnings into errors in CI). Don't narrate a fix next to the code; that is for the commit message.
 - **Formatting is owned by CSharpier** (`.csharpierrc`, version pinned in `.config/dotnet-tools.json`): run
-  `dotnet csharpier src tests samples tools` rather than hand-formatting. TypeScript follows the same 4-space style.
+  `dotnet csharpier format src tests samples tools` rather than hand-formatting. TypeScript follows the same 4-space style.
 - **Don't copy code between operations.** The fluent extension methods (`filter.Equal(...)`) are generated: an
   operation is marked `[GenerateFilterExtensions(shape)]` and the templates under
   `src/ExpressionBuilder.Generators/Templates/` do the rest. Change a template, not 25 files.
@@ -67,7 +67,7 @@ fails without the fix. Run before hand-off:
 dotnet build ExpressionBuilder.sln
 dotnet test ExpressionBuilder.sln
 cd src/ExpressionBuilder.Web/client; npm ci; npm run check   # only when the web client changed
-dotnet csharpier --check src tests samples tools
+dotnet csharpier check src tests samples tools
 ```
 
 See [docs/standards/testing.md](docs/standards/testing.md).

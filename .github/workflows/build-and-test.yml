@@ -78,13 +78,10 @@ jobs:
               with:
                   dotnet-version: ${{ env.DOTNET_VERSION }}
 
-            # The pinned CSharpier is a .NET 8 tool; only .NET 10 is installed, so let it roll forward
             - name: CSharpier (version pinned in .config/dotnet-tools.json)
-              env:
-                  DOTNET_ROLL_FORWARD: Major
               run: |
                   dotnet tool restore
-                  dotnet csharpier --check src tests samples tools
+                  dotnet csharpier check src tests samples tools
 
     client:
         name: web client

@@ -48,7 +48,7 @@
             "label": "format (CSharpier)",
             "command": "dotnet",
             "type": "process",
-            "args": ["csharpier", "src", "tests", "samples", "tools"],
+            "args": ["csharpier", "format", "src", "tests", "samples", "tools"],
             "problemMatcher": []
         },
         {

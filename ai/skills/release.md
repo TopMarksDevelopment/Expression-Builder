@@ -12,7 +12,7 @@ publish unless explicitly asked, and never handle the NuGet API key: it is a Git
    ```powershell
    dotnet build ExpressionBuilder.sln -c Release -p:ContinuousIntegrationBuild=true   # warnings are errors
    dotnet test ExpressionBuilder.sln -c Release --no-build
-   dotnet csharpier --check src tests samples tools
+   dotnet csharpier check src tests samples tools
    cd src/ExpressionBuilder.Web/client; npm ci; npm run check; git diff --exit-code ../wwwroot
    cd ../../..; dotnet pack ExpressionBuilder.sln -c Release
    ```
