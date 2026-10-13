@@ -1,74 +1,38 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-
-    <PackageId>TopMarksDevelopment.ExpressionBuilder</PackageId>
-    <version>1.0.0-rc.1</version>
-    <title>Expression Builder</title>
-    <Authors>Glenn Marks</Authors>
-    <Company>Top Marks Development</Company>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/TopMarksDevelopment/Expression-Builder/</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/TopMarksDevelopment/Expression-Builder/</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageIcon>icon.png</PackageIcon>
-    <PackageIconUrl>https://raw.githubusercontent.com/TopMarksDevelopment/Expression-Builder/main/assets/icon.png</PackageIconUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <Description>Easily build a filter that can be applied to lists and database queries (even dynamically). Packed with features, you can: easily convert API requests into expressions, save and re-run filters, have `NULL` checks done  automatically, build complex queries with groups and so much more!</Description>
-    <summary>Easily build a filter that can be applied to lists and database queries (even dynamically). Packed with features, you can: easily convert API requests into expressions, save and re-run filters, have `NULL` checks done  automatically, build complex queries with groups and so much more!</summary>
-    <copyright>Top Marks Development Limited © 2024</copyright>
-    <language>en-GB</language>
-    <PackageTags>Expression Builder Func LINQ Lambda Database IQuery LINQ SQL LINQ2SQL Queryable</PackageTags>
-    <releaseNotes>
-      See the github page for a changelog. If you can, please support the project 😘 
-    </releaseNotes>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <Title>Expression Builder</Title>
+    <Description>Easily build a filter that can be applied to lists and database queries (even dynamically). Packed with features, you can: easily convert API requests into expressions, save and re-run filters, have `NULL` checks done automatically, build complex queries with groups and so much more!</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../../README.md" Pack="true" PackagePath="\"/>
-    <None Include="../../../LICENSE.md" Pack="true" PackagePath="\"/>
-    <None Include="../../../assets/icon.png" Pack="true" PackagePath="\"/>
+    <ProjectReference Include="..\ExpressionBuilder.Core\ExpressionBuilder.Core.csproj" />
+    <ProjectReference Include="..\Operations\Between\ExpressionBuilder.Operations.Between.csproj" />
+    <ProjectReference Include="..\Operations\BetweenExclusive\ExpressionBuilder.Operations.BetweenExclusive.csproj" />
+    <ProjectReference Include="..\Operations\Contains\ExpressionBuilder.Operations.Contains.csproj" />
+    <ProjectReference Include="..\Operations\DoesNotContain\ExpressionBuilder.Operations.DoesNotContain.csproj" />
+    <ProjectReference Include="..\Operations\DoesNotEndWith\ExpressionBuilder.Operations.DoesNotEndWith.csproj" />
+    <ProjectReference Include="..\Operations\DoesNotStartWith\ExpressionBuilder.Operations.DoesNotStartWith.csproj" />
+    <ProjectReference Include="..\Operations\EndsWith\ExpressionBuilder.Operations.EndsWith.csproj" />
+    <ProjectReference Include="..\Operations\Equal\ExpressionBuilder.Operations.Equal.csproj" />
+    <ProjectReference Include="..\Operations\GreaterThan\ExpressionBuilder.Operations.GreaterThan.csproj" />
+    <ProjectReference Include="..\Operations\GreaterThanOrEqual\ExpressionBuilder.Operations.GreaterThanOrEqual.csproj" />
+    <ProjectReference Include="..\Operations\In\ExpressionBuilder.Operations.In.csproj" />
+    <ProjectReference Include="..\Operations\IsEmpty\ExpressionBuilder.Operations.IsEmpty.csproj" />
+    <ProjectReference Include="..\Operations\IsNotEmpty\ExpressionBuilder.Operations.IsNotEmpty.csproj" />
+    <ProjectReference Include="..\Operations\IsNotNull\ExpressionBuilder.Operations.IsNotNull.csproj" />
+    <ProjectReference Include="..\Operations\IsNotNullOrWhiteSpace\ExpressionBuilder.Operations.IsNotNullOrWhiteSpace.csproj" />
+    <ProjectReference Include="..\Operations\IsNull\ExpressionBuilder.Operations.IsNull.csproj" />
+    <ProjectReference Include="..\Operations\IsNullOrWhiteSpace\ExpressionBuilder.Operations.IsNullOrWhiteSpace.csproj" />
+    <ProjectReference Include="..\Operations\LessThan\ExpressionBuilder.Operations.LessThan.csproj" />
+    <ProjectReference Include="..\Operations\LessThanOrEqual\ExpressionBuilder.Operations.LessThanOrEqual.csproj" />
+    <ProjectReference Include="..\Operations\NotBetween\ExpressionBuilder.Operations.NotBetween.csproj" />
+    <ProjectReference Include="..\Operations\NotBetweenExclusive\ExpressionBuilder.Operations.NotBetweenExclusive.csproj" />
+    <ProjectReference Include="..\Operations\NotEqual\ExpressionBuilder.Operations.NotEqual.csproj" />
+    <ProjectReference Include="..\Operations\NotIn\ExpressionBuilder.Operations.NotIn.csproj" />
+    <ProjectReference Include="..\Operations\SmartSearch\ExpressionBuilder.Operations.SmartSearch.csproj" />
+    <ProjectReference Include="..\Operations\StartsWith\ExpressionBuilder.Operations.StartsWith.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Core\src\Core.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\Between\src\Operations.Between.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\BetweenExclusive\src\Operations.BetweenExclusive.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\Contains\src\Operations.Contains.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\DoesNotContain\src\Operations.DoesNotContain.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\DoesNotEndWith\src\Operations.DoesNotEndWith.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\Equal\src\Operations.Equal.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\EndsWith\src\Operations.EndsWith.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\GreaterThan\src\Operations.GreaterThan.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\GreaterThanOrEqual\src\Operations.GreaterThanOrEqual.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\In\src\Operations.In.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\LessThan\src\Operations.LessThan.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\LessThanOrEqual\src\Operations.LessThanOrEqual.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\NotEqual\src\Operations.NotEqual.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\SmartSearch\src\Operations.SmartSearch.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\StartsWith\src\Operations.StartsWith.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\IsEmpty\src\Operations.IsEmpty.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\NotBetween\src\Operations.NotBetween.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\NotBetweenExclusive\src\Operations.NotBetweenExclusive.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\IsNotEmpty\src\Operations.IsNotEmpty.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\NotIn\src\Operations.NotIn.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\IsNull\src\Operations.IsNull.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\IsNotNull\src\Operations.IsNotNull.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\IsNullOrWhiteSpace\src\Operations.IsNullOrWhiteSpace.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\IsNotNullOrWhiteSpace\src\Operations.IsNotNullOrWhiteSpace.Src.csproj" />
-    <ProjectReference Include="..\..\Operations\DoesNotStartWith\src\Operations.DoesNotStartWith.Src.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="protobuf-net" Version="3.2.30" />
-  </ItemGroup>
 
 </Project>

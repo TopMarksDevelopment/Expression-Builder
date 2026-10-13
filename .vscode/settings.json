@@ -1,5 +1,5 @@
 {
-    "dotnet.defaultSolution": "ExpressionBuilder-Container.sln",
+    "dotnet.defaultSolution": "ExpressionBuilder.sln",
     "dotnet.unitTestDebuggingOptions": {
         "enableStepFiltering": false
     },

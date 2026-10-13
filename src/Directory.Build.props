@@ -1,0 +1,48 @@
+<Project>
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!--
+    Everything under src/ is a NuGet package. The project name is the package identity:
+    "ExpressionBuilder.Operations.Equal" is built and published as
+    "TopMarksDevelopment.ExpressionBuilder.Operations.Equal".
+  -->
+  <PropertyGroup>
+    <AssemblyName>TopMarksDevelopment.$(MSBuildProjectName)</AssemblyName>
+    <PackageId>$(AssemblyName)</PackageId>
+
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+
+    <Authors>Glenn Marks</Authors>
+    <Company>Top Marks Development</Company>
+    <Copyright>Top Marks Development Limited © 2024</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/TopMarksDevelopment/Expression-Builder/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/TopMarksDevelopment/Expression-Builder/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageIconUrl>https://raw.githubusercontent.com/TopMarksDevelopment/Expression-Builder/main/assets/icon.png</PackageIconUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>Expression Builder Func LINQ Lambda Database IQuery LINQ SQL LINQ2SQL Queryable</PackageTags>
+    <PackageReleaseNotes>See the github page for a changelog. If you can, please support the project 😘</PackageReleaseNotes>
+    <NeutralLanguage>en-GB</NeutralLanguage>
+
+    <!-- The readme shown on nuget.org; a package can point this at its own. -->
+    <PackageReadmeSource Condition="'$(PackageReadmeSource)' == ''">$(MSBuildThisFileDirectory)../README.md</PackageReadmeSource>
+
+    <!-- Public API must be documented, and a build in CI must be free of warnings -->
+    <TreatWarningsAsErrors Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</TreatWarningsAsErrors>
+
+    <!-- The shared sentence that every package description ends with. -->
+    <ExpressionBuilderBlurb>ExpressionBuilder allows you to easily build a filter that can be applied to lists and database queries (even dynamically). Packed with features, you can: easily convert API requests into expressions, save and re-run filters, have `NULL` checks done automatically, build complex queries with groups and so much more!</ExpressionBuilderBlurb>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(PackageReadmeSource)" Pack="true" PackagePath="\" Visible="false" />
+    <None Include="$(MSBuildThisFileDirectory)../LICENSE.md" Pack="true" PackagePath="\" Visible="false" />
+    <None Include="$(MSBuildThisFileDirectory)../assets/icon.png" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,21 @@
+<Project>
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!--
+    Every operation is a small package that only needs the API. Its title and description
+    are derived from its project name (ExpressionBuilder.Operations.<Name>), so a new
+    operation's .csproj normally has nothing to declare except any operations it builds on.
+  -->
+  <PropertyGroup>
+    <OperationName>$(MSBuildProjectName.Replace('ExpressionBuilder.Operations.', ''))</OperationName>
+    <Title>Expression Builder - Operation: $(OperationName)</Title>
+    <Description>The "$(OperationName)" operation for the "ExpressionBuilder" package. $(ExpressionBuilderBlurb)</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../ExpressionBuilder.Api/ExpressionBuilder.Api.csproj" />
+
+  </ItemGroup>
+
+</Project>
