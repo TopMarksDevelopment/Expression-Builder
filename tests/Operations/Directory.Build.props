@@ -1,0 +1,28 @@
+<Project>
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!--
+    A test project named ExpressionBuilder.Operations.<Name>.Tests tests exactly one
+    operation package, so everything it needs follows from its name.
+  -->
+  <PropertyGroup>
+    <OperationName>$(MSBuildProjectName.Replace('ExpressionBuilder.Operations.', '').Replace('.Tests', ''))</OperationName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../../src/ExpressionBuilder.Api/ExpressionBuilder.Api.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../ExpressionBuilder.TestBase/ExpressionBuilder.TestBase.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../../src/Operations/$(OperationName)/ExpressionBuilder.Operations.$(OperationName).csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Linq.Expressions" />
+    <Using Include="ExpressionBuilder.Tests" />
+    <Using Include="ExpressionBuilder.Tests.Models" />
+    <Using Include="TopMarksDevelopment.ExpressionBuilder" />
+    <Using Include="TopMarksDevelopment.ExpressionBuilder.Api" />
+    <Using Include="TopMarksDevelopment.ExpressionBuilder.Operations" />
+  </ItemGroup>
+
+</Project>
