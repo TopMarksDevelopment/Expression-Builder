@@ -3,6 +3,17 @@
 Written at the end of the restructure / web filter builder session so work can continue elsewhere. It is a to-do list to work
 through over several sessions, not one task. Tick items off here (and delete the file when it is done).
 
+## Progress
+
+- **Section 1 (.NET 10): done.** `net10.0` only; CI, docs and changelog updated. Found and fixed on the way: C# 14 binds
+  `array.Contains(x)` in an expression lambda to the span overload (tests now use `Enumerable.Contains`), and the main package's
+  `build/*.props` was never committed (`.gitignore` ignores `build/`; CI now runs `dotnet pack`).
+- **Section 2 (packages): started.** Done: EF Core, Sqlite and Mvc.Testing to 10.0.13; CSharpier to 1.3.0 (commands are now
+  `dotnet csharpier check|format`; it also formats `.csproj`/`.props` XML; reformatted in its own commit). Remaining: the other
+  NuGet packages, the client's npm packages, the GitHub Actions versions, and the audits.
+- **Carry into section 3:** the sample serves `_content/...` assets only in Development (it uses `UseStaticFiles()`); check
+  `MapStaticAssets` and the published, non-Development case.
+
 The prompt below is paste-ready.
 
 ```text
@@ -18,10 +29,8 @@ start; keep mechanical changes (moves, renames, version bumps) in their own comm
 change (a bug fix gets a regression test that fails without the fix); keep the solution warning-free; run the checks in AGENTS.md
 before handing back; and do not commit unless I ask. Stop and ask me where a decision is mine (marked DECISION).
 
-## 1. Move to .NET 10 and drop .NET 8
-- DECISION first: net10.0 only, or net8.0;net10.0 for one more release? .NET 8 support ends November 2026; .NET 10 is LTS. My
-  current lean: net10.0 only, because we are still pre-1.0 and dropping a target later is a breaking change. Confirm the plan
-  with me, then do it.
+## 1. Move to .NET 10 and drop .NET 8 (DONE - skip)
+- net10.0 only
 - Change TargetFramework in Directory.Build.props (and the analyzers/generator stay netstandard2.0). Update CI (setup-dotnet 10.x,
   matrix), global.json if you add one, the README "requires" line, CONTRIBUTING, docs/standards, the release skill and the changelog.
 - Check everything on .NET 10: build with warnings as errors, all tests, the sample app, `dotnet pack` and inspect the packages
@@ -31,7 +40,7 @@ before handing back; and do not commit unless I ask. Stop and ask me where a dec
   reason), ASP.NET Core 10 changes that affect the tag helper / view component / static web assets, anything now obsolete.
   Do not adopt new language features just because they exist.
 
-## 2. Bump packages
+## 2. Bump packages (EF Core/Sqlite/Mvc.Testing and CSharpier are DONE; do the rest)
 - Directory.Packages.props (xunit, Microsoft.NET.Test.Sdk, coverlet, EF Core and SQLite to the 10.x line, Mvc.Testing,
   protobuf-net, Roslyn, MetadataLoadContext), the client's package.json (typescript, esbuild, jsdom, @types/*), the pinned
   CSharpier (.config/dotnet-tools.json) and the GitHub Actions versions. Remember CSharpier is pinned to 0.29.2 because newer
@@ -85,6 +94,7 @@ review it. Constraints and a suggested direction:
 - Deliver in slices: (a) multi-root schema and non-generic build with tests, (b) root picker UI, (c) columns and sort, (d) execution
   and export in the sample app, (e) grouping/aggregates only if still wanted. Each slice stands on its own and is released behind
   docs, not a flag.
+- With "export" in mind, allow any report that's been generated to be saved as a "built-in" report for the app that's using it (pluging it in to a dashboard or a "Your reports" page). This would mean teh report would need a anem and for the data to be stored (maybe even a custom storage mechanism to allow a report to be "global" - shown to everyone)
 
 ## 6. Other things I would do (decide with me which, and in what order)
 - Fix the rough edges listed in docs/architecture/overview.md: Filter<T>.CloseGroup swallowing exceptions, IsNotNullable using
