@@ -83,6 +83,30 @@ jobs:
                   dotnet tool restore
                   dotnet csharpier check src tests samples tools
 
+    # Real browsers, driving the sample app and apps built from the packed packages. It is a job of its own because it
+    # downloads the browsers and the tests are slower; see docs/standards/testing.md.
+    e2e:
+        name: browsers
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+              with:
+                  dotnet-version: ${{ env.DOTNET_VERSION }}
+
+            - name: Build
+              run: dotnet build tests/ExpressionBuilder.Web.E2E --configuration Release
+
+            # Chromium, Firefox and WebKit, and the system libraries they need
+            - name: Install the browsers
+              run: pwsh tests/ExpressionBuilder.Web.E2E/bin/Release/net10.0/playwright.ps1 install --with-deps
+
+            - name: Test
+              run: dotnet test tests/ExpressionBuilder.Web.E2E --configuration Release --no-build --verbosity normal
+
     client:
         name: web client
         runs-on: ubuntu-latest

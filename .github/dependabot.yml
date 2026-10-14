@@ -11,6 +11,8 @@ updates:
                   - "Microsoft.NET.Test.Sdk"
                   - "coverlet.*"
                   - "Microsoft.AspNetCore.Mvc.Testing"
+                  - "Microsoft.Playwright"
+                  - "Deque.AxeCore.*"
           roslyn:
               patterns:
                   - "Microsoft.CodeAnalysis.*"
