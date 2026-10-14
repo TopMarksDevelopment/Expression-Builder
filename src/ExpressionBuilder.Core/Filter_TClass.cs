@@ -242,8 +242,16 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
     )
         where T : class => CloseCollection<T>();
 
+    /// <remarks>
+    /// The values the filter compares with are read from variables rather than written in as constants, so a database
+    /// provider sends them as parameters: one query plan serves every value. Use
+    /// <see cref="FilterExpressionExtensions.InlineValues{TClass}"/> to get them as constants.
+    /// </remarks>
     /// <inheritdoc />
-    public Expression<Func<TClass, bool>> ToExpression()
+    public Expression<Func<TClass, bool>> ToExpression() =>
+        ValueParameters.Parameterise(BuildExpression());
+
+    Expression<Func<TClass, bool>> BuildExpression()
     {
         var parameterLog = new Dictionary<string, uint>() { };
 
