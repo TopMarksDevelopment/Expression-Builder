@@ -65,10 +65,13 @@ public static class TestExtensions
         Func<string, string>? applyReplacements = null
     )
         where T : class =>
-        (applyReplacements ?? ((s) => s)).Invoke(expression.ToString());
+        // A filter keeps its values in variables so a database sees parameters; the tests compare them as written
+        (applyReplacements ?? ((s) => s)).Invoke(
+            expression.InlineValues().ToString()
+        );
 
     public static string ToMatchString<T>(this IFilter<T> filter)
-        where T : class => filter.ToExpression().ToString();
+        where T : class => filter.ToExpression().InlineValues().ToString();
 
     public static string ToMatchString<T>(this IFilterable<T> filterable)
         where T : class => filterable.Filter.ToMatchString();

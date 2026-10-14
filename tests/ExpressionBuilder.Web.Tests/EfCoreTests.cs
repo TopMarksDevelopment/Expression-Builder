@@ -2,6 +2,8 @@ namespace ExpressionBuilder.Web.Tests;
 
 using ExpressionBuilder.Web.Tests.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Caching.Memory;
 using TopMarksDevelopment.ExpressionBuilder.Web;
 using static ExpressionBuilder.Web.Tests.TestData;
 
@@ -83,7 +85,7 @@ public class EfCoreTests(Shop shop) : IClassFixture<Shop>
 
         // "Is set" on a column that can't be null is true for every row, so EF leaves the test out altogether
         Assert.Equal(memory, database);
-        Assert.StartsWith("SELECT", sql);
+        Assert.Contains("SELECT", sql);
     }
 
     #endregion Every operation, on every kind it is offered for
@@ -357,16 +359,73 @@ public class EfCoreTests(Shop shop) : IClassFixture<Shop>
     }
 
     [Fact(
-        DisplayName = "Values are written into the SQL as literals, not sent as parameters (known; see next-steps section 4)"
+        DisplayName = "Values are sent as parameters, not written into the SQL"
     )]
-    public void ValuesAreLiteralsToday()
+    public void ValuesAreParameters()
     {
-        // A filter holds its values as constants, which EF cannot turn into parameters. So every different value is
-        // different SQL text, and a new entry in EF's query cache. If this starts failing, that was fixed: update it.
-        var (_, _, sql) = Run(Doc(Cond("Name", "Equal", ["Alan Turing"])));
+        var (database, _, sql) = Run(
+            Doc(Cond("Name", "Equal", ["Alan Turing"]))
+        );
 
-        Assert.Contains("= 'Alan Turing'", sql);
-        Assert.DoesNotContain("@", sql);
+        Assert.Equal<int>([1], database);
+
+        // The value is in the parameters (the comment at the top), and the query only mentions the parameter
+        var query = sql[sql.IndexOf("SELECT", StringComparison.Ordinal)..];
+
+        Assert.DoesNotContain("Alan Turing", query);
+        Assert.Matches(@"WHERE ""a"".""Name"" = @", query);
+    }
+
+    [Fact(DisplayName = "A list of choices is sent as parameters too")]
+    public void ListsAreParameters()
+    {
+        var (database, memory, sql) = Run(
+            Doc(Cond("Name", "In", ["Alan Turing", "grace hopper"]))
+        );
+        var query = sql[sql.IndexOf("SELECT", StringComparison.Ordinal)..];
+
+        Assert.Equal<int>([1, 2], database);
+        Assert.Equal(memory, database);
+        Assert.DoesNotContain("Alan Turing", query);
+    }
+
+    [Fact(DisplayName = "Different values share one query in EF's cache")]
+    public void DifferentValuesShareACacheEntry()
+    {
+        var cache = (MemoryCache)shop.Context.GetService<IMemoryCache>();
+
+        // Once, so what EF caches for any first query is already there
+        Run(Doc(Cond("Name", "Equal", ["first"], match: null)));
+
+        var before = cache.Count;
+
+        foreach (
+            var name in new[]
+            {
+                "second",
+                "third",
+                "fourth",
+                "fifth",
+                "Alan Turing",
+            }
+        )
+            Run(Doc(Cond("Name", "Equal", [name])));
+
+        Assert.Equal(before, cache.Count);
+    }
+
+    [Fact(
+        DisplayName = "What stays in the SQL as it is: null, true/false and the empty text"
+    )]
+    public void ShapeStaysInTheSql()
+    {
+        var (nulls, _, nullSql) = Run(Doc(Cond("Age", "IsNull")));
+        var (empty, _, emptySql) = Run(Doc(Cond("Email", "IsEmpty")));
+
+        Assert.Equal<int>([2], nulls);
+        Assert.Equal<int>([4], empty);
+        Assert.Contains("IS NULL", nullSql.ToUpperInvariant());
+        Assert.Contains("''", emptySql);
     }
 
     #endregion Shapes of filter
