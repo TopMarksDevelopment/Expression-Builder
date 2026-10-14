@@ -357,5 +357,52 @@ public partial class SampleAppTests(WebApplicationFactory<Program> factory)
         Assert.Contains("0 products", html);
     }
 
+    [Fact(
+        DisplayName = "The app's own operation and manipulator are offered, under a heading of their own"
+    )]
+    public async Task CustomThingsAreOffered()
+    {
+        var (html, _) = await Get("/Products");
+
+        Assert.Contains(
+            "\"name\":\"IsWeekend\",\"label\":\"Is at the weekend\"",
+            html
+        );
+        Assert.Contains("\"group\":\"Custom\"", html);
+        Assert.Contains("\"name\":\"IgnorePunctuation\"", html);
+    }
+
+    [Fact(DisplayName = "The app's own operation and manipulator are applied")]
+    public async Task CustomThingsAreApplied()
+    {
+        var json = TestData.Doc(
+            Cond("Released", "IsWeekend", connector: "Or"),
+            Cond(
+                "Name",
+                "Contains",
+                ["multitool"],
+                manipulators: [new { name = "IgnorePunctuation" }]
+            )
+        );
+
+        var (status, html) = await Post("/Products", "Filter.Json", json);
+
+        var expected = Catalog
+            .Where(p =>
+                p.Released.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday
+                || p.Name.StartsWith("Multi-tool", StringComparison.Ordinal)
+            )
+            .Select(p => p.Id)
+            .Order()
+            .ToList();
+
+        Assert.Equal(HttpStatusCode.OK, status);
+        Assert.Contains(
+            Catalog.Single(p => p.Name == "Multi-tool").Id,
+            expected
+        );
+        Assert.Equal(expected, ShownIds(html));
+    }
+
     #endregion Posting
 }

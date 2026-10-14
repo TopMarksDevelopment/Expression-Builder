@@ -1271,6 +1271,49 @@
       "defaultMatch": "All"
     }
   ],
+  "manipulators": [
+    {
+      "name": "Trim",
+      "label": "Trim spaces",
+      "parameters": [],
+      "kinds": [
+        "string"
+      ]
+    },
+    {
+      "name": "ToLower",
+      "label": "Make lower case",
+      "parameters": [],
+      "kinds": [
+        "string"
+      ]
+    },
+    {
+      "name": "ToUpper",
+      "label": "Make upper case",
+      "parameters": [],
+      "kinds": [
+        "string"
+      ]
+    },
+    {
+      "name": "Replace",
+      "label": "Replace text",
+      "parameters": [
+        {
+          "label": "Find",
+          "required": true
+        },
+        {
+          "label": "Replace with",
+          "required": false
+        }
+      ],
+      "kinds": [
+        "string"
+      ]
+    }
+  ],
   "labels": {
     "conditions": "Conditions",
     "group": "Group",
@@ -1304,6 +1347,8 @@
     "replace": "Replace text",
     "replaceFind": "Find",
     "replaceWith": "Replace with",
+    "standardGroup": "Standard",
+    "customGroup": "Custom",
     "yes": "Yes",
     "no": "No",
     "summaryEmpty": "No conditions, so everything matches.",

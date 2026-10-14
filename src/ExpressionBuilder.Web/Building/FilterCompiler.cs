@@ -237,7 +237,10 @@ sealed class FilterCompiler(FilterSchema schema, FilterBuilderOptions options)
 
         if (
             !field.Operations.Contains(operationName)
-            || !OperationCatalog.TryGet(operationName, out var descriptor)
+            || !schema.OperationDescriptors.TryGetValue(
+                operationName,
+                out var descriptor
+            )
             || !OperationRegistry.TryGet(operationName, out var operation)
         )
             return ErrorStatement(
@@ -368,14 +371,7 @@ sealed class FilterCompiler(FilterSchema schema, FilterBuilderOptions options)
 
         if (node.Manipulators is { Count: > 0 })
         {
-            if (field.Kind != FieldKind.String)
-            {
-                Error(path, "Text can only be adjusted on a text property.");
-
-                return false;
-            }
-
-            if (node.Manipulators.Count > 4)
+            if (node.Manipulators.Count > options.MaxManipulatorsPerCondition)
             {
                 Error(path, "Too many adjustments were asked for.");
 
@@ -386,7 +382,7 @@ sealed class FilterCompiler(FilterSchema schema, FilterBuilderOptions options)
 
             foreach (var posted in node.Manipulators)
             {
-                var manipulator = CreateManipulator(posted, path);
+                var manipulator = CreateManipulator(posted, field, path);
 
                 if (manipulator == null)
                     return false;
@@ -405,38 +401,85 @@ sealed class FilterCompiler(FilterSchema schema, FilterBuilderOptions options)
         return true;
     }
 
-    IEntityManipulator? CreateManipulator(ManipulatorNode? posted, string path)
+    IEntityManipulator? CreateManipulator(
+        ManipulatorNode? posted,
+        FieldSchema field,
+        string path
+    )
     {
-        // Only these are offered. A posted name can never reach any other method.
-        switch (posted?.Name)
+        // Only the manipulators the schema offers: a posted name is looked up there and never used to
+        // find a type or method, so it can't reach anything the app did not describe.
+        if (
+            posted?.Name == null
+            || !schema.ManipulatorDescriptors.TryGetValue(
+                posted.Name,
+                out var descriptor
+            )
+        )
         {
-            case ManipulatorNode.Trim:
-            case ManipulatorNode.ToLower:
-            case ManipulatorNode.ToUpper:
-                return new ExpressionMethodManipulator(
-                    typeof(string).GetMethod(posted.Name, Type.EmptyTypes)!,
-                    []
+            Error(path, "That adjustment is not available.");
+
+            return null;
+        }
+
+        if (!descriptor.Kinds.Contains(field.Kind))
+        {
+            Error(
+                path,
+                $"\"{descriptor.Label}\" can't be used on {field.Label}."
+            );
+
+            return null;
+        }
+
+        var text = posted.Args ?? [];
+
+        if (text.Count != descriptor.Parameters.Count)
+        {
+            Error(path, $"\"{descriptor.Label}\" is missing something.");
+
+            return null;
+        }
+
+        for (var i = 0; i < text.Count; i++)
+        {
+            var parameter = descriptor.Parameters[i];
+
+            if (
+                text[i] == null
+                || text[i]!.Length > options.MaxValueLength
+                || (parameter.Required && text[i]!.Length == 0)
+            )
+            {
+                Error(
+                    path,
+                    $"\"{descriptor.Label}\" needs: {parameter.Label}."
                 );
 
-            case ManipulatorNode.Replace:
-                if (
-                    string.IsNullOrEmpty(posted.Find)
-                    || posted.Find.Length > options.MaxValueLength
-                    || (posted.With?.Length ?? 0) > options.MaxValueLength
-                )
-                {
-                    Error(path, "Replacing text needs the text to find.");
-
-                    return null;
-                }
-
-                return new ReplaceManipulator(posted.Find, posted.With ?? "");
-
-            default:
-                Error(path, "That adjustment is not available.");
-
                 return null;
+            }
         }
+
+        try
+        {
+            var manipulator = descriptor.Create([.. text.Select(t => t!)]);
+
+            manipulator.Validate();
+
+            return manipulator;
+        }
+        catch (ArgumentException ex)
+        {
+            // The descriptor's own check, written for the user
+            Error(path, ex.Message);
+        }
+        catch (Exception ex)
+            when (ex is InvalidDataException or InvalidOperationException)
+        {
+            Error(path, $"\"{descriptor.Label}\" can't be used like that.");
+        }
+
+        return null;
     }
 
     bool TryParseValue(

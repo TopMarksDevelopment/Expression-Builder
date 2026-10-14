@@ -226,12 +226,7 @@ public class FilterBuilderModelTests
                     ["AlanTuring"],
                     manipulators:
                     [
-                        new
-                        {
-                            name = "Replace",
-                            find = " ",
-                            with = "",
-                        },
+                        new { name = "Replace", args = new[] { " ", "" } },
                     ]
                 )
             )
@@ -449,29 +444,6 @@ public class FilterBuilderModelTests
         return data;
     }
 
-    static string[] ValuesFor(FieldSchema field, OperationSchema operation)
-    {
-        var one = field.Kind switch
-        {
-            FieldKind.Number => "5",
-            FieldKind.Date => "2000-01-01",
-            FieldKind.DateTime => "2000-01-01T10:00",
-            FieldKind.Time => "10:00",
-            FieldKind.Boolean => "true",
-            FieldKind.Enum => field.Options![0].Value,
-            FieldKind.Guid => GuidOne.ToString(),
-            _ => "a",
-        };
-
-        return operation.Arity switch
-        {
-            ValueArity.None => [],
-            ValueArity.One => [one],
-            ValueArity.Two => [one, one],
-            _ => [one, one],
-        };
-    }
-
     [Theory(
         DisplayName = "An operation that is offered for a property builds and runs"
     )]
@@ -623,7 +595,7 @@ public class FilterBuilderModelTests
                         manipulators: [new { name = "Trim" }]
                     )
                 ),
-                "only be adjusted on a text"
+                "can't be used on"
             },
             {
                 Doc(
@@ -645,7 +617,7 @@ public class FilterBuilderModelTests
                         manipulators: [new { name = "Replace" }]
                     )
                 ),
-                "needs the text to find"
+                "is missing something"
             },
             {
                 Doc(
@@ -655,6 +627,24 @@ public class FilterBuilderModelTests
                         ["a"],
                         manipulators:
                         [
+                            new { name = "Replace", args = new[] { "", "x" } },
+                        ]
+                    )
+                ),
+                "needs: Find"
+            },
+            {
+                Doc(
+                    Cond(
+                        "Name",
+                        "Equal",
+                        ["a"],
+                        manipulators:
+                        [
+                            new { name = "Trim" },
+                            new { name = "Trim" },
+                            new { name = "Trim" },
+                            new { name = "Trim" },
                             new { name = "Trim" },
                             new { name = "Trim" },
                             new { name = "Trim" },

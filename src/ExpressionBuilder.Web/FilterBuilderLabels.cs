@@ -108,6 +108,16 @@ public sealed class FilterBuilderLabels
     /// <summary>Text to replace it with.</summary>
     public string ReplaceWith { get; set; } = "Replace with";
 
+    /// <summary>
+    /// Heading of the built-in operations and manipulators, shown when custom ones are offered too.
+    /// </summary>
+    public string StandardGroup { get; set; } = "Standard";
+
+    /// <summary>
+    /// Heading of custom operations and manipulators that were not given a group of their own.
+    /// </summary>
+    public string CustomGroup { get; set; } = "Custom";
+
     /// <summary>The <c>true</c> choice.</summary>
     public string Yes { get; set; } = "Yes";
 
