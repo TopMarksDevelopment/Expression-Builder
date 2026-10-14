@@ -13,6 +13,7 @@ import type {
     Issue,
     Labels,
     ManipulatorNode,
+    ManipulatorSchema,
     OperationSchema,
     Schema,
     TypeSchema,
@@ -47,7 +48,7 @@ export function newCondition(): ConditionNode {
  * Reads a posted document. Anything that is not understood becomes an empty filter, rather than an error:
  * the page must still load, and the server is the one that rejects bad input.
  */
-export function parseDocument(json: string | null | undefined): FilterDocument {
+export function parseDocument(json: string | null | undefined, schema?: Schema): FilterDocument {
     if (!json || !json.trim()) return emptyDocument();
 
     try {
@@ -55,7 +56,7 @@ export function parseDocument(json: string | null | undefined): FilterDocument {
 
         if (!isObject(parsed) || parsed.version !== VERSION) return emptyDocument();
 
-        const root = readNode(parsed.root);
+        const root = readNode(parsed.root, schema);
 
         return root?.type === "group" ? { version: VERSION, root } : emptyDocument();
     } catch {
@@ -79,7 +80,7 @@ function readConnector(value: unknown): Connector {
     return typeof value === "string" && value.toLowerCase() === "or" ? "Or" : "And";
 }
 
-function readNode(value: unknown): FilterNode | null {
+function readNode(value: unknown, schema: Schema | undefined): FilterNode | null {
     if (!isObject(value)) return null;
 
     if (value.type === "group") {
@@ -87,7 +88,7 @@ function readNode(value: unknown): FilterNode | null {
 
         group.connector = readConnector(value.connector);
         group.items = (Array.isArray(value.items) ? value.items : [])
-            .map(readNode)
+            .map((item) => readNode(item, schema))
             .filter((n): n is FilterNode => n !== null);
 
         return group;
@@ -106,7 +107,7 @@ function readNode(value: unknown): FilterNode | null {
         if (value.match === "Any" || value.match === "All") condition.match = value.match;
 
         const manipulators = (Array.isArray(value.manipulators) ? value.manipulators : [])
-            .map(readManipulator)
+            .map((m) => readManipulator(m, schema))
             .filter((m): m is ManipulatorNode => m !== null);
 
         if (manipulators.length) condition.manipulators = manipulators;
@@ -117,19 +118,21 @@ function readNode(value: unknown): FilterNode | null {
     return null;
 }
 
-function readManipulator(value: unknown): ManipulatorNode | null {
+function readManipulator(value: unknown, schema: Schema | undefined): ManipulatorNode | null {
     if (!isObject(value)) return null;
 
-    switch (value.name) {
-        case "Trim":
-        case "ToLower":
-        case "ToUpper":
-            return { name: value.name };
-        case "Replace":
-            return { name: "Replace", find: asString(value.find), with: asString(value.with) };
-        default:
-            return null;
-    }
+    const name = asString(value.name);
+
+    if (!name) return null;
+
+    // Something this builder does not offer is dropped, rather than posted for the server to refuse
+    if (schema && !findManipulator(schema, name)) return null;
+
+    const manipulator: ManipulatorNode = { name };
+
+    if (Array.isArray(value.args) && value.args.length > 0) manipulator.args = value.args.map(asString);
+
+    return manipulator;
 }
 
 // -- Looking things up in the schema --------------------------------------------------------
@@ -148,6 +151,17 @@ export function findField(schema: Schema, typeId: string, path: string): FieldSc
 
 export function findOperation(schema: Schema, name: string): OperationSchema | undefined {
     return schema.operations.find((o) => o.name === name);
+}
+
+export function findManipulator(schema: Schema, name: string): ManipulatorSchema | undefined {
+    return schema.manipulators.find((m) => m.name === name);
+}
+
+/** The adjustments that suit a field, in the order the schema lists them. */
+export function manipulatorsFor(schema: Schema, field: FieldSchema | undefined): ManipulatorSchema[] {
+    if (!field) return [];
+
+    return schema.manipulators.filter((m) => m.kinds.includes(field.kind));
 }
 
 /** The operations that can be used on a field, in the order the schema lists them. */
@@ -286,12 +300,26 @@ export function findIssues(schema: Schema, group: GroupNode, typeId: string, iss
             issues.push({ node: item, message: labels.operationPlaceholder });
         } else if (item.values.length < minimumValues(operation) || item.values.some((v) => v === "")) {
             issues.push({ node: item, message: labels.required });
-        } else if (item.manipulators?.some((m) => m.name === "Replace" && !m.find)) {
-            issues.push({ node: item, message: labels.replaceFind });
+        } else {
+            const missing = missingArgument(schema, item);
+
+            if (missing) issues.push({ node: item, message: missing });
         }
     }
 
     return issues;
+}
+
+/** The label of the first thing an adjustment still needs, if there is one. */
+function missingArgument(schema: Schema, condition: ConditionNode): string | undefined {
+    for (const manipulator of condition.manipulators ?? []) {
+        const parameters = findManipulator(schema, manipulator.name)?.parameters ?? [];
+        const missing = parameters.find((p, index) => p.required && !manipulator.args?.[index]);
+
+        if (missing) return missing.label;
+    }
+
+    return undefined;
 }
 
 // -- Describing a filter in words -----------------------------------------------------------

@@ -14,6 +14,8 @@ import type {
     FilterNode,
     GroupNode,
     Issue,
+    ManipulatorNode,
+    ManipulatorSchema,
     OperationSchema,
     Schema,
 } from "./types.js";
@@ -23,10 +25,25 @@ const COLLECTION_PREFIX = "collection:";
 
 const CHANGE_EVENT = "eb:change";
 
+/** What an incomplete condition gets, unless the view says otherwise with data-eb-invalid-class. */
+const DEFAULT_INVALID_CLASS = "eb-invalid";
+
+/** What each template must contain, besides what the script needs to find in the view itself. */
+const REQUIRED_PARTS: Record<string, string[]> = {
+    value: ['[data-eb-control="input"]', '[data-eb-control="select"]', "[data-eb-remove-value]"],
+    "manipulator-group": ["[data-eb-manipulator-group-title]", "[data-eb-manipulator-group-items]"],
+    manipulator: ["[data-eb-manipulator]", "[data-eb-manipulator-label]", "[data-eb-manipulator-args]"],
+};
+
 interface Templates {
     group: HTMLTemplateElement;
+    item: HTMLTemplateElement;
     condition: HTMLTemplateElement;
+    value: HTMLTemplateElement;
     connector: HTMLTemplateElement;
+    manipulatorGroup: HTMLTemplateElement;
+    manipulator: HTMLTemplateElement;
+    manipulatorArg: HTMLTemplateElement;
 }
 
 interface Parent {
@@ -51,7 +68,11 @@ export class FilterBuilder {
     readonly #optionsOpen = new WeakSet<ConditionNode>();
     readonly #elements = new Map<FilterNode, HTMLElement>();
     #showErrors = false;
+    /** Where focus goes when the next render is done: this item, or failing that the add button of this group. */
     #focusAfterRender: FilterNode | undefined;
+    #focusFallback: GroupNode | undefined;
+    readonly #addButtons = new Map<GroupNode, HTMLElement>();
+    #lastId = 0;
     #issues: Issue[] = [];
 
     private constructor(root: HTMLElement) {
@@ -61,10 +82,21 @@ export class FilterBuilder {
         this.schema = readSchema(root);
         this.#templates = {
             group: template(root, "group"),
+            item: template(root, "item"),
             condition: template(root, "condition"),
+            value: template(root, "value"),
             connector: template(root, "connector"),
+            manipulatorGroup: template(root, "manipulator-group"),
+            manipulator: template(root, "manipulator"),
+            manipulatorArg: template(root, "manipulator-arg"),
         };
-        this.#document = M.parseDocument(this.#input.value);
+
+        // Parts of the templates are only needed once a condition asks for them. Look now, so a view that
+        // lost one fails when the page loads rather than on a click.
+        for (const [name, selectors] of Object.entries(REQUIRED_PARTS))
+            for (const selector of selectors) query(template(root, name).content, selector);
+
+        this.#document = M.parseDocument(this.#input.value, this.schema);
 
         this.#bindForm();
         this.#render();
@@ -101,7 +133,7 @@ export class FilterBuilder {
 
     /** Replaces the filter, such as with one loaded from somewhere else. */
     load(json: string | null | undefined): void {
-        this.#document = M.parseDocument(json);
+        this.#document = M.parseDocument(json, this.schema);
         this.#showErrors = false;
         this.#render();
         this.#sync(false);
@@ -122,6 +154,7 @@ export class FilterBuilder {
 
     #render(): void {
         this.#elements.clear();
+        this.#addButtons.clear();
 
         const host = query(this.root, "[data-eb-root]");
 
@@ -129,9 +162,25 @@ export class FilterBuilder {
         this.#sync(false);
 
         const focus = this.#focusAfterRender && this.#elements.get(this.#focusAfterRender);
+        const fallback = this.#focusFallback && this.#addButtons.get(this.#focusFallback);
 
         this.#focusAfterRender = undefined;
-        focus?.querySelector<HTMLElement>("select, input, button")?.focus();
+        this.#focusFallback = undefined;
+        (focus?.querySelector<HTMLElement>("select, input, button") ?? fallback)?.focus();
+    }
+
+    /**
+     * Something was removed from a group, which takes focus with it. Put it on whatever now sits in that place
+     * or, failing that, before it, or on the group's "add condition" button when the group is empty.
+     */
+    #focusNear(group: GroupNode, index: number): void {
+        this.#focusAfterRender = group.items[index] ?? group.items[index - 1];
+        this.#focusFallback = group;
+    }
+
+    /** An id that is unique on the page, for pointing one part of a builder at another. */
+    #id(kind: string): string {
+        return `${this.root.id || "eb"}-${kind}-${++this.#lastId}`;
     }
 
     /**
@@ -152,6 +201,11 @@ export class FilterBuilder {
         const addGroup = query<HTMLButtonElement>(element, "[data-eb-add-group]");
 
         this.#elements.set(group, element);
+        this.#addButtons.set(group, addCondition);
+
+        // The group is named after its heading
+        title.id = this.#id("title");
+        element.setAttribute("aria-labelledby", title.id);
 
         const collection =
             parent && group.collection ? M.findField(this.schema, parent.typeId, group.collection) : undefined;
@@ -166,23 +220,27 @@ export class FilterBuilder {
         remove.addEventListener("click", () => {
             if (!parent) return;
 
-            parent.group.items.splice(parent.group.items.indexOf(group), 1);
+            const index = parent.group.items.indexOf(group);
+
+            parent.group.items.splice(index, 1);
+            this.#focusNear(parent.group, index);
             this.#render();
             this.#changed();
         });
 
         group.items.forEach((item, index) => {
-            const li = document.createElement("li");
+            const li = clone(this.#templates.item);
 
-            li.className = "eb-item";
             li.append(
                 item.type === "group"
                     ? this.#renderGroup(item, M.typeIdOf(this.schema, typeId, item), { group, typeId })
                     : this.#renderCondition(item, typeId, group),
             );
-            items.append(li);
 
-            if (index < group.items.length - 1) items.append(this.#renderConnector(item));
+            // How an item joins the next belongs to the item, so the list only has items in it
+            if (index < group.items.length - 1) li.append(this.#renderConnector(item));
+
+            items.append(li);
         });
 
         empty.hidden = group.items.length > 0;
@@ -211,13 +269,9 @@ export class FilterBuilder {
     }
 
     #renderConnector(item: FilterNode): HTMLElement {
-        const li = document.createElement("li");
         const element = clone(this.#templates.connector);
         const select = query<HTMLSelectElement>(element, "[data-eb-connector]");
         const labels = this.schema.labels;
-
-        li.className = "eb-item eb-item-connector";
-        li.setAttribute("role", "presentation");
 
         select.options[0]!.text = labels.and;
         select.options[1]!.text = labels.or;
@@ -227,9 +281,7 @@ export class FilterBuilder {
             this.#changed();
         });
 
-        li.append(element);
-
-        return li;
+        return element;
     }
 
     #renderCondition(node: ConditionNode, typeId: string, parent: GroupNode): HTMLElement {
@@ -284,9 +336,29 @@ export class FilterBuilder {
             this.#changed();
         });
 
-        query(element, "[data-eb-remove]").addEventListener("click", () => {
-            parent.items.splice(parent.items.indexOf(node), 1);
+        const removeCondition = query<HTMLButtonElement>(element, "[data-eb-remove]");
+
+        removeCondition.setAttribute("aria-label", `${labels.removeCondition} ${number}`);
+        removeCondition.title = `${labels.removeCondition} ${number}`;
+        removeCondition.addEventListener("click", () => {
+            const index = parent.items.indexOf(node);
+
+            parent.items.splice(index, 1);
+            this.#focusNear(parent, index);
             this.#render();
+            this.#changed();
+        });
+
+        query<HTMLButtonElement>(element, "[data-eb-add-value]").addEventListener("click", () => {
+            node.values.push("");
+            this.#fillValues(
+                element,
+                node,
+                typeId,
+                M.findField(this.schema, typeId, node.field),
+                M.findOperation(this.schema, node.operation),
+            );
+            [...element.querySelectorAll<HTMLElement>("[data-eb-value] [data-eb-control]")].at(-1)?.focus();
             this.#changed();
         });
 
@@ -328,91 +400,129 @@ export class FilterBuilder {
         const operationSelect = query<HTMLSelectElement>(element, "[data-eb-operation]");
 
         operationSelect.replaceChildren(option("", labels.operationPlaceholder));
-
-        for (const operation of operations) operationSelect.append(option(operation.name, operation.label));
+        this.#appendOperations(operationSelect, operations);
 
         operationSelect.disabled = !field;
         operationSelect.value = operations.some((o) => o.name === node.operation) ? node.operation : "";
 
         const operation = M.findOperation(this.schema, operationSelect.value);
 
-        this.#fillValues(query(element, "[data-eb-values]"), node, field, operation);
+        this.#fillValues(element, node, typeId, field, operation);
         this.#fillOptions(element, node, field, operation);
     }
 
+    /**
+     * Adds the operations to the list. When some are custom they are listed under headings, the built-in
+     * ones first.
+     */
+    #appendOperations(select: HTMLSelectElement, operations: OperationSchema[]): void {
+        if (operations.every((o) => !o.group)) {
+            for (const operation of operations) select.append(option(operation.name, operation.label));
+
+            return;
+        }
+
+        const groups = new Map<string | undefined, OperationSchema[]>([[undefined, []]]);
+
+        for (const operation of operations) {
+            const members = groups.get(operation.group) ?? [];
+
+            members.push(operation);
+            groups.set(operation.group, members);
+        }
+
+        for (const [name, members] of groups) {
+            if (members.length === 0) continue;
+
+            const group = document.createElement("optgroup");
+
+            group.label = name ?? this.schema.labels.standardGroup;
+
+            for (const operation of members) group.append(option(operation.name, operation.label));
+
+            select.append(group);
+        }
+    }
+
     #fillValues(
-        container: HTMLElement,
+        element: HTMLElement,
         node: ConditionNode,
+        typeId: string,
         field: FieldSchema | undefined,
         operation: OperationSchema | undefined,
     ): void {
         const labels = this.schema.labels;
+        const container = query(element, "[data-eb-values]");
+        const add = query<HTMLButtonElement>(element, "[data-eb-add-value]");
 
         container.replaceChildren();
+        add.hidden = true;
 
         if (!field || !operation || operation.arity === "none") return;
 
         node.values.forEach((value, index) => {
-            const wrapper = document.createElement("span");
             const label =
                 operation.arity === "two" ? (index === 0 ? labels.valueFrom : labels.valueTo) : labels.value;
-            const input = this.#createInput(field, value, node.values.length > 1 && operation.arity === "many" ? `${label} ${index + 1}` : label);
-
-            wrapper.className = "eb-value";
-            wrapper.append(input);
+            const { row, control } = this.#createValue(
+                field,
+                value,
+                node.values.length > 1 && operation.arity === "many" ? `${label} ${index + 1}` : label,
+            );
 
             // What the input shows may be tidier than what was loaded (for example, a date without its time)
-            if (input.value !== value) node.values[index] = input.value;
+            if (control.value !== value) node.values[index] = control.value;
 
             const update = (): void => {
-                node.values[index] = input.value;
+                node.values[index] = control.value;
                 this.#changed();
             };
 
-            input.addEventListener("input", update);
-            input.addEventListener("change", update);
+            control.addEventListener("input", update);
+            control.addEventListener("change", update);
 
-            if (operation.arity === "two" && index === 0) {
-                const joiner = document.createElement("span");
+            const joiner = row.querySelector<HTMLElement>("[data-eb-value-joiner]");
 
-                joiner.className = "eb-value-joiner";
+            if (joiner && operation.arity === "two" && index === 0) {
                 joiner.textContent = labels.and.toLowerCase();
-                wrapper.append(joiner);
+                joiner.hidden = false;
             }
+
+            const remove = query<HTMLButtonElement>(row, "[data-eb-remove-value]");
 
             if (operation.arity === "many" && node.values.length > 1) {
-                const remove = button("eb-btn eb-btn-icon eb-btn-remove-value", "−", labels.removeValue);
-
+                remove.hidden = false;
+                remove.setAttribute("aria-label", `${labels.removeValue} ${index + 1}`);
+                remove.title = `${labels.removeValue} ${index + 1}`;
                 remove.addEventListener("click", () => {
                     node.values.splice(index, 1);
-                    this.#fillValues(container, node, field, operation);
+                    this.#fillValues(element, node, typeId, field, operation);
+
+                    const controls = [...container.querySelectorAll<HTMLElement>("[data-eb-control]")];
+
+                    controls[Math.min(index, controls.length - 1)]?.focus();
                     this.#changed();
                 });
-                wrapper.append(remove);
             }
 
-            container.append(wrapper);
+            container.append(row);
         });
 
-        if (operation.arity === "many") {
-            const add = button("eb-btn eb-btn-text eb-btn-add-value", labels.addValue, labels.addValue);
-
-            add.addEventListener("click", () => {
-                node.values.push("");
-                this.#fillValues(container, node, field, operation);
-                [...container.querySelectorAll<HTMLElement>(".eb-value input, .eb-value select")].at(-1)?.focus();
-                this.#changed();
-            });
-            container.append(add);
-        }
+        add.hidden = operation.arity !== "many";
     }
 
-    #createInput(field: FieldSchema, value: string, label: string): HTMLInputElement | HTMLSelectElement {
+    /** One value of a condition, made from the view's template: a box, or a list of choices. */
+    #createValue(
+        field: FieldSchema,
+        value: string,
+        label: string,
+    ): { row: HTMLElement; control: HTMLInputElement | HTMLSelectElement } {
         const labels = this.schema.labels;
+        const row = clone(this.#templates.value);
+        const input = query<HTMLInputElement>(row, '[data-eb-control="input"]');
+        const select = query<HTMLSelectElement>(row, '[data-eb-control="select"]');
         let control: HTMLInputElement | HTMLSelectElement;
 
         if (field.input === "select" || field.input === "boolean") {
-            const select = document.createElement("select");
             const choices =
                 field.input === "boolean"
                     ? [
@@ -421,6 +531,7 @@ export class FilterBuilder {
                       ]
                     : (field.options ?? []);
 
+            input.remove();
             select.append(option("", ""));
 
             for (const choice of choices) select.append(option(choice.value, choice.label));
@@ -428,8 +539,7 @@ export class FilterBuilder {
             select.value = choices.some((c) => c.value === value) ? value : "";
             control = select;
         } else {
-            const input = document.createElement("input");
-
+            select.remove();
             input.type = ["number", "date", "time", "datetime-local"].includes(field.input) ? field.input : "text";
 
             if (field.input === "number") {
@@ -441,15 +551,21 @@ export class FilterBuilder {
             control = input;
         }
 
-        control.className = "eb-input";
         control.setAttribute("aria-label", label);
 
-        return control;
+        const caption = row.querySelector<HTMLElement>("[data-eb-value-label]");
+
+        if (caption) caption.textContent = label;
+
+        return { row, control };
     }
 
     #bindOptions(element: HTMLElement, node: ConditionNode): void {
         const toggle = query<HTMLButtonElement>(element, "[data-eb-toggle-options]");
         const panel = query(element, "[data-eb-options]");
+
+        panel.id = this.#id("options");
+        toggle.setAttribute("aria-controls", panel.id);
 
         toggle.addEventListener("click", () => {
             const open = !this.#optionsOpen.has(node);
@@ -468,34 +584,76 @@ export class FilterBuilder {
             this.#changed();
         });
 
-        const replaceFind = query<HTMLInputElement>(element, "[data-eb-replace-find]");
-        const replaceWith = query<HTMLInputElement>(element, "[data-eb-replace-with]");
-        const replacePanel = query(element, "[data-eb-replace]");
+        this.#buildManipulators(element, node);
+    }
 
-        const updateReplace = (): void => {
-            M.toggleManipulator(node, { name: "Replace", find: replaceFind.value, with: replaceWith.value }, true);
+    /**
+     * Lists the adjustments the schema offers, from the view's templates: a checkbox for each, with a box for
+     * each thing it asks for, under a heading for the group (built-in or custom) it belongs to.
+     */
+    #buildManipulators(element: HTMLElement, node: ConditionNode): void {
+        const labels = this.schema.labels;
+        const host = query(element, "[data-eb-manipulators]");
+        const groups = new Map<string | undefined, HTMLElement>();
+        const headings = new Set(this.schema.manipulators.map((m) => m.group)).size > 1;
+
+        host.replaceChildren();
+
+        for (const manipulator of this.schema.manipulators) {
+            let items = groups.get(manipulator.group);
+
+            if (!items) {
+                const group = clone(this.#templates.manipulatorGroup);
+                const title = query(group, "[data-eb-manipulator-group-title]");
+
+                title.textContent = manipulator.group ?? labels.standardGroup;
+                title.hidden = !headings;
+                items = query(group, "[data-eb-manipulator-group-items]");
+                groups.set(manipulator.group, items);
+                host.append(group);
+            }
+
+            items.append(this.#createManipulator(manipulator, node));
+        }
+    }
+
+    #createManipulator(manipulator: ManipulatorSchema, node: ConditionNode): HTMLElement {
+        const item = clone(this.#templates.manipulator);
+        const box = query<HTMLInputElement>(item, "[data-eb-manipulator]");
+        const args = query(item, "[data-eb-manipulator-args]");
+
+        item.setAttribute("data-eb-manipulator-item", manipulator.name);
+        box.setAttribute("data-eb-manipulator", manipulator.name);
+        query(item, "[data-eb-manipulator-label]").textContent = manipulator.label;
+
+        const inputs = manipulator.parameters.map((parameter) => {
+            const input = clone<HTMLInputElement>(this.#templates.manipulatorArg);
+
+            input.placeholder = parameter.label;
+            input.setAttribute("aria-label", `${manipulator.label}: ${parameter.label}`);
+            args.append(input);
+
+            return input;
+        });
+
+        const current = (): ManipulatorNode =>
+            inputs.length > 0
+                ? { name: manipulator.name, args: inputs.map((input) => input.value) }
+                : { name: manipulator.name };
+
+        box.addEventListener("change", () => {
+            args.hidden = !box.checked || inputs.length === 0;
+            M.toggleManipulator(node, current(), box.checked);
             this.#changed();
-        };
+        });
 
-        replaceFind.addEventListener("input", updateReplace);
-        replaceWith.addEventListener("input", updateReplace);
-
-        for (const box of element.querySelectorAll<HTMLInputElement>("[data-eb-manipulator]")) {
-            box.addEventListener("change", () => {
-                const name = box.dataset.ebManipulator as "Trim" | "ToLower" | "ToUpper" | "Replace";
-
-                if (name === "Replace") {
-                    replacePanel.hidden = !box.checked;
-
-                    if (box.checked) updateReplace();
-                    else M.toggleManipulator(node, { name: "Replace" }, false);
-                } else {
-                    M.toggleManipulator(node, { name }, box.checked);
-                }
-
+        for (const input of inputs)
+            input.addEventListener("input", () => {
+                M.toggleManipulator(node, current(), true);
                 this.#changed();
             });
-        }
+
+        return item;
     }
 
     #fillOptions(
@@ -510,7 +668,25 @@ export class FilterBuilder {
         const manipulatorsWrap = query(element, "[data-eb-manipulators-wrap]");
 
         matchWrap.hidden = !(operation?.supportsMatch && operation.arity === "many");
-        manipulatorsWrap.hidden = !(field?.kind === "string" && operation && operation.arity !== "none");
+
+        const suited = new Set(M.manipulatorsFor(this.schema, field).map((m) => m.name));
+        const takesValues = operation !== undefined && operation.arity !== "none";
+
+        for (const item of element.querySelectorAll<HTMLElement>("[data-eb-manipulator-item]")) {
+            const name = item.getAttribute("data-eb-manipulator-item") ?? "";
+            const applied = M.hasManipulator(node, name);
+            const inputs = [...item.querySelectorAll<HTMLInputElement>("[data-eb-manipulator-arg]")];
+
+            item.hidden = !(takesValues && suited.has(name));
+            query<HTMLInputElement>(item, "[data-eb-manipulator]").checked = applied !== undefined;
+            inputs.forEach((input, index) => (input.value = applied?.args?.[index] ?? ""));
+            query(item, "[data-eb-manipulator-args]").hidden = applied === undefined || inputs.length === 0;
+        }
+
+        for (const group of element.querySelectorAll<HTMLElement>("[data-eb-manipulator-group]"))
+            group.hidden = ![...group.querySelectorAll<HTMLElement>("[data-eb-manipulator-item]")].some((i) => !i.hidden);
+
+        manipulatorsWrap.hidden = [...element.querySelectorAll<HTMLElement>("[data-eb-manipulator-item]")].every((i) => i.hidden);
 
         const available = !matchWrap.hidden || !manipulatorsWrap.hidden;
 
@@ -527,15 +703,6 @@ export class FilterBuilder {
         const match = query<HTMLSelectElement>(element, "[data-eb-match]");
 
         match.value = node.match ?? operation?.defaultMatch ?? "Any";
-
-        for (const box of element.querySelectorAll<HTMLInputElement>("[data-eb-manipulator]"))
-            box.checked = M.hasManipulator(node, box.dataset.ebManipulator ?? "") !== undefined;
-
-        const replace = M.hasManipulator(node, "Replace");
-
-        query(element, "[data-eb-replace]").hidden = !replace;
-        query<HTMLInputElement>(element, "[data-eb-replace-find]").value = replace?.find ?? "";
-        query<HTMLInputElement>(element, "[data-eb-replace-with]").value = replace?.with ?? "";
     }
 
     // -- Keeping the page and the posted value in step --------------------------------------
@@ -550,12 +717,13 @@ export class FilterBuilder {
         this.#issues = M.findIssues(this.schema, this.#document.root, this.schema.root);
 
         const labels = this.schema.labels;
+        const invalid = (this.root.dataset.ebInvalidClass ?? DEFAULT_INVALID_CLASS).split(/\s+/).filter(Boolean);
 
         for (const [node, element] of this.#elements) {
             const issue = this.#issues.find((i) => i.node === node);
             const show = this.#showErrors && issue !== undefined;
 
-            element.classList.toggle("eb-invalid", show);
+            for (const name of invalid) element.classList.toggle(name, show);
 
             if (node.type === "condition") {
                 query(element, "[data-eb-toggle-options]").toggleAttribute(
@@ -629,12 +797,12 @@ function template(root: HTMLElement, name: string): HTMLTemplateElement {
     return query<HTMLTemplateElement>(root, `template[data-eb-template="${name}"]`);
 }
 
-function clone(source: HTMLTemplateElement): HTMLElement {
+function clone<T extends HTMLElement = HTMLElement>(source: HTMLTemplateElement): T {
     const element = source.content.firstElementChild?.cloneNode(true);
 
     if (!(element instanceof HTMLElement)) throw new Error("A filter builder template is empty.");
 
-    return element;
+    return element as T;
 }
 
 function readSchema(root: HTMLElement): Schema {
@@ -648,18 +816,6 @@ function option(value: string, text: string): HTMLOptionElement {
 
     element.value = value;
     element.textContent = text;
-
-    return element;
-}
-
-function button(className: string, text: string, label: string): HTMLButtonElement {
-    const element = document.createElement("button");
-
-    element.type = "button";
-    element.className = className;
-    element.textContent = text;
-    element.setAttribute("aria-label", label);
-    element.title = label;
 
     return element;
 }

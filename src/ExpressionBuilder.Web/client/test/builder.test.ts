@@ -165,7 +165,7 @@ describe("choosing a property, a condition and a value", () => {
         fill(row, "Id", "In", "1");
 
         assert.equal(all(row, ".eb-value").length, 1);
-        assert.equal(all(row, ".eb-btn-remove-value").length, 0, "there is no point removing the only value");
+        assert.equal(all(row, ".eb-btn-remove-value:not([hidden])").length, 0, "there is no point removing the only value");
 
         click(one(row, ".eb-btn-add-value"));
         click(one(row, ".eb-btn-add-value"));
@@ -173,7 +173,7 @@ describe("choosing a property, a condition and a value", () => {
 
         assert.deepEqual(posted(page).root.items[0].values, ["1", "2", "3"]);
 
-        click(all(row, ".eb-btn-remove-value")[1]!);
+        click(all(row, ".eb-btn-remove-value:not([hidden])")[1]!);
 
         assert.deepEqual(posted(page).root.items[0].values, ["1", "3"]);
         assert.deepEqual(
@@ -533,19 +533,26 @@ describe("advanced options, a click away", () => {
         fill(row, "Name", "Equal", "a");
         open(row);
 
-        assert.equal(one(row, "[data-eb-replace]").hidden, true);
+        const item = one(row, '[data-eb-manipulator-item="Replace"]');
+        const args = one(item, "[data-eb-manipulator-args]");
+
+        assert.equal(args.hidden, true);
 
         const box = one<HTMLInputElement>(row, '[data-eb-manipulator="Replace"]');
 
         box.checked = true;
         box.dispatchEvent(new page.dom.window.Event("change", { bubbles: true }));
 
-        assert.equal(one(row, "[data-eb-replace]").hidden, false);
+        assert.equal(args.hidden, false);
 
-        type(one(row, "[data-eb-replace-find]"), " ");
-        type(one(row, "[data-eb-replace-with]"), "_");
+        const [find, replacement] = all(item, "[data-eb-manipulator-arg]");
 
-        assert.deepEqual(posted(page).root.items[0].manipulators, [{ name: "Replace", find: " ", with: "_" }]);
+        assert.deepEqual([find!.getAttribute("placeholder"), replacement!.getAttribute("placeholder")], ["Find", "Replace with"]);
+
+        type(find!, " ");
+        type(replacement!, "_");
+
+        assert.deepEqual(posted(page).root.items[0].manipulators, [{ name: "Replace", args: [" ", "_"] }]);
 
         box.checked = false;
         box.dispatchEvent(new page.dom.window.Event("change", { bubbles: true }));
@@ -554,7 +561,7 @@ describe("advanced options, a click away", () => {
     });
 
     it("shows loaded options, and keeps them open across other changes", () => {
-        const page = render(doc(condition("Name", "Contains", ["a", "b"], { match: "All", manipulators: [{ name: "ToUpper" }, { name: "Replace", find: "x", with: "y" }] })));
+        const page = render(doc(condition("Name", "Contains", ["a", "b"], { match: "All", manipulators: [{ name: "ToUpper" }, { name: "Replace", args: ["x", "y"] }] })));
         const row = conditions(page)[0]!;
 
         open(row);
@@ -562,8 +569,10 @@ describe("advanced options, a click away", () => {
         assert.equal(one<HTMLSelectElement>(row, "[data-eb-match]").value, "All");
         assert.equal(one<HTMLInputElement>(row, '[data-eb-manipulator="ToUpper"]').checked, true);
         assert.equal(one<HTMLInputElement>(row, '[data-eb-manipulator="Trim"]').checked, false);
-        assert.equal(one<HTMLInputElement>(row, "[data-eb-replace-find]").value, "x");
-        assert.equal(one<HTMLInputElement>(row, "[data-eb-replace-with]").value, "y");
+        assert.deepEqual(
+            all(row, "[data-eb-manipulator-arg]").map((i) => (i as HTMLInputElement).value),
+            ["x", "y"],
+        );
 
         click(one(page.root, "[data-eb-add-condition]"));
 
@@ -716,5 +725,98 @@ describe("tidying values for an input", () => {
         assert.equal(tidyForInput("datetime-local", "2024-01-10T09:30:15"), "2024-01-10T09:30:15");
         assert.equal(tidyForInput("time", "09:30:00"), "09:30:00");
         assert.equal(tidyForInput("text", "x"), "x");
+    });
+});
+
+describe("working without a mouse", () => {
+    function active(page: ReturnType<typeof render>): Element | null {
+        return page.document.activeElement;
+    }
+
+    it("puts focus on whatever took the place of a condition that was removed", () => {
+        const page = render();
+        const [first, second, third] = [addCondition(page), addCondition(page), addCondition(page)];
+
+        click(one(second!, "[data-eb-remove]"));
+
+        const rows = conditions(page);
+
+        assert.equal(rows.length, 2);
+        assert.ok(rows[1]!.contains(active(page)), "the one after it");
+
+        click(one(rows[1]!, "[data-eb-remove]"));
+
+        assert.ok(conditions(page)[0]!.contains(active(page)), "the one before it, when it was the last");
+
+        click(one(conditions(page)[0]!, "[data-eb-remove]"));
+
+        assert.equal(active(page)?.hasAttribute("data-eb-add-condition"), true, "the add button, when nothing is left");
+        assert.ok(first && third);
+    });
+
+    it("puts focus in the group when a group is removed", () => {
+        const page = render();
+
+        click(one(page.root, "[data-eb-add-group]"));
+        click(one(page.root, "[data-eb-group] [data-eb-group] [data-eb-remove-group]"));
+
+        assert.ok(page.root.contains(active(page)));
+        assert.notEqual(active(page), page.document.body);
+    });
+
+    it("puts focus on the value that took the place of one that was removed", () => {
+        const page = render();
+        const row = addCondition(page);
+
+        fill(row, "Name", "In", "a");
+        click(one(row, "[data-eb-add-value]"));
+        click(one(row, "[data-eb-add-value]"));
+
+        const [first, second] = all(row, "[data-eb-remove-value]:not([hidden])");
+
+        assert.equal(first?.getAttribute("aria-label"), "Remove value 1");
+        assert.equal(second?.getAttribute("aria-label"), "Remove value 2");
+
+        click(second!);
+
+        assert.equal(all(row, "[data-eb-value]").length, 2);
+        assert.equal(active(page), all(row, "[data-eb-control]")[1], "the value that is now in that place");
+    });
+
+    it("names a condition's remove button by its number, and a group by its heading", () => {
+        const page = render();
+
+        addCondition(page);
+        addCondition(page);
+
+        assert.deepEqual(
+            all(page.root, "[data-eb-remove]").map((b) => b.getAttribute("aria-label")),
+            ["Remove condition 1", "Remove condition 2"],
+        );
+
+        const group = one(page.root, "[data-eb-group]");
+        const title = one(group, "[data-eb-title]");
+
+        assert.ok(title.id);
+        assert.equal(group.getAttribute("aria-labelledby"), title.id);
+    });
+
+    it("points the options toggle at the options it opens", () => {
+        const page = render();
+        const row = addCondition(page);
+        const toggle = one(row, "[data-eb-toggle-options]");
+        const panel = one(row, "[data-eb-options]");
+
+        assert.ok(panel.id);
+        assert.equal(toggle.getAttribute("aria-controls"), panel.id);
+        assert.equal(new Set(all(page.root, "[id]").map((e) => e.id)).size, all(page.root, "[id]").length, "ids are unique");
+    });
+
+    it("announces a mistake", () => {
+        const page = render();
+
+        addCondition(page);
+
+        assert.equal(one(page.root, "[data-eb-error]").getAttribute("role"), "alert");
     });
 });

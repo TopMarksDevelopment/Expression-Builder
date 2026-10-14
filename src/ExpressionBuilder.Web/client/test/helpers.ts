@@ -62,10 +62,14 @@ export interface Page {
 }
 
 /** Puts the view in a page and starts the filter builder on it. */
-export function render(initial?: unknown, options: { schema?: Schema; rootAttributes?: Record<string, string> } = {}): Page {
+export function render(
+    initial?: unknown,
+    options: { schema?: Schema; rootAttributes?: Record<string, string>; html?: (html: string) => string } = {},
+): Page {
     const schema = options.schema ?? personSchema();
     const json = initial === undefined ? "" : typeof initial === "string" ? initial : JSON.stringify(initial);
-    const dom = new JSDOM(`<!doctype html><body><form>${viewHtml(schema, json)}<button id="submit">Go</button></form></body>`);
+    const view = options.html ? options.html(viewHtml(schema, json)) : viewHtml(schema, json);
+    const dom = new JSDOM(`<!doctype html><body><form>${view}<button id="submit">Go</button></form></body>`);
 
     const { window } = dom;
 
@@ -162,7 +166,7 @@ export function fill(row: HTMLElement, field: string, operation?: string, ...val
 
     if (operation) choose(one(row, "[data-eb-operation]"), operation);
 
-    all(row, "[data-eb-values] .eb-value :is(input, select)").forEach((control, i) => {
+    all(row, "[data-eb-values] [data-eb-value] [data-eb-control]").forEach((control, i) => {
         const value = values[i];
 
         if (value !== undefined) {
