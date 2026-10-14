@@ -65,7 +65,8 @@ $env:EB_E2E_BROWSERS = "chromium"; dotnet test tests/ExpressionBuilder.Web.E2E  
 
 The Entity Framework Core side is in `ExpressionBuilder.Web.Tests/EfCoreTests.cs`: every operation the builder offers is run
 against SQLite in memory and compared with the same filter run over the same objects, and the shapes people use (a collection, a
-collection inside a collection, a collection of plain values, text adjustments, nullable and date comparisons) assert on the SQL.
+collection inside a collection, a collection of plain values, text adjustments, nullable and date comparisons) assert on the SQL, and that values are parameters
+and share one entry in EF's query cache.
 
 ## Process-isolated tests
 

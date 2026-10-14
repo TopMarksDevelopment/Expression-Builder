@@ -47,6 +47,14 @@ walks the tree: `ExpressionExtensions.GetExpression` resolves the property chain
 collections as the operation's `NullHandler` asks) and hands the member to the operation's `Build`, which returns the
 boolean expression.
 
+**Values are variables, not constants.** The operations write the values they compare with as constants, and then
+`ToExpression()` replaces each plain value (text, numbers, dates, ids, enums, and lists of those) with a read of a small
+holder (`ValueHolder<T>.Value`; `Extensions/ValueParameters.cs`). A database provider sees a captured variable and sends a
+SQL parameter, where a constant would become text in the SQL: with constants every different value is a different query and
+a new entry in EF Core's query cache. `null`, `true`/`false` and the empty text stay constants because they are part of the
+query's shape. This is done once, over the finished tree, rather than in every operation, so a new operation gets it for free.
+`FilterExpressionExtensions.InlineValues()` undoes it (the expression-text tests use it to compare with hand-written lambdas).
+
 ## Operations are found by name
 
 A saved filter (JSON or protobuf) stores an operation as text (`"Between"`). `OperationRegistry` turns the name back

@@ -27,9 +27,10 @@ through over several sessions, not one task. Tick items off here (and delete the
   `aria-controls` / `role="alert"`, remove buttons were not numbered. `MapStaticAssets` and `UseStaticFiles` both serve the
   package's files once published; the only thing that broke a strict CSP was ASP.NET's own `asp-validation-summary` (an inline
   `style`), now documented. **Still to do by hand:** NVDA/JAWS and VoiceOver; keyboard use on a phone.
-- **Carry into section 4:** EF receives every filter value as a SQL literal, not a parameter (confirmed by
-  `EfCoreTests.ValuesAreLiteralsToday`, which will fail once that is fixed). Every distinct value is distinct SQL text and a new
-  query-cache entry.
+- **Values are SQL parameters (from section 4): done.** `ToExpression()` now keeps values in variables
+  (`Extensions/ValueParameters.cs`), so EF sends parameters and one query-cache entry serves every value
+  (`EfCoreTests.DifferentValuesShareACacheEntry`). `FilterExpressionExtensions.InlineValues()` restores constants; the
+  expression-text tests use it. Not yet measured: the saving, and the cost of the extra pass.
 
 The prompt below is paste-ready.
 
@@ -80,9 +81,8 @@ before handing back; and do not commit unless I ask. Stop and ask me where a dec
   medium / large filters; compiling vs hand-written LINQ; deserialising JSON and protobuf; OperationRegistry lookups (cold and
   warm); the web FilterCompiler (posted JSON -> Filter) and FilterSchema.For<T> (reflection per request: should it be cached?);
   the Razor view rendering with a large schema; allocations as well as time.
-- Investigate how constants are emitted. Filters embed values as Expression.Constant, which EF Core cannot parameterise, so every
-  distinct value can mean a new SQL string and a new entry in EF's query cache. Measure it. If it hurts, emit closure members
-  (Expression.Property on a small holder object) so values become parameters, behind tests that compare the produced SQL.
+- Constants: DONE (see Progress): values reach EF as parameters. Still to do: measure what it saves, and benchmark the
+  parameterising pass itself (it walks the finished tree once per ToExpression call).
 - Cache what is safe to cache (schema per type and options, reflection results) and prove it with the benchmarks.
 - Only if the results are good: add a short, honest "Performance" section to the README with the method and the numbers (hardware,
   .NET version, what was compared), commit the benchmark project so people can reproduce it, and draft an announcement.
