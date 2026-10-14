@@ -14,9 +14,6 @@ updates:
           roslyn:
               patterns:
                   - "Microsoft.CodeAnalysis.*"
-      # The generator's Roslyn is held back on purpose; see the comment in Directory.Packages.props
-      ignore:
-          - dependency-name: "Microsoft.CodeAnalysis.CSharp"
       open-pull-requests-limit: 10
 
     - package-ecosystem: npm
