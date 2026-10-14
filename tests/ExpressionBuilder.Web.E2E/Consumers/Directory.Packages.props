@@ -1,0 +1,3 @@
+<Project>
+  <!-- Deliberately empty: see Directory.Build.props. A consumer chooses its own package versions. -->
+</Project>

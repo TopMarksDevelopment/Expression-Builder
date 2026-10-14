@@ -1,0 +1,32 @@
+@page
+@model IndexModel
+
+<h1>Products (Razor Pages)</h1>
+
+<form method="post">
+    @* Not the validation-summary tag helper: it writes an inline style, which a strict policy refuses *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <ul id="errors">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    }
+    <filter-builder for="Search.Filter" type="typeof(Product)" />
+    <button type="submit">Search</button>
+</form>
+
+@if (Model.Search.Results != null)
+{
+    <h2 id="results-heading">@Model.Search.Results.Count @(Model.Search.Results.Count == 1 ? "product" : "products")</h2>
+    <table>
+        <tbody>
+            @foreach (var product in Model.Search.Results)
+            {
+                <tr><td>@product.Id</td><td>@product.Name</td><td>@product.Price</td></tr>
+            }
+        </tbody>
+    </table>
+}
