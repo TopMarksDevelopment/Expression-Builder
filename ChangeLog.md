@@ -32,6 +32,7 @@ All notable changes to this project will be documented in this file.
 -   The packages now target `net10.0` only; `net8.0` is no longer supported (its support ends in November 2026). Apps on .NET 8 or 9 should stay on the previous release or move to .NET 10
 -   The assemblies now have the same names as their packages (`TopMarksDevelopment.ExpressionBuilder.Core.dll`, not `Core.Src.dll`). Types and namespaces are unchanged, so code recompiles as it is; anything that refers to an assembly by name (`InternalsVisibleTo`, `Assembly.Load("Core.Src")`) needs updating
 -   `Operation` and `HelperMethods` are now `static class`es (they were `struct`s that only held static members). Source compatible; binary compatible code must be rebuilt
+-   `Filter<T>.ToExpression()` keeps the values a filter compares with in variables (`x.Name == value(…).Value`) instead of constants (`x.Name == "a"`), so a database provider sends them as parameters. Results are the same; code that inspects the expression for `ConstantExpression`s should use `InlineValues()` (see Core below)
 -   `TypeTracker` is obsolete and does nothing. Operations and manipulators are found by `OperationRegistry` / `ManipulatorRegistry`
 
 ### Changes (Overview)
@@ -59,6 +60,11 @@ A ready-made filter builder for ASP.NET Core, for MVC and Razor Pages. Users pic
 #### Added
 
 -   `OperationRegistry` and `ManipulatorRegistry`: find operations and manipulators by name, and register your own
+-   `FilterExpressionExtensions.InlineValues()` writes a filter's values back into its expression as constants
+
+#### Changed
+
+-   `ToExpression()` makes Entity Framework Core (and other providers that parameterise captured variables) send values as SQL parameters, not text. Every different value used to be different SQL and a new entry in EF's query cache; now one plan and one cache entry serve all of them. `null`, `true`/`false` and the empty text stay in the expression, as they are part of a query's shape
 
 #### Fixed
 
