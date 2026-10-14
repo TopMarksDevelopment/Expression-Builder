@@ -44,7 +44,7 @@ suite("parsing and writing", () => {
             type: "group",
             connector: "And",
             items: [
-                { ...condition("Name", "Contains", ["a", "b"]), connector: "Or", match: "All", manipulators: [{ name: "ToLower" }, { name: "Replace", find: " ", with: "" }] },
+                { ...condition("Name", "Contains", ["a", "b"]), connector: "Or", match: "All", manipulators: [{ name: "ToLower" }, { name: "Replace", args: [" ", ""] }] },
                 { type: "group", connector: "And", collection: "Contacts", items: [condition("Value", "StartsWith", ["0"])] },
             ],
         };
@@ -67,6 +67,7 @@ suite("parsing and writing", () => {
                     ],
                 },
             }),
+            schema,
         );
 
         assert.equal(parsed.root.items.length, 1);
@@ -275,7 +276,7 @@ suite("finding what is incomplete", () => {
     it("wants the text to find when replacing", () => {
         const c = condition("Name", "Equal", ["a"]);
 
-        M.toggleManipulator(c, { name: "Replace", find: "", with: "x" }, true);
+        M.toggleManipulator(c, { name: "Replace", args: ["", "x"] }, true);
 
         assert.equal(issues([c])[0]?.message, schema.labels.replaceFind);
     });

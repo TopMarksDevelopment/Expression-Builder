@@ -24,8 +24,6 @@ export type Connector = "And" | "Or";
 
 export type Matches = "Any" | "All";
 
-export type ManipulatorName = "Trim" | "ToLower" | "ToUpper" | "Replace";
-
 export interface EnumOption {
     value: string;
     label: string;
@@ -59,6 +57,25 @@ export interface OperationSchema {
     arity: ValueArity;
     supportsMatch: boolean;
     defaultMatch: Matches;
+    /** The heading it is listed under; absent for the built-in operations */
+    group?: string;
+}
+
+export interface ManipulatorParameter {
+    label: string;
+    required: boolean;
+}
+
+/** An adjustment of the text before it is compared. */
+export interface ManipulatorSchema {
+    name: string;
+    label: string;
+    /** What the user is asked for, in the order it is posted */
+    parameters: ManipulatorParameter[];
+    /** The kinds of property it suits */
+    kinds: FieldKind[];
+    /** The heading it is listed under; absent for the built-in manipulators */
+    group?: string;
 }
 
 export interface Labels {
@@ -88,6 +105,8 @@ export interface Labels {
     matchAny: string;
     matchAll: string;
     manipulators: string;
+    standardGroup: string;
+    customGroup: string;
     trim: string;
     toLower: string;
     toUpper: string;
@@ -105,13 +124,14 @@ export interface Schema {
     root: string;
     types: Record<string, TypeSchema>;
     operations: OperationSchema[];
+    manipulators: ManipulatorSchema[];
     labels: Labels;
 }
 
 export interface ManipulatorNode {
-    name: ManipulatorName;
-    find?: string;
-    with?: string;
+    name: string;
+    /** The text it was given, one item for each of its parameters */
+    args?: string[];
 }
 
 export interface ConditionNode {

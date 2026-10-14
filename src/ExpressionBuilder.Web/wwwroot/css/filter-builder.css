@@ -227,7 +227,38 @@
     gap: 0.25rem;
 }
 
-.eb-replace {
+.eb-manipulators {
+    display: grid;
+    gap: var(--eb-gap);
+}
+
+.eb-manipulator-group {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.eb-manipulator-group-title {
+    color: var(--eb-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.eb-manipulator-group-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--eb-gap);
+}
+
+.eb-manipulator {
+    align-items: center;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.eb-manipulator-args {
     align-items: center;
     display: inline-flex;
     flex-wrap: wrap;
