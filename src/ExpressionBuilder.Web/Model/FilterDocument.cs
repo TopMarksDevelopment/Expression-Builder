@@ -77,21 +77,13 @@ sealed class FilterNode
 }
 
 /// <summary>
-/// A change applied to a text property (and the values it is compared with).
+/// A change applied to a property (and the values it is compared with).
 /// </summary>
 sealed class ManipulatorNode
 {
-    public const string Trim = "Trim";
-    public const string ToLower = "ToLower";
-    public const string ToUpper = "ToUpper";
-    public const string Replace = "Replace";
-
-    /// <summary>One of <c>Trim</c>, <c>ToLower</c>, <c>ToUpper</c> or <c>Replace</c>.</summary>
+    /// <summary>The name of a manipulator the schema offers, such as <c>Trim</c> or <c>Replace</c>.</summary>
     public string? Name { get; set; }
 
-    /// <summary><c>Replace</c> only: the text to find.</summary>
-    public string? Find { get; set; }
-
-    /// <summary><c>Replace</c> only: the text to put in its place.</summary>
-    public string? With { get; set; }
+    /// <summary>The text the manipulator was given, one item for each of its parameters.</summary>
+    public List<string?>? Args { get; set; }
 }

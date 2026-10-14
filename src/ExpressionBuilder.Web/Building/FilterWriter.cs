@@ -100,9 +100,7 @@ sealed class FilterWriter(FilterSchema schema)
         };
     }
 
-    static List<ManipulatorNode>? WriteManipulators(
-        IFilterStatementOptions? options
-    )
+    List<ManipulatorNode>? WriteManipulators(IFilterStatementOptions? options)
     {
         if (options?.Manipulators?.Any() != true)
             return null;
@@ -110,29 +108,19 @@ sealed class FilterWriter(FilterSchema schema)
         return
         [
             .. options.Manipulators.Select(m =>
-                m switch
-                {
-                    ReplaceManipulator
-                    {
-                        Arguments: [string find, string with]
-                    } => new ManipulatorNode
-                    {
-                        Name = ManipulatorNode.Replace,
-                        Find = find,
-                        With = with,
-                    },
-                    ExpressionMethodManipulator
-                    {
-                        Name: ManipulatorNode.Trim
-                            or ManipulatorNode.ToLower
-                            or ManipulatorNode.ToUpper,
-                        Arguments: [],
-                    } => new ManipulatorNode { Name = m.Name },
-                    _ => throw new NotSupportedException(
-                        $"The \"{m.Name}\" adjustment can't be shown in the filter builder."
-                    ),
-                }
-            ),
+            {
+                foreach (var descriptor in schema.ManipulatorDescriptors.Values)
+                    if (descriptor.Read?.Invoke(m) is { } text)
+                        return new ManipulatorNode
+                        {
+                            Name = descriptor.Name,
+                            Args = text.Count > 0 ? [.. text] : null,
+                        };
+
+                throw new NotSupportedException(
+                    $"The \"{m.Name}\" adjustment can't be shown in the filter builder."
+                );
+            }),
         ];
     }
 

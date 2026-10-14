@@ -8,8 +8,10 @@ using TopMarksDevelopment.ExpressionBuilder.Api;
 /// </summary>
 /// <remarks>
 /// The built-in operations are described here. To offer an operation of your own, make sure it can be
-/// found by the <see cref="OperationRegistry"/> and describe it with <see cref="Register"/>. An
-/// operation is only offered if it is both described and registered.
+/// found by the <see cref="OperationRegistry"/> and describe it with
+/// <see cref="Register(OperationDescriptor)"/> (or do both with <see cref="Register{TOperation}"/>). An
+/// operation is only offered if it is both described and registered. Custom operations are kept apart
+/// from the built-in ones: they are listed under their own heading, and can't take a built-in name.
 /// </remarks>
 public static class OperationCatalog
 {
@@ -144,7 +146,7 @@ public static class OperationCatalog
         bool nullableOnly = false,
         bool supportsMatch = false
     ) =>
-        Register(
+        Store(
             new OperationDescriptor(
                 name,
                 label,
@@ -153,16 +155,13 @@ public static class OperationCatalog
                 nullableOnly,
                 supportsMatch
             )
+            {
+                IsBuiltIn = true,
+            }
         );
 
-    /// <summary>
-    /// Describes an operation, replacing the description of any operation with the same name.
-    /// </summary>
-    /// <param name="descriptor">The description</param>
-    public static void Register(OperationDescriptor descriptor)
+    static void Store(OperationDescriptor descriptor)
     {
-        ArgumentNullException.ThrowIfNull(descriptor);
-
         if (_descriptors.TryAdd(descriptor.Name, descriptor))
             lock (_orderLock)
                 _order.Add(descriptor.Name);
@@ -171,12 +170,81 @@ public static class OperationCatalog
     }
 
     /// <summary>
-    /// Forgets the description of an operation, so it is no longer offered.
+    /// Describes an operation of your own, so it is offered by every filter builder (apart from those that
+    /// leave it out). It is replaced if a custom operation of the same name was described before.
+    /// </summary>
+    /// <remarks>
+    /// The operation itself must also be findable by the <see cref="OperationRegistry"/>; see the generic
+    /// overload, which does both. A custom operation is listed apart from the built-in ones.
+    /// </remarks>
+    /// <param name="descriptor">The description</param>
+    /// <exception cref="InvalidOperationException">
+    /// The name belongs to a built-in operation. Use <see cref="FilterBuilderOptions.OperationLabels"/> to
+    /// change its text, or <see cref="FilterBuilderOptions.ExcludeOperations"/> to leave it out.
+    /// </exception>
+    public static void Register(OperationDescriptor descriptor)
+    {
+        ArgumentNullException.ThrowIfNull(descriptor);
+        ThrowIfBuiltIn(descriptor.Name);
+
+        // A custom operation is always shown as one, whatever the descriptor says
+        Store(descriptor with { IsBuiltIn = false });
+    }
+
+    /// <summary>
+    /// Registers an operation so it can be found by name, and describes it for the filter builder.
+    /// </summary>
+    /// <typeparam name="TOperation">The operation</typeparam>
+    /// <param name="descriptor">The description, whose name must be the operation's name</param>
+    public static void Register<TOperation>(OperationDescriptor descriptor)
+        where TOperation : IOperation, new()
+    {
+        ArgumentNullException.ThrowIfNull(descriptor);
+        EnsureNamesMatch<TOperation>(descriptor);
+
+        OperationRegistry.Register<TOperation>();
+        Register(descriptor);
+    }
+
+    internal static void EnsureNamesMatch<TOperation>(
+        OperationDescriptor descriptor
+    )
+        where TOperation : IOperation, new()
+    {
+        var name = new TOperation().Name;
+
+        if (!string.Equals(name, descriptor.Name, StringComparison.Ordinal))
+            throw new ArgumentException(
+                $"The operation is named \"{name}\", but it is described as \"{descriptor.Name}\".",
+                nameof(descriptor)
+            );
+    }
+
+    internal static void ThrowIfBuiltIn(string name)
+    {
+        if (
+            _descriptors.TryGetValue(name, out var existing)
+            && existing.IsBuiltIn
+        )
+            throw new InvalidOperationException(
+                $"\"{name}\" is a built-in operation, so it can't be replaced."
+            );
+    }
+
+    /// <summary>
+    /// Forgets the description of a custom operation, so it is no longer offered. A built-in operation
+    /// can't be forgotten: leave it out of a builder with <see cref="FilterBuilderOptions.ExcludeOperations"/>.
     /// </summary>
     /// <param name="name">The operation's <see cref="IOperation.Name"/></param>
     /// <returns>True if it was described</returns>
     public static bool Unregister(string name)
     {
+        if (
+            _descriptors.TryGetValue(name, out var existing)
+            && existing.IsBuiltIn
+        )
+            return false;
+
         lock (_orderLock)
             _order.Remove(name);
 

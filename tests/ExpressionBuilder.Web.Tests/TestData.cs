@@ -2,6 +2,7 @@ namespace ExpressionBuilder.Web.Tests;
 
 using System.Text.Json;
 using ExpressionBuilder.Web.Tests.Models;
+using TopMarksDevelopment.ExpressionBuilder.Web;
 
 /// <summary>
 /// People to filter, and a short way of writing the filters the browser posts.
@@ -181,6 +182,33 @@ static class TestData
             .JsonIgnoreCondition
             .WhenWritingNull,
     };
+
+    /// <summary>Values that suit a property and an operation, for trying every combination.</summary>
+    public static string[] ValuesFor(
+        FieldSchema field,
+        OperationSchema operation
+    )
+    {
+        var one = field.Kind switch
+        {
+            FieldKind.Number => "5",
+            FieldKind.Date => "2000-01-01",
+            FieldKind.DateTime => "2000-01-01T10:00",
+            FieldKind.Time => "10:00",
+            FieldKind.Boolean => "true",
+            FieldKind.Enum => field.Options![0].Value,
+            FieldKind.Guid => GuidOne.ToString(),
+            _ => "a",
+        };
+
+        return operation.Arity switch
+        {
+            ValueArity.None => [],
+            ValueArity.One => [one],
+            ValueArity.Two => [one, one],
+            _ => [one, one],
+        };
+    }
 
     /// <summary>A document with the given items at the top.</summary>
     public static string Doc(params object[] items) =>

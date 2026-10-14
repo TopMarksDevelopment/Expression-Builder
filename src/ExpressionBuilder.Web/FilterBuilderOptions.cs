@@ -17,6 +17,16 @@ using System.Reflection;
 public sealed class FilterBuilderOptions
 {
     readonly HashSet<PropertyInfo> _excluded = [];
+    readonly HashSet<string> _excludedOperations = new(StringComparer.Ordinal);
+    readonly Dictionary<string, OperationDescriptor> _addedOperations = new(
+        StringComparer.Ordinal
+    );
+    readonly HashSet<string> _excludedManipulators = new(
+        StringComparer.Ordinal
+    );
+    readonly Dictionary<string, ManipulatorDescriptor> _addedManipulators = new(
+        StringComparer.Ordinal
+    );
 
     /// <summary>
     /// How deeply groups can be nested. The top level group counts as the first.
@@ -59,6 +69,137 @@ public sealed class FilterBuilderOptions
     /// </summary>
     public IDictionary<string, string> OperationLabels { get; } =
         new Dictionary<string, string>(StringComparer.Ordinal);
+
+    /// <summary>
+    /// Replacements for the text of manipulators, by name, such as <c>["Trim"] = "Remove spaces"</c>.
+    /// </summary>
+    public IDictionary<string, string> ManipulatorLabels { get; } =
+        new Dictionary<string, string>(StringComparer.Ordinal);
+
+    /// <summary>
+    /// The most adjustments ("manipulators") a single condition can have.
+    /// </summary>
+    public int MaxManipulatorsPerCondition { get; set; } = 8;
+
+    /// <summary>
+    /// Leaves operations out of the filter builder, whether built-in or custom, by
+    /// <see cref="Api.IOperation.Name"/>. A post that uses one is refused.
+    /// </summary>
+    /// <param name="names">The names of the operations</param>
+    /// <returns>These options, so calls can be chained</returns>
+    public FilterBuilderOptions ExcludeOperations(params string[] names)
+    {
+        ArgumentNullException.ThrowIfNull(names);
+
+        foreach (var name in names)
+            _excludedOperations.Add(name);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Offers an operation of your own in this filter builder only. It must also be findable by the
+    /// <see cref="OperationRegistry"/>; use <see cref="AddOperation{TOperation}"/> to do both.
+    /// </summary>
+    /// <param name="descriptor">The description</param>
+    /// <returns>These options, so calls can be chained</returns>
+    /// <exception cref="InvalidOperationException">The name belongs to a built-in operation</exception>
+    public FilterBuilderOptions AddOperation(OperationDescriptor descriptor)
+    {
+        ArgumentNullException.ThrowIfNull(descriptor);
+        OperationCatalog.ThrowIfBuiltIn(descriptor.Name);
+
+        _addedOperations[descriptor.Name] = descriptor with
+        {
+            IsBuiltIn = false,
+        };
+
+        return this;
+    }
+
+    /// <summary>
+    /// Registers an operation so it can be found by name, and offers it in this filter builder only.
+    /// </summary>
+    /// <typeparam name="TOperation">The operation</typeparam>
+    /// <param name="descriptor">The description, whose name must be the operation's name</param>
+    /// <returns>These options, so calls can be chained</returns>
+    public FilterBuilderOptions AddOperation<TOperation>(
+        OperationDescriptor descriptor
+    )
+        where TOperation : Api.IOperation, new()
+    {
+        ArgumentNullException.ThrowIfNull(descriptor);
+        OperationCatalog.EnsureNamesMatch<TOperation>(descriptor);
+        OperationRegistry.Register<TOperation>();
+
+        return AddOperation(descriptor);
+    }
+
+    /// <summary>
+    /// Leaves manipulators out of the filter builder, whether built-in or custom, by name. A post that uses
+    /// one is refused.
+    /// </summary>
+    /// <param name="names">The names of the manipulators</param>
+    /// <returns>These options, so calls can be chained</returns>
+    public FilterBuilderOptions ExcludeManipulators(params string[] names)
+    {
+        ArgumentNullException.ThrowIfNull(names);
+
+        foreach (var name in names)
+            _excludedManipulators.Add(name);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Offers a manipulator of your own in this filter builder only.
+    /// </summary>
+    /// <param name="descriptor">The description</param>
+    /// <returns>These options, so calls can be chained</returns>
+    /// <exception cref="InvalidOperationException">The name belongs to a built-in manipulator</exception>
+    public FilterBuilderOptions AddManipulator(ManipulatorDescriptor descriptor)
+    {
+        ArgumentNullException.ThrowIfNull(descriptor);
+        ManipulatorCatalog.ThrowIfBuiltIn(descriptor.Name);
+
+        _addedManipulators[descriptor.Name] = descriptor;
+
+        return this;
+    }
+
+    /// <summary>
+    /// The operations this builder offers: the ones described for every builder, and the ones added here,
+    /// less the ones left out; as long as they can be found by the <see cref="OperationRegistry"/>.
+    /// </summary>
+    internal IReadOnlyList<OperationDescriptor> GetOperations() =>
+        [
+            .. OperationCatalog
+                .GetAvailable()
+                .Where(o =>
+                    !_excludedOperations.Contains(o.Name)
+                    && !_addedOperations.ContainsKey(o.Name)
+                ),
+            .. _addedOperations.Values.Where(o =>
+                !_excludedOperations.Contains(o.Name)
+                && OperationRegistry.TryGet(o.Name, out _)
+            ),
+        ];
+
+    /// <summary>
+    /// The manipulators this builder offers.
+    /// </summary>
+    internal IReadOnlyList<ManipulatorDescriptor> GetManipulators() =>
+        [
+            .. ManipulatorCatalog
+                .GetAvailable()
+                .Where(m =>
+                    !_excludedManipulators.Contains(m.Name)
+                    && !_addedManipulators.ContainsKey(m.Name)
+                ),
+            .. _addedManipulators.Values.Where(m =>
+                !_excludedManipulators.Contains(m.Name)
+            ),
+        ];
 
     /// <summary>
     /// Stops properties from being filtered on, as <see cref="FilterBuilderIgnoreAttribute"/> does

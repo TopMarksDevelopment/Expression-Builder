@@ -36,11 +36,12 @@ sealed partial class SchemaBuilder(FilterBuilderOptions options)
     readonly Dictionary<Type, string> _ids = [];
     readonly Dictionary<string, TypeSchema> _types = [];
     readonly IReadOnlyList<OperationDescriptor> _operations =
-        OperationCatalog.GetAvailable();
+        options.GetOperations();
 
     public FilterSchema Build(Type root)
     {
         var rootId = AddType(root);
+        var manipulators = options.GetManipulators();
 
         return new FilterSchema(
             rootId,
@@ -53,10 +54,64 @@ sealed partial class SchemaBuilder(FilterBuilderOptions options)
                         : o.Label,
                     o.Arity,
                     o.SupportsMatch,
-                    OperationRegistry.Get(o.Name).Defaults.Match.ToString()
+                    OperationRegistry.Get(o.Name).Defaults.Match.ToString(),
+                    GroupOf(o.IsBuiltIn, o.Group)
                 ))
                 .ToList(),
-            options.Labels
+            manipulators.Select(ManipulatorSchemaFor).ToList(),
+            options.Labels,
+            _operations.ToDictionary(o => o.Name, StringComparer.Ordinal),
+            manipulators.ToDictionary(m => m.Name, StringComparer.Ordinal)
+        );
+    }
+
+    /// <summary>
+    /// Built-in operations and manipulators have no heading; a custom one is under its own, or the
+    /// general one for custom things.
+    /// </summary>
+    string? GroupOf(bool builtIn, string? group) =>
+        builtIn
+            ? null
+            : (
+                string.IsNullOrWhiteSpace(group)
+                    ? options.Labels.CustomGroup
+                    : group
+            );
+
+    ManipulatorSchema ManipulatorSchemaFor(ManipulatorDescriptor m)
+    {
+        var labels = options.Labels;
+
+        // The built-in manipulators take their text from the labels, so they translate with the rest
+        var (label, parameters) = m.IsBuiltIn
+            ? m.Name switch
+            {
+                "Trim" => (labels.Trim, m.Parameters),
+                "ToLower" => (labels.ToLower, m.Parameters),
+                "ToUpper" => (labels.ToUpper, m.Parameters),
+                "Replace" => (
+                    labels.Replace,
+                    (IReadOnlyList<ManipulatorParameter>)
+                        [
+                            new ManipulatorParameter(labels.ReplaceFind),
+                            new ManipulatorParameter(
+                                labels.ReplaceWith,
+                                Required: false
+                            ),
+                        ]
+                ),
+                _ => (m.Label, m.Parameters),
+            }
+            : (m.Label, m.Parameters);
+
+        return new ManipulatorSchema(
+            m.Name,
+            options.ManipulatorLabels.TryGetValue(m.Name, out var replaced)
+                ? replaced
+                : label,
+            parameters,
+            [.. m.Kinds],
+            GroupOf(m.IsBuiltIn, m.Group)
         );
     }
 

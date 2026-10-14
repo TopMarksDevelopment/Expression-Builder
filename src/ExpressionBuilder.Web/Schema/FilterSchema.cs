@@ -28,13 +28,22 @@ public sealed class FilterSchema
         string root,
         IReadOnlyDictionary<string, TypeSchema> types,
         IReadOnlyList<OperationSchema> operations,
-        FilterBuilderLabels labels
+        IReadOnlyList<ManipulatorSchema> manipulators,
+        FilterBuilderLabels labels,
+        IReadOnlyDictionary<string, OperationDescriptor> operationDescriptors,
+        IReadOnlyDictionary<
+            string,
+            ManipulatorDescriptor
+        > manipulatorDescriptors
     )
     {
         Root = root;
         Types = types;
         Operations = operations;
+        Manipulators = manipulators;
         Labels = labels;
+        OperationDescriptors = operationDescriptors;
+        ManipulatorDescriptors = manipulatorDescriptors;
     }
 
     /// <summary>
@@ -51,6 +60,11 @@ public sealed class FilterSchema
     /// The operations on offer.
     /// </summary>
     public IReadOnlyList<OperationSchema> Operations { get; }
+
+    /// <summary>
+    /// The adjustments ("manipulators") on offer.
+    /// </summary>
+    public IReadOnlyList<ManipulatorSchema> Manipulators { get; }
 
     /// <summary>
     /// The text of the filter builder.
@@ -84,6 +98,19 @@ public sealed class FilterSchema
     /// Gets the schema in the form the script reads.
     /// </summary>
     public string ToJson() => JsonSerializer.Serialize(this, JsonOptions);
+
+    // What a posted name makes is decided by these, not by anything in the post
+    [JsonIgnore]
+    internal IReadOnlyDictionary<
+        string,
+        OperationDescriptor
+    > OperationDescriptors { get; }
+
+    [JsonIgnore]
+    internal IReadOnlyDictionary<
+        string,
+        ManipulatorDescriptor
+    > ManipulatorDescriptors { get; }
 
     internal FieldSchema? FindField(string typeId, string path) =>
         Types.TryGetValue(typeId, out var type)
@@ -153,10 +180,28 @@ public sealed record EnumOption(string Value, string Label);
 /// <param name="Arity">How many values it takes</param>
 /// <param name="SupportsMatch">Whether the user can choose to match any or all of several values</param>
 /// <param name="DefaultMatch">Which of them is matched unless the user chooses: <c>Any</c> or <c>All</c></param>
+/// <param name="Group">The heading it is listed under, or <c>null</c> for the built-in operations</param>
 public sealed record OperationSchema(
     string Name,
     string Label,
     ValueArity Arity,
     bool SupportsMatch,
-    string DefaultMatch
+    string DefaultMatch,
+    string? Group = null
+);
+
+/// <summary>
+/// A manipulator ("adjust the text before comparing") on offer.
+/// </summary>
+/// <param name="Name">The name of the manipulator, which is what is posted</param>
+/// <param name="Label">What the user sees</param>
+/// <param name="Parameters">What the user is asked for, in the order it is posted</param>
+/// <param name="Kinds">The kinds of property it suits</param>
+/// <param name="Group">The heading it is listed under, or <c>null</c> for the built-in manipulators</param>
+public sealed record ManipulatorSchema(
+    string Name,
+    string Label,
+    IReadOnlyList<ManipulatorParameter> Parameters,
+    IReadOnlyList<FieldKind> Kinds,
+    string? Group = null
 );
