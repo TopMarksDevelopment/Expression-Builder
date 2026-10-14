@@ -10,10 +10,10 @@
         "check": "npm run build && npm test"
     },
     "devDependencies": {
-        "@types/jsdom": "^21.1.7",
+        "@types/jsdom": "^30.0.0",
         "@types/node": "^22.20.5",
         "esbuild": "^0.28.2",
-        "jsdom": "^26.1.0",
-        "typescript": "~5.9.3"
+        "jsdom": "^29.1.1",
+        "typescript": "~7.0.2"
     }
 }
