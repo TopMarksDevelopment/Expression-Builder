@@ -67,6 +67,7 @@ fails without the fix. Run before hand-off:
 dotnet build ExpressionBuilder.sln
 dotnet test ExpressionBuilder.sln
 cd src/ExpressionBuilder.Web/client; npm ci; npm run check   # only when the web client changed
+dotnet test tests/ExpressionBuilder.Web.E2E                  # only when the builder's markup, script or packaging changed (needs browsers)
 dotnet csharpier check src tests samples tools
 ```
 

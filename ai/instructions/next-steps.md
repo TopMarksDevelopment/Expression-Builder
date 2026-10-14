@@ -14,8 +14,22 @@ through over several sessions, not one task. Tick items off here (and delete the
   (majors, pinned by commit SHA); the audits (no vulnerabilities in NuGet or npm). `global.json` now requires SDK 10.0.402+
   (Roslyn 5.9), which is what lets the generator reference `Microsoft.CodeAnalysis.CSharp` 5.9.0. xunit v2 is flagged "Legacy"
   on NuGet; migrating to xunit.v3 is in section 6.
-- **Carry into section 3:** the sample serves `_content/...` assets only in Development (it uses `UseStaticFiles()`); check
-  `MapStaticAssets` and the published, non-Development case.
+- **Customisation (between sections 2 and 3): done.** Custom operations and manipulators are opt-in by description
+  (`OperationCatalog` / `ManipulatorCatalog`, or `options.AddOperation` / `AddManipulator` for one builder), listed apart from the
+  built-in ones, cannot take a built-in name, and any builder can leave things out (`ExcludeOperations` / `ExcludeManipulators`).
+  The posted form of an adjustment is now `{ name, args[] }`. The script adds no classes of its own: everything it creates is
+  cloned from a `<template>` in the view, and `data-eb-invalid-class` names the incomplete-condition classes.
+- **Section 3 (prove it works for real): done, except a human screen-reader pass.** `tests/ExpressionBuilder.Web.E2E` (not in the
+  solution; its own CI job `browsers`): Playwright in Chromium, Firefox and WebKit, axe (light and dark), keyboard-only flows, and
+  apps built from the packed packages, published and run in Production under a strict CSP. `EfCoreTests` runs every offered
+  operation through SQLite and compares with in-memory. Found and fixed: the list had `role="presentation"` children (connector
+  now lives inside its item), focus was lost after removing a condition, group or value, the options toggle and error had no
+  `aria-controls` / `role="alert"`, remove buttons were not numbered. `MapStaticAssets` and `UseStaticFiles` both serve the
+  package's files once published; the only thing that broke a strict CSP was ASP.NET's own `asp-validation-summary` (an inline
+  `style`), now documented. **Still to do by hand:** NVDA/JAWS and VoiceOver; keyboard use on a phone.
+- **Carry into section 4:** EF receives every filter value as a SQL literal, not a parameter (confirmed by
+  `EfCoreTests.ValuesAreLiteralsToday`, which will fail once that is fixed). Every distinct value is distinct SQL text and a new
+  query-cache entry.
 
 The prompt below is paste-ready.
 
@@ -51,7 +65,7 @@ before handing back; and do not commit unless I ask. Stop and ask me where a dec
 - Run `dotnet list package --outdated --vulnerable --include-transitive` and `npm audit`; fix or justify each finding.
 - One commit per ecosystem (nuget, npm, actions, tools) so a regression is easy to bisect.
 
-## 3. Prove the web builder works for real (the things not yet covered)
+## 3. Prove the web builder works for real (DONE - skip; see Progress)
 - Add a Playwright smoke test (new tests project, or run from the client folder) that opens the sample app, builds a filter by
   clicking, posts, and checks the results. Cover Chromium, Firefox and WebKit, including date and datetime-local inputs.
 - Accessibility: run axe in those tests, then do a keyboard-only and screen-reader pass; fix what it finds (focus after add/remove,

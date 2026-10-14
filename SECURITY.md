@@ -22,11 +22,20 @@ The library turns descriptions of a filter into expressions that run against you
 | What the web filter builder posts (`FilterBuilderModel.Json`) | **No**                 | Plain text only. Properties, operations and values are validated against the schema before anything is built; see below.               |
 | Operation and manipulator names                             | Looked up, never created | `OperationRegistry`/`ManipulatorRegistry` only return types that implement the interface. A _method_ manipulator (`x => x.Name.Trim()`) is stored as a CLR type and method name and run on the value; static methods are refused when a filter is read, but that is a second reason to treat the library's own JSON as trusted-only. |
 
+### Operations and manipulators of your own
+
+The web filter builder offers an operation or manipulator of yours only if your app has described it (`OperationCatalog`,
+`ManipulatorCatalog`, or the options of one builder), and a browser can only choose it by name. Installing a package that
+contains one is not enough, and a name that was not described is refused, so a post cannot reach any other type or method.
+Custom ones are listed apart from the built-in ones and cannot take a built-in name. Once described, though, your code
+runs on what the user typed: check it in `IEntityManipulator.Validate` / your operation's `Validate`, throw an
+`ArgumentException` with a message fit for the user, and remember that text can be up to `MaxValueLength` characters.
+
 ### What the web filter builder enforces
 
 A property path is only ever looked up in the schema (never used to reach into the class); an operation must suit the property;
 values are parsed as the property's type (enum values must be a member name); adjustments are chosen from a fixed list and apply
-to text only; and the sizes of a filter (conditions, values, value length, group depth, payload) are limited
+to text only; and the sizes of a filter (conditions, values, value length, group depth, adjustments, payload) are limited
 (`FilterBuilderOptions`). Posted text is never rendered as markup, and the form is protected by ASP.NET Core's anti-forgery token
 in the usual way.
 

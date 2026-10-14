@@ -98,6 +98,13 @@ See [web-filter-builder.md](../web-filter-builder.md) for use. Design points tha
 
 - **One schema, two readers.** `FilterSchema` is built by reflection and serialised for the script; the same object checks
   the posted filter, so the browser and the server cannot disagree about what is allowed.
+- **Custom operations and manipulators are opt-in, by description.** An `IOperation` or `IEntityManipulator` is offered
+  only when the app describes it (`OperationCatalog` / `ManipulatorCatalog`, or `FilterBuilderOptions.AddOperation` /
+  `AddManipulator` for one builder). The schema built from those descriptions is also what a post is checked against, so
+  a browser can only choose a described thing *by name*; what the name makes is decided by the descriptor's factory.
+  Built-in and custom are kept apart (separate groups in the UI, and a custom one can't take a built-in name), so nothing
+  can quietly replace `Equal` or `Trim`. We do not resolve a posted name through `OperationRegistry` /
+  `ManipulatorRegistry` alone: that would make *every* installed manipulator reachable from a browser.
 - **The wire format is not the library's JSON.** The library's JSON names .NET types (`propertyType`) and would let a browser
   pick one. The builder posts plain text (property path, operation name, string values) which `FilterCompiler` validates and
   only then turns into statements.

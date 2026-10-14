@@ -9,7 +9,7 @@ post to a page. This guide covers how it fits together, how to set it up, and ho
 - [What can be filtered](#what-can-be-filtered)
 - [Showing a saved filter](#showing-a-saved-filter)
 - [Settings and text](#settings-and-text)
-- [Custom operations](#custom-operations)
+- [Custom operations and manipulators](#custom-operations-and-manipulators)
 - [Changing the markup and the look](#changing-the-markup-and-the-look)
 - [Working with the script](#working-with-the-script)
 - [The posted format](#the-posted-format)
@@ -141,7 +141,8 @@ var result = search.Filter.Build<Product>(options.Value);
 - **Group** conditions in brackets ("Add group"), as deeply as the settings allow.
 - **Advanced options**, behind the gear on a condition:
   - *When there are several values, match any/all of them* (where that makes sense for the operation);
-  - *Adjust the text before comparing*: trim spaces, lower case, upper case, replace text.
+  - *Adjust the text before comparing*: trim spaces, lower case, upper case, replace text. Your own adjustments are listed in a group of their own
+    ([custom operations and manipulators](#custom-operations-and-manipulators)).
 - A live sentence under the builder says what the filter means. An incomplete condition is highlighted, and the form is
   not posted until it is complete (add `data-eb-novalidate` to the builder's element to leave that to the server).
 
@@ -208,23 +209,86 @@ uses a property that is ignored, or a manipulator the builder does not know.
 | `MaxNavigationDepth`    | 2       | Names in a property path (`Name` = 1, `Birth.Country` = 2).       |
 | `Labels`                | English | All the text of the builder (`FilterBuilderLabels`).              |
 | `OperationLabels`       | -       | Replace an operation's text: `["Equal"] = "Is"`.                  |
+| `ManipulatorLabels`     | -       | Replace an adjustment's text: `["Trim"] = "Remove spaces"`.        |
+| `MaxManipulatorsPerCondition` | 8 | Adjustments on one condition.                                     |
 
 Because the labels are in the options, the same text is used by the Razor view and by the script - translate them once.
 
-## Custom operations
+## Custom operations and manipulators
 
-An operation appears in the list when it is **registered** (so it can be found by name) **and described** (so the builder
-knows what to call it and what it suits):
+You can add operations and manipulators ("adjust the text before comparing") of your own to fill gaps in the built-in ones.
+They are ordinary Expression Builder extensions - an `IOperation` and an `IEntityManipulator` - so they work in code and
+in saved filters as they always have. What this section adds is the part that is specific to the browser:
+
+- **You opt in.** Nothing is offered just because an assembly is installed. An operation or manipulator reaches the
+  builder only when your app _describes_ it (below). That description is also what a post is checked against, so a
+  browser can only ever choose one of them **by name**; it can never name a type or a method.
+- **They are listed apart.** Built-in ones are never mixed with yours: custom operations appear in the list under their
+  own heading (`Custom` by default, or the group you name), and custom manipulators in their own group in the options.
+  The headings only appear when you have added something.
+- **They can't impersonate a built-in one.** Describing something with a built-in name (`Equal`, `Trim`…) throws. To
+  change a built-in's wording use `OperationLabels` / `ManipulatorLabels`; to hide it use `ExcludeOperations` /
+  `ExcludeManipulators`.
+
+### An operation
 
 ```csharp
-OperationRegistry.Register<IsWeekend>();                    // from the core package
+public class IsWeekend : IOperation { /* Name => "IsWeekend", Build(...) */ }
 
-OperationCatalog.Register(new OperationDescriptor(
+var descriptor = new OperationDescriptor(
     Name: "IsWeekend",
     Label: "Is at the weekend",
-    Arity: ValueArity.None,
-    Kinds: new HashSet<FieldKind> { FieldKind.Date, FieldKind.DateTime }));
+    Arity: ValueArity.None,                                   // None, One, Two or Many values
+    Kinds: new HashSet<FieldKind> { FieldKind.Date, FieldKind.DateTime },
+    Group: "Dates");                                          // optional heading; "Custom" if left out
+
+// For every builder in the app...
+OperationCatalog.Register<IsWeekend>(descriptor);
+
+// ...or for one builder only
+services.AddFilterBuilder(options => options.AddOperation<IsWeekend>(descriptor));
 ```
+
+`Register<T>` also registers the operation with `OperationRegistry`, which is what lets a _saved_ filter find it by name;
+use the non-generic `Register(descriptor)` if you register it yourself (for example with `RegisterAssembly`). An operation
+that is described but cannot be found by the registry is not offered. An operation can only use the value shapes and
+property kinds above; for anything else, build the filter in code.
+
+### A manipulator
+
+A manipulator class implements `IEntityManipulator` (`Name`, `Arguments`, `ManipulateMember`, `ManipulateValue`,
+`Validate`). The text the user types arrives in `Arguments`, one string for each parameter you declare:
+
+```csharp
+// Parameters are what the user is asked for. Required defaults to true.
+ManipulatorCatalog.Register<FirstLetters>(
+    label: "First letters",
+    parameters: [new ManipulatorParameter("How many")],
+    group: "Text tools");
+
+// ...or for one builder only
+services.AddFilterBuilder(options => options.AddManipulator(
+    ManipulatorDescriptor.For<FirstLetters>("First letters", [new ManipulatorParameter("How many")])));
+```
+
+Check the text in `Validate()` and throw an `ArgumentException` with a message fit for the user ("Give a whole number of
+letters."): it is shown beside the condition. For full control, build the descriptor yourself:
+`new ManipulatorDescriptor(name, label, create: text => …, parameters, kinds, group, read)` where `create` makes the
+manipulator from the text and `read` turns a saved filter's manipulator back into text (so `FromFilter` can show it).
+`kinds` says which kinds of property it suits (text only if left out).
+
+A manipulator runs inside the expression, so if you filter a database it must be something your provider can translate
+(`ToLower()` is; a method of your own is not, unless you map it).
+
+### Leaving things out of one builder
+
+```csharp
+services.AddFilterBuilder(options => options
+    .ExcludeOperations("SmartSearch", "Contains")
+    .ExcludeManipulators("Replace"));
+```
+
+A post that uses something a builder leaves out is refused, not ignored.
 
 ## Changing the markup and the look
 
@@ -234,17 +298,62 @@ OperationCatalog.Register(new OperationDescriptor(
 .eb { --eb-accent: #0a7; --eb-radius: 2px; }
 ```
 
-It follows `prefers-color-scheme`; set `data-theme="light"` or `"dark"` on `<html>` to force one.
+It follows `prefers-color-scheme`; set `data-theme="light"` or `"dark"` on `<html>` to force one. To use your own
+framework's variables, point the properties at them: `.eb { --eb-border: var(--bs-border-color); --eb-accent: var(--bs-primary); }`.
 
 **Markup.** Copy `Views/Shared/Components/FilterBuilder/Default.cshtml` into your app at the same path (Razor Pages:
 `Pages/Shared/Components/FilterBuilder/Default.cshtml`). Your copy is used instead. Change classes, wrapping elements
 and text as you like, but keep:
 
 - the `data-eb-*` attributes - they are how the script finds each part;
-- the three `<template data-eb-template="…">` elements, which the script copies for every group, condition and connector;
+- the `<template data-eb-template="…">` elements (below);
 - the hidden input (`data-eb-input`) and the schema (`script[data-eb-schema]`).
 
-If a part is missing the script says which one, so a customised view fails loudly rather than quietly.
+**The script adds no classes of its own.** Everything it creates is cloned from one of the templates, so the classes (and
+the surrounding elements) are yours to choose. The one exception is marking an incomplete condition: it gets the classes
+named in `data-eb-invalid-class` on the builder's element (`eb-invalid` if you leave the attribute out), so for Bootstrap use
+`data-eb-invalid-class="is-invalid"`.
+
+| Template            | Made for                                       | Parts the script looks for (all `data-eb-…`)                                                                                                 |
+| ------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `group`             | The top level, a bracketed group, a collection | `title`, `remove-group`, `items`, `empty`, `add-condition`, `add-group`                                                                      |
+| `item`              | A place in a group's list (a `li`)             | the element itself                                                                                                                           |
+| `condition`         | One condition                                  | `field`, `operation`, `values`, `add-value`, `toggle-options`, `remove`, `options`, `match`, `match-wrap`, `manipulators-wrap`, `manipulators`, `error` |
+| `value`             | One value of a condition                       | `control="input"` **and** `control="select"` (the unused one is removed), `remove-value`; optional `value-joiner`, `value-label`            |
+| `connector`         | What joins an item to the next (it goes inside the item's `li`) | `connector` (a select with `And` and `Or`)                                                                                                   |
+| `manipulator-group` | A group of adjustments                         | `manipulator-group-title`, `manipulator-group-items`                                                                                         |
+| `manipulator`       | One adjustment                                 | `manipulator` (the checkbox), `manipulator-label`, `manipulator-args`                                                                        |
+| `manipulator-arg`   | One piece of text an adjustment asks for       | the element itself (an `input`)                                                                                                              |
+
+If a part is missing the script says which one, when the page loads, so a customised view fails loudly rather than quietly.
+
+**Example: Bootstrap.** Only the classes change:
+
+```cshtml
+<template data-eb-template="value">
+    <span class="input-group" data-eb-value>
+        <input class="form-control" data-eb-control="input" />
+        <select class="form-select" data-eb-control="select"></select>
+        <span class="input-group-text" data-eb-value-joiner hidden></span>
+        <button type="button" class="btn btn-outline-danger" data-eb-remove-value aria-label="@l.RemoveValue" hidden>&minus;</button>
+    </span>
+</template>
+```
+
+**Example: a floating label** (the box comes before its label, inside a form group). `data-eb-value-label` receives the
+text the box is otherwise labelled with for screen readers:
+
+```cshtml
+<template data-eb-template="value">
+    <span class="FormGroup" data-eb-value>
+        <input class="FormControl" placeholder=" " data-eb-control="input" />
+        <select class="FormControl" data-eb-control="select"></select>
+        <label data-eb-value-label></label>
+        <span data-eb-value-joiner hidden></span>
+        <button type="button" data-eb-remove-value aria-label="@l.RemoveValue" hidden>&minus;</button>
+    </span>
+</template>
+```
 
 ## Working with the script
 
@@ -277,7 +386,7 @@ The hidden input holds a small JSON document. A `connector` says how an item joi
     "type": "group", "connector": "And",
     "items": [
       { "type": "condition", "field": "Name", "operation": "Contains", "values": ["bike", "cycle"],
-        "match": "Any", "manipulators": [{ "name": "ToLower" }], "connector": "Or" },
+        "match": "Any", "manipulators": [{ "name": "ToLower" }, { "name": "Replace", "args": ["-", ""] }], "connector": "Or" },
       { "type": "group", "collection": "Reviews", "connector": "And",
         "items": [{ "type": "condition", "field": "Stars", "operation": "GreaterThanOrEqual", "values": ["4"] }] }
     ]
@@ -298,12 +407,14 @@ The posted filter comes from a browser, so it is checked as untrusted input befo
 - An `operation` must be offered for that property (a `Contains` on a number is refused).
 - Values are parsed as the property's type; enum values must be a member **name**; numbers must be finite; dates use fixed
   formats.
-- Adjustments are chosen from a fixed list (`Trim`, `ToLower`, `ToUpper`, `Replace`), applied to text only.
+- Adjustments are chosen by name from the list your app described (`Trim`, `ToLower`, `ToUpper`, `Replace` and any custom ones), and only for the kinds of property they suit. What a name makes is decided by your app's description, never by the post.
 - Limits stop an oversized filter from becoming an expensive query (conditions, values, length, group depth, payload size).
 - Nothing in the posted text is ever rendered as markup, and the form is protected by ASP.NET's anti-forgery token like
   any other.
-- It works under a strict Content Security Policy: the schema is a non-executing `application/json` block, the script is an
+- It works under a strict Content Security Policy (tested in Chromium, Firefox and WebKit, in an app published and run in Production): the schema is a non-executing `application/json` block, the script is an
   external module, and there are no inline handlers or styles.
+  ASP.NET's own `asp-validation-summary` tag helper does write an inline `style`, so under a strict policy list the
+  errors yourself (`ViewData.ModelState.Values.SelectMany(v => v.Errors)`); `tests/ExpressionBuilder.Web.E2E/Consumers` does.
 
 What it cannot do for you: decide **which properties are safe to search**. Mark the ones that are not.
 
