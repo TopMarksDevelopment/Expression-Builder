@@ -8,7 +8,7 @@ Thank you for helping. This page gets you from a clone to a pull request. The co
 
 You need the **.NET 10 SDK, 10.0.402 or later** (`global.json`; the source generator references Roslyn 5.9, so an older
 SDK fails with CS9057) and, only if you change the web filter builder's
-script, **Node 22**.
+script, **Node 24.15 or later** (jsdom, used by the client tests, requires it).
 
 ```powershell
 git clone https://github.com/TopMarksDevelopment/Expression-Builder.git
