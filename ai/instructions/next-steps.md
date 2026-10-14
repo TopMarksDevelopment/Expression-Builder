@@ -8,9 +8,12 @@ through over several sessions, not one task. Tick items off here (and delete the
 - **Section 1 (.NET 10): done.** `net10.0` only; CI, docs and changelog updated. Found and fixed on the way: C# 14 binds
   `array.Contains(x)` in an expression lambda to the span overload (tests now use `Enumerable.Contains`), and the main package's
   `build/*.props` was never committed (`.gitignore` ignores `build/`; CI now runs `dotnet pack`).
-- **Section 2 (packages): started.** Done: EF Core, Sqlite and Mvc.Testing to 10.0.13; CSharpier to 1.3.0 (commands are now
-  `dotnet csharpier check|format`; it also formats `.csproj`/`.props` XML; reformatted in its own commit). Remaining: the other
-  NuGet packages, the client's npm packages, the GitHub Actions versions, and the audits.
+- **Section 2 (packages): done.** EF Core, Sqlite and Mvc.Testing to 10.0.13; CSharpier to 1.3.0 (commands are now
+  `dotnet csharpier check|format`; it also formats `.csproj`/`.props` XML; reformatted in its own commit); the other NuGet
+  packages; the client's npm packages (TypeScript 7, jsdom 29); the GitHub Actions majors; the audits (no vulnerabilities in
+  NuGet or npm). Held back on purpose: `Microsoft.CodeAnalysis.CSharp` (the generator must load on the oldest SDK's compiler;
+  see the comment in `Directory.Packages.props`), `@types/node` (matches the CI Node), jsdom 30 (its Node floor excludes
+  current 24.x). Open: xunit v2 is flagged "Legacy" on NuGet (xunit.v3 is the successor); see the end-of-section report.
 - **Carry into section 3:** the sample serves `_content/...` assets only in Development (it uses `UseStaticFiles()`); check
   `MapStaticAssets` and the published, non-Development case.
 
@@ -40,7 +43,7 @@ before handing back; and do not commit unless I ask. Stop and ask me where a dec
   reason), ASP.NET Core 10 changes that affect the tag helper / view component / static web assets, anything now obsolete.
   Do not adopt new language features just because they exist.
 
-## 2. Bump packages (EF Core/Sqlite/Mvc.Testing and CSharpier are DONE; do the rest)
+## 2. Bump packages (DONE - skip)
 - Directory.Packages.props (xunit, Microsoft.NET.Test.Sdk, coverlet, EF Core and SQLite to the 10.x line, Mvc.Testing,
   protobuf-net, Roslyn, MetadataLoadContext), the client's package.json (typescript, esbuild, jsdom, @types/*), the pinned
   CSharpier (.config/dotnet-tools.json) and the GitHub Actions versions. Remember CSharpier is pinned to 0.29.2 because newer

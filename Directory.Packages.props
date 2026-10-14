@@ -4,23 +4,39 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup Label="Runtime dependencies">
-
     <PackageVersion Include="protobuf-net" Version="3.4.30" />
   </ItemGroup>
   <ItemGroup Label="Build-time dependencies">
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0" />
+    <PackageVersion
+      Include="Microsoft.CodeAnalysis.Analyzers"
+      Version="5.9.0"
+    />
+    <!--
+      Deliberately not the latest. A compiler refuses a generator built against a newer Roslyn than it is
+      (CS9057), and the SDK bands differ: 10.0.1xx ships Roslyn 5.0, 10.0.4xx ships 5.9. Raise this only when
+      the oldest SDK we support has a compiler at least as new.
+    -->
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
   </ItemGroup>
 
   <ItemGroup Label="Tooling">
-    <PackageVersion Include="System.Reflection.MetadataLoadContext" Version="10.0.13" />
+    <PackageVersion
+      Include="System.Reflection.MetadataLoadContext"
+      Version="10.0.13"
+    />
   </ItemGroup>
 
   <ItemGroup Label="Test dependencies">
     <PackageVersion Include="coverlet.collector" Version="10.1.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.13" />
+    <PackageVersion
+      Include="Microsoft.AspNetCore.Mvc.Testing"
+      Version="10.0.13"
+    />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.13" />
+    <PackageVersion
+      Include="Microsoft.EntityFrameworkCore.Sqlite"
+      Version="10.0.13"
+    />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
