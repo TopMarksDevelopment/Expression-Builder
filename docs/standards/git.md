@@ -48,6 +48,14 @@ direct pushes to `main`.
 Prefer small, incremental pull requests that can be understood, tested and reverted independently. Do not split work so
 narrowly that an intermediate pull request leaves `main` broken.
 
+## Workflow actions
+
+Actions in `.github/workflows` are pinned to a full commit SHA with the release in a trailing comment
+(`uses: actions/checkout@<sha> # v7.0.1`). A tag can be moved to different code after you reviewed it, and the release
+workflow holds the NuGet API key. Dependabot's `github-actions` ecosystem updates the SHA and the comment together; review
+those pull requests like any other dependency bump. When adding an action by hand, resolve the tag with
+`gh api repos/<owner>/<repo>/commits/<tag> --jq .sha`.
+
 ## Releases
 
 A release is a GitHub release, which runs the **Nuget Push CI** workflow: restore, build, test, pack, push every package to

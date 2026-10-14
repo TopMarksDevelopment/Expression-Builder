@@ -10,10 +10,10 @@ through over several sessions, not one task. Tick items off here (and delete the
   `build/*.props` was never committed (`.gitignore` ignores `build/`; CI now runs `dotnet pack`).
 - **Section 2 (packages): done.** EF Core, Sqlite and Mvc.Testing to 10.0.13; CSharpier to 1.3.0 (commands are now
   `dotnet csharpier check|format`; it also formats `.csproj`/`.props` XML; reformatted in its own commit); the other NuGet
-  packages; the client's npm packages (TypeScript 7, jsdom 29); the GitHub Actions majors; the audits (no vulnerabilities in
-  NuGet or npm). Held back on purpose: `Microsoft.CodeAnalysis.CSharp` (the generator must load on the oldest SDK's compiler;
-  see the comment in `Directory.Packages.props`), `@types/node` (matches the CI Node), jsdom 30 (its Node floor excludes
-  current 24.x). Open: xunit v2 is flagged "Legacy" on NuGet (xunit.v3 is the successor); see the end-of-section report.
+  packages; the client's npm packages (TypeScript 7, jsdom 30, Node 24 with `@types/node` 24 and in CI); the GitHub Actions
+  (majors, pinned by commit SHA); the audits (no vulnerabilities in NuGet or npm). `global.json` now requires SDK 10.0.402+
+  (Roslyn 5.9), which is what lets the generator reference `Microsoft.CodeAnalysis.CSharp` 5.9.0. xunit v2 is flagged "Legacy"
+  on NuGet; migrating to xunit.v3 is in section 6.
 - **Carry into section 3:** the sample serves `_content/...` assets only in Development (it uses `UseStaticFiles()`); check
   `MapStaticAssets` and the published, non-Development case.
 
@@ -112,6 +112,10 @@ review it. Constraints and a suggested direction:
   on unreviewed changes.
 - Collapse the duplicated per-operation test files (ExpressionMatchTests/ResultMatchTests exist in 25 drifting copies) into shared
   source, keeping each operation's AllTests data.
+- Move the tests from xunit v2 to xunit.v3 (NuGet marks v2 "Legacy"; 2.9.3 is its last release and works). v3 test projects are
+  executables and the runner package changes, across ~30 projects, so do it centrally (`tests/Directory.Build.props`,
+  `Directory.Packages.props`) and ideally after the duplicated test files above are collapsed, which leaves less to migrate.
+  Check coverlet and the CI coverage step still produce a cobertura report.
 - Reconsider the 25 operation packages: keep, or ship one package plus the Api for extenders? (Breaking: only before 1.0.0.)
 - Localisation: ship resource-based label sets (en-GB, cy, fr, de...) for the builder, plus right-to-left check.
 - Native AOT / trimming: document what is not supported (reflection, registries) and add the annotations or a trimming test.
