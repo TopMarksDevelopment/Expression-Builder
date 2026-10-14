@@ -17,6 +17,7 @@ Node's built-in test runner with jsdom for the web client. Use the cheapest laye
 | `ExpressionBuilder.Tests.Probe`                     | A console app those tests run in a **separate process** (see below)                             |
 | `ExpressionBuilder.Generators.Tests`                | The source generator, run in-process against sample code                                        |
 | `ExpressionBuilder.Web.Tests`                       | The web builder: schema, compiler, round trip, and the sample app over HTTP                     |
+| `ExpressionBuilder.Web.E2E`                         | Real browsers (Chromium, Firefox, WebKit): clicking, posting, axe, keyboard, published apps     |
 | `ExpressionBuilder.TestBase`                        | Shared models (`Product`, `Category`…), seed data and the `TestBuilder` record                  |
 | `src/ExpressionBuilder.Web/client/test`             | The script: pure model tests and DOM tests against the real Razor view                          |
 
@@ -40,6 +41,31 @@ Examples of that in this repo:
   until the stack overflowed.
 - `FilterBuilderModelTests.OfferedOperationsWork` is a matrix: every operation × every property kind it is offered for, built and
   run both as a delegate and as an expression tree. When it fails, either the operation or the catalog is wrong.
+
+## Browser tests
+
+`tests/ExpressionBuilder.Web.E2E` drives the real thing with Playwright in Chromium, Firefox and WebKit. It is **not** in
+`ExpressionBuilder.sln`: it downloads the browsers and is slower, so `dotnet test ExpressionBuilder.sln` stays quick. CI runs it as
+its own job (`browsers`). It has four parts:
+
+- `FilterBuilderTests`: build a filter by clicking (every kind of box, collections, the app's own operation and adjustment), post
+  it and compare the products shown with what LINQ says they should be.
+- `AccessibilityTests`: axe over the builder in each state it can be left in, in light and dark. `KeyboardTests`: the whole flow
+  with the keyboard alone, focus after every kind of removal, the names and roles a screen reader would read. This is a
+  proxy for a screen reader, not a replacement: before a release, try NVDA/JAWS (Windows) and VoiceOver (macOS, iOS) by hand.
+- `PublishedAppTests`: the packages are packed into a local feed and installed into a new MVC app (`MapStaticAssets`) and a new
+  Razor Pages app (`UseStaticFiles`), which are published and run in **Production** under a Content-Security-Policy that allows
+  nothing inline. The apps are the source under `Consumers/`; they are copied out and built by the test, so nothing is left in the
+  repository.
+
+```powershell
+dotnet test tests/ExpressionBuilder.Web.E2E              # all three browsers (installs them the first time)
+$env:EB_E2E_BROWSERS = "chromium"; dotnet test tests/ExpressionBuilder.Web.E2E   # just one, for speed
+```
+
+The Entity Framework Core side is in `ExpressionBuilder.Web.Tests/EfCoreTests.cs`: every operation the builder offers is run
+against SQLite in memory and compared with the same filter run over the same objects, and the shapes people use (a collection, a
+collection inside a collection, a collection of plain values, text adjustments, nullable and date comparisons) assert on the SQL.
 
 ## Process-isolated tests
 
@@ -82,6 +108,7 @@ the move to generated fluent methods were shown to change nothing.
 ```powershell
 dotnet test ExpressionBuilder.sln                        # everything on .NET
 dotnet test tests/ExpressionBuilder.Web.Tests            # one project
+dotnet test tests/ExpressionBuilder.Web.E2E              # the browser tests (not in the solution; see above)
 
 cd src/ExpressionBuilder.Web/client
 npm ci

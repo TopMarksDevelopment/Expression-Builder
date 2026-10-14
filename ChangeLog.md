@@ -47,6 +47,9 @@ A ready-made filter builder for ASP.NET Core, for MVC and Razor Pages. Users pic
 
 -   `<filter-builder for="Filter" type="typeof(Product)" />` tag helper, `FilterBuilder` view component and an overridable Razor view
 -   `FilterBuilderModel`, `FilterBuilderOptions`, `FilterBuilderLabels`, `[FilterBuilderIgnore]`, `FilterSchema`, `OperationCatalog`
+-   Operations and manipulators of your own, offered only when the app describes them (`OperationCatalog`, `ManipulatorCatalog`, `FilterBuilderOptions.AddOperation` / `AddManipulator`), listed in groups apart from the built-in ones, and unable to take a built-in name. A single builder can leave any operation or manipulator out (`ExcludeOperations`, `ExcludeManipulators`)
+-   Restyling: every element the script creates is cloned from a `<template>` in the view (`item`, `value`, `manipulator`…), so the script adds no classes of its own. `data-eb-invalid-class` names the classes of an incomplete condition. See the [guide](./docs/web-filter-builder.md#changing-the-markup-and-the-look)
+-   The posted form of an adjustment is `{ "name": "Replace", "args": ["find", "with"] }`
 -   `FilterBuilderModel.FromFilter` to show a saved filter in the builder
 -   The TypeScript front end ships as one script and stylesheet, served from the package. Light/dark themes, keyboard accessible, no framework
 -   A posted filter is validated against the class being filtered, and sizes are limited. See [SECURITY.md](./SECURITY.md)

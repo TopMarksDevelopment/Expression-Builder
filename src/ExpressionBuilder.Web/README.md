@@ -70,9 +70,11 @@ That is all that is needed. The `samples/ExpressionBuilder.Web.Sample` app has a
 - **Show a saved filter** with `FilterBuilderModel.FromFilter(filter)`.
 - **Change the text, limits or labels** with `services.AddFilterBuilder(options => ...)`.
 - **Change the look** by overriding the CSS variables, or copy `Views/Shared/Components/FilterBuilder/Default.cshtml`
-  into your app and edit it - it is yours to restyle as long as the `data-eb-*` attributes stay.
-- **Add your own operation** by registering it with `OperationRegistry.Register<T>()` and describing it with
-  `OperationCatalog.Register(...)`.
+  into your app and edit it. The script adds no classes of its own - everything it makes is cloned from a `<template>` in
+  that view - so it can match Bootstrap or your own form styles, as long as the `data-eb-*` attributes stay.
+- **Add your own operation or manipulator** with `OperationCatalog.Register<T>(...)` / `ManipulatorCatalog.Register<T>(...)`
+  (or `options.AddOperation` / `AddManipulator` for one builder). They are listed apart from the built-in ones, a browser can
+  only choose them by name, and `options.ExcludeOperations(...)` / `ExcludeManipulators(...)` leave built-in ones out.
 
 The full guide is in
 [docs/web-filter-builder.md](https://github.com/TopMarksDevelopment/Expression-Builder/blob/main/docs/web-filter-builder.md).
