@@ -32,7 +32,8 @@ through over several sessions, not one task. Tick items off here (and delete the
   (`EfCoreTests.DifferentValuesShareACacheEntry`). `FilterExpressionExtensions.InlineValues()` restores constants; the
   expression-text tests use it. Not yet measured: the saving, and the cost of the extra pass.
 
-The prompt below is paste-ready.
+For the very next session, use [next-session.md](next-session.md): it has a prompt that is ready to paste, and the current state.
+The prompt below is the original, covering every section.
 
 ```text
 Read AGENTS.md and ai/instructions/engineering-principles.md first (standing instruction: call out anything in my requests that
