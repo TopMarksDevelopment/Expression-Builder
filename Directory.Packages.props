@@ -12,11 +12,10 @@
       Version="5.9.0"
     />
     <!--
-      Deliberately not the latest. A compiler refuses a generator built against a newer Roslyn than it is
-      (CS9057), and the SDK bands differ: 10.0.1xx ships Roslyn 5.0, 10.0.4xx ships 5.9. Raise this only when
-      the oldest SDK we support has a compiler at least as new.
+      Must not be newer than the compiler in the SDK that global.json requires: a compiler refuses a generator
+      built against a newer Roslyn than itself (CS9057). 10.0.1xx SDKs ship Roslyn 5.0, 10.0.4xx ship 5.9.
     -->
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
   </ItemGroup>
 
   <ItemGroup Label="Tooling">
