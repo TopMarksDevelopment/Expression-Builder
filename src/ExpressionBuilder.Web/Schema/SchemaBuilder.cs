@@ -35,6 +35,10 @@ sealed partial class SchemaBuilder(FilterBuilderOptions options)
 
     readonly Dictionary<Type, string> _ids = [];
     readonly Dictionary<string, TypeSchema> _types = [];
+    readonly Dictionary<
+        (FieldKind, bool),
+        IReadOnlyList<string>
+    > _operationNames = [];
     readonly IReadOnlyList<OperationDescriptor> _operations =
         options.GetOperations();
 
@@ -254,10 +258,7 @@ sealed partial class SchemaBuilder(FilterBuilderOptions options)
             kind,
             nullable,
             Input: InputFor(kind),
-            Operations: _operations
-                .Where(o => o.AppliesTo(kind, nullable))
-                .Select(o => o.Name)
-                .ToList(),
+            Operations: OperationsFor(kind, nullable),
             Step: kind == FieldKind.Number
                 ? (IntegralTypes.Contains(underlying) ? "1" : "any")
                 : null,
@@ -266,6 +267,23 @@ sealed partial class SchemaBuilder(FilterBuilderOptions options)
         {
             ValueType = underlying,
         };
+    }
+
+    /// <summary>
+    /// The operations that suit a kind of property. Every field of the same kind gets the same answer, so it is
+    /// worked out once per kind for this schema (and only this one: the operations on offer can change between
+    /// schemas).
+    /// </summary>
+    IReadOnlyList<string> OperationsFor(FieldKind kind, bool nullable)
+    {
+        if (!_operationNames.TryGetValue((kind, nullable), out var names))
+            _operationNames[(kind, nullable)] = names = _operations
+                .Where(o => o.AppliesTo(kind, nullable))
+                .Select(o => o.Name)
+                .ToList()
+                .AsReadOnly();
+
+        return names;
     }
 
     static string InputFor(FieldKind kind) =>
