@@ -72,7 +72,7 @@ public class FilterStatement<TPropertyType>
     public FilterStatement()
     {
         var t = typeof(TPropertyType);
-        propertyType = t.FullName ?? t.AssemblyQualifiedName ?? t.Name;
+        propertyType = TypeNames.For(t);
 
         PropertyId = string.Empty;
         Operation = null!;
@@ -95,7 +95,7 @@ public class FilterStatement<TPropertyType>
     )
     {
         var t = typeof(TPropertyType);
-        propertyType = t.FullName ?? t.AssemblyQualifiedName ?? t.Name;
+        propertyType = TypeNames.For(t);
 
         PropertyId = propertyId;
         Operation = operation;
