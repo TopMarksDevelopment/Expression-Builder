@@ -15,6 +15,49 @@ public class FilterSchemaTests
     static FieldSchema Field(string path, TypeSchema? type = null) =>
         (type ?? Root).Fields.Single(f => f.Path == path);
 
+    [Fact(
+        DisplayName = "The operations offered for a kind of property are worked out for each schema, not shared between them"
+    )]
+    public void OperationsBelongToTheirOwnSchema()
+    {
+        var narrowed = FilterSchema.For<Person>(
+            new FilterBuilderOptions().ExcludeOperations("Contains")
+        );
+        var again = FilterSchema.For<Person>();
+
+        Assert.DoesNotContain(
+            "Contains",
+            narrowed
+                .Types[narrowed.Root]
+                .Fields.Single(f => f.Path == "Name")
+                .Operations
+        );
+        Assert.Contains("Contains", Field("Name").Operations);
+        Assert.Contains(
+            "Contains",
+            again
+                .Types[again.Root]
+                .Fields.Single(f => f.Path == "Name")
+                .Operations
+        );
+    }
+
+    [Fact(
+        DisplayName = "Fields of the same kind are offered the same operations"
+    )]
+    public void SameKindSameOperations()
+    {
+        var names = Root.Fields.Where(f =>
+            f.Kind == FieldKind.String && f.Nullable
+        );
+
+        Assert.True(names.Count() > 1);
+        Assert.Single(
+            names.Select(f => string.Join(",", f.Operations)).Distinct()
+        );
+        Assert.Contains("IsNull", names.First().Operations);
+    }
+
     [Theory(DisplayName = "Properties are classified by the type they hold")]
     [InlineData("Name", FieldKind.String, "text")]
     [InlineData("Email", FieldKind.String, "text")]
