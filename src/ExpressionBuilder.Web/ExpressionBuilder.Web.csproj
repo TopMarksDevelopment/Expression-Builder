@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="ExpressionBuilder.Web.Tests" />
+    <InternalsVisibleTo Include="ExpressionBuilder.Benchmarks" />
   </ItemGroup>
 
   <ItemGroup>

@@ -278,3 +278,6 @@ $RECYCLE.BIN/
 /CoverageAnalysis
 # NuGet content that is packed on purpose (the package's own MSBuild props)
 !src/ExpressionBuilder/build/
+
+# Benchmark output
+**/BenchmarkDotNet.Artifacts/
