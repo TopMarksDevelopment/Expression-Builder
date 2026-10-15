@@ -251,6 +251,18 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
     public Expression<Func<TClass, bool>> ToExpression() =>
         ValueParameters.Parameterise(BuildExpression());
 
+    /// <summary>
+    /// Makes a filter into a delegate, for objects in memory.
+    /// </summary>
+    /// <remarks>
+    /// Compiled from constants, not variables: nothing here sends the values to a database, and the compiler is
+    /// noticeably slower with the variables (see tools/ExpressionBuilder.Benchmarks).
+    /// </remarks>
+    internal static Func<TClass, bool> Compile(IFilter<TClass> filter) =>
+        filter is Filter<TClass> own
+            ? own.BuildExpression().Compile()
+            : filter.ToExpression().InlineValues().Compile();
+
     Expression<Func<TClass, bool>> BuildExpression()
     {
         var parameterLog = new Dictionary<string, uint>() { };
@@ -373,7 +385,7 @@ public class Filter<TClass> : IFilter<TClass>, IFilter
     /// </summary>
     /// <param name="filter"></param>
     public static implicit operator Func<TClass, bool>(Filter<TClass> filter) =>
-        filter.ToExpression().Compile();
+        Compile(filter);
 
     #endregion Operators
 }

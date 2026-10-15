@@ -66,6 +66,49 @@ public class ValueParameterTests
     }
 
     [Fact(
+        DisplayName = "A filter used on a list is compiled from constants: the compiler is slower with variables"
+    )]
+    public void ListFiltersAreCompiledFromConstants()
+    {
+        var filter = new Filter<Product>();
+        filter
+            .Equal(p => p.Name, "Product 2")
+            .Or()
+            .LessThanOrEqual(p => p.Id, 1);
+
+        Func<Product, bool> func = filter;
+
+        // Values the delegate has to fetch are held in its closure; there should be none
+        var constants = (object[])
+            func.Target!.GetType()
+                .GetField("Constants")!
+                .GetValue(func.Target)!;
+
+        Assert.DoesNotContain(constants, c => c is IValueHolder);
+        Assert.Equal<int>(
+            [1, 2],
+            Products.Where(func).Select(p => p.Id).Order().ToList()
+        );
+    }
+
+    [Fact(
+        DisplayName = "Filtering a list through IFilterable finds the same products"
+    )]
+    public void FilterableFindsTheSameProducts()
+    {
+        var filterable = Products.ToFilterable();
+        filterable
+            .Equal(p => p.Name, "Product 2")
+            .Or()
+            .LessThanOrEqual(p => p.Id, 1);
+
+        Assert.Equal<int>(
+            [1, 2],
+            filterable.Select(p => p.Id).Order().ToList()
+        );
+    }
+
+    [Fact(
         DisplayName = "The shape of the query stays in the expression: null and the empty text"
     )]
     public void ShapeStaysAsConstants()

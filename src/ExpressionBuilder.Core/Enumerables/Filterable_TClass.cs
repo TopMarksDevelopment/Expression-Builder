@@ -153,7 +153,7 @@ public class Filterable<TClass> : IFilterable<TClass>
     /// <inheritdoc />
     public IEnumerator<TClass> GetEnumerator() =>
         (_oList as IEnumerable<TClass> ?? _list)
-            .Where(ToExpression().Compile())
+            .Where(Filter<TClass>.Compile(Filter))
             .GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
