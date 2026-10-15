@@ -54,6 +54,9 @@ SQL parameter, where a constant would become text in the SQL: with constants eve
 a new entry in EF Core's query cache. `null`, `true`/`false` and the empty text stay constants because they are part of the
 query's shape. This is done once, over the finished tree, rather than in every operation, so a new operation gets it for free.
 `FilterExpressionExtensions.InlineValues()` undoes it (the expression-text tests use it to compare with hand-written lambdas).
+A filter that is used on objects in memory (`list.Where(filter)`) skips the pass altogether and compiles the constants: nothing
+there sends values to a database, and the expression compiler is measurably slower with variables to fetch
+(`tools/ExpressionBuilder.Benchmarks`).
 
 ## Operations are found by name
 

@@ -30,7 +30,18 @@ through over several sessions, not one task. Tick items off here (and delete the
 - **Values are SQL parameters (from section 4): done.** `ToExpression()` now keeps values in variables
   (`Extensions/ValueParameters.cs`), so EF sends parameters and one query-cache entry serves every value
   (`EfCoreTests.DifferentValuesShareACacheEntry`). `FilterExpressionExtensions.InlineValues()` restores constants; the
-  expression-text tests use it. Not yet measured: the saving, and the cost of the extra pass.
+  expression-text tests use it. Measured: see Performance below.
+
+- **Performance (section 4): done.**
+  `tools/ExpressionBuilder.Benchmarks` (BenchmarkDotNet, plus `-- ef` for EF Core); numbers and method in its `RESULTS.md`.
+  Parameters: 5-31 times quicker per query for different values and no growth of EF's query cache; the parameterising pass is
+  0.7 / 5 / 30 µs for 3 / 20 / 100 conditions (13-17% of `ToExpression()`, 0.2-0.4% of compiling it). Changed: `list.Where(filter)`
+  and `ToFilterable()` compile constants (making a delegate is 18-36% quicker than from variables); a schema works out the operations for a kind of
+  property once (`FilterSchema.For` 129 -> 95 µs for a 126-field class). Deliberately not done: a schema cache (it is the gate for what a
+  post may do, and 95 µs for the largest class is small), the registry's 2 µs miss, the pass itself. **Found, and fixed afterwards:** a saved filter
+  (JSON or protobuf) whose values are of an enum or class from the application cannot be read back, because `propertyType` is saved
+  without its assembly (`Type.GetType(name)` only finds corelib and Core types); now it says its assembly (`TypeNames.For`, tests in
+  `SavedTypeTests`). The README has a "Performance" section, and `ai/instructions/announcement-draft.md` is a draft announcement.
 
 For the very next session, use [next-session.md](next-session.md): it has a prompt that is ready to paste, and the current state.
 The prompt below is the original, covering every section.

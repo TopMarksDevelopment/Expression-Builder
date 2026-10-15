@@ -88,6 +88,13 @@ The contract also runs the other way: `client/test/contract.test.ts` fills in th
 it posts to `client/test/fixtures/posted/*.json`; `PostedFixtureTests` builds each one on the server and checks it finds the right
 people. Regenerate those with `UPDATE_FIXTURES=1 npm test` in the client folder.
 
+## Performance checks
+
+`tools/ExpressionBuilder.Benchmarks` holds BenchmarkDotNet benchmarks (and an Entity Framework Core experiment) for the library. It is in the
+solution so it always builds, but it is not a test project and CI does not run it: numbers from a shared CI machine would mean little.
+Before adding a cache or changing a hot path, measure it there first, and keep the benchmark that shows the change helped. How to run
+it, and what each class measures, is in its [README](../../tools/ExpressionBuilder.Benchmarks/README.md).
+
 ## Public API check
 
 Before a refactor, and again before opening the pull request, snapshot the public API (one member per line, sorted) and
