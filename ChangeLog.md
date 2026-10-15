@@ -41,6 +41,7 @@ All notable changes to this project will be documented in this file.
 -   The fluent methods of the operations (about 28,000 lines of copied code) are now generated at build time from templates. The public API is identical
 -   XML documentation on the whole public API, with warnings treated as errors in CI
 -   CI: formatting check, the web client's checks, coverage, and a check that the committed script is current. Dependabot and issue/PR templates added
+-   Benchmarks (BenchmarkDotNet) for building, compiling, serialising and finding operations, and for the web builder's schema and page, in `tools/ExpressionBuilder.Benchmarks`. They are not packed
 
 ### Package: TopMarksDevelopment.ExpressionBuilder.Web (new)
 
@@ -64,7 +65,7 @@ A ready-made filter builder for ASP.NET Core, for MVC and Razor Pages. Users pic
 
 #### Changed
 
--   `ToExpression()` makes Entity Framework Core (and other providers that parameterise captured variables) send values as SQL parameters, not text. Every different value used to be different SQL and a new entry in EF's query cache; now one plan and one cache entry serve all of them. `null`, `true`/`false` and the empty text stay in the expression, as they are part of a query's shape
+-   `ToExpression()` makes Entity Framework Core (and other providers that parameterise captured variables) send values as SQL parameters, not text. Every different value used to be different SQL and a new entry in EF's query cache; now one plan and one cache entry serve all of them. `null`, `true`/`false` and the empty text stay in the expression, as they are part of a query's shape. A filter used on a list (`list.Where(filter)`, `ToFilterable()`) is still compiled from constants, which the expression compiler handles faster
 
 #### Fixed
 
@@ -73,6 +74,7 @@ A ready-made filter builder for ASP.NET Core, for MVC and Razor Pages. Users pic
 -   `FilterCollection` could not be given the values of another collection, and threw from `SyncRoot`/`IsSynchronized`
 -   A manipulator argument that is a variable (`x => x.Name.Replace(term, "")`) threw an `InvalidCastException`; it can now be any value that does not depend on the item being filtered
 -   Deserialising a filter no longer re-scans the assembly for each group, and its errors say what was wrong
+-   Saved filters (JSON and `byte[]`) whose values are of a type from your application, such as your own enum, could not be read back: the type was saved by name without its assembly. It now says which assembly it is in (`App.Tier, App`, without a version). Types of the framework are saved as before, so nothing already saved changes
 
 #### Security
 

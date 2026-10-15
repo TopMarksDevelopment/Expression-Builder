@@ -24,6 +24,7 @@ front end). Public docs live in the root `README.md` and under `docs/`.
 | Tests                                     | `tests/` — mirrors `src/`; `tests/Operations/<Name>/` per operation    |
 | Shared test models and helpers            | `tests/ExpressionBuilder.TestBase/`                                    |
 | Runnable sample of the web filter builder | `samples/ExpressionBuilder.Web.Sample/`                                |
+| Benchmarks (not packed, not tests)        | `tools/ExpressionBuilder.Benchmarks/` — see its README                 |
 | AI-facing skills/instructions/memory      | `ai/` — see [ai/README.md](ai/README.md)                               |
 | Human docs                                | `docs/` — see the docs index below                                     |
 

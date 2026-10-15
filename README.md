@@ -24,6 +24,7 @@ With this library you can quickly create a filter that can be applied to a list/
 -   [Serialization](#serialization)
 -   [Built-in operations](#built-in-operations)
 -   [Your own operations](#your-own-operations)
+-   [Performance](#performance)
 -   You can check these out too:
     -   [Changelog](./ChangeLog.md)
     -   [License](./LICENSE.md)
@@ -468,6 +469,37 @@ OperationRegistry.Register<MyOperation>();            // or OperationRegistry.Re
 ```
 
 Contributing a built-in operation? See [adding-an-operation.md](./docs/adding-an-operation.md).
+
+## Performance
+
+These numbers come from the benchmarks in [tools/ExpressionBuilder.Benchmarks](./tools/ExpressionBuilder.Benchmarks/) (BenchmarkDotNet,
+plus an Entity Framework Core experiment), run on an Intel Core i5-12600KF with Windows 11, .NET 10.0.13 and EF Core 10.0.13 with
+SQLite in memory. It is one machine on one day: use them to compare one thing with another, not as a promise about yours. The method,
+every table and how to repeat them are in [RESULTS.md](./tools/ExpressionBuilder.Benchmarks/RESULTS.md).
+
+**Values reach the database as parameters.** `ToExpression()` keeps the values of a filter in variables, so EF Core sends SQL parameters
+and one query plan serves every value. With constants (what `ToExpression().InlineValues()` gives) each different value is a new query
+for EF to translate and a new entry in its query cache. The same number of queries, each with a different text and number:
+
+| Different values | Constants, per query | Parameters, per query | Faster | EF query-cache entries added (constants / parameters) |
+| ---: | ---: | ---: | ---: | ---: |
+| 10 | 3.6 ms | 0.42 ms | 9× | 20 / 0 |
+| 100 | 3.0 ms | 0.21 ms | 14× | 200 / 0 |
+| 1,000 | 2.6 ms | 0.10 ms | 26× | 991 / 0 |
+
+This is time spent in your process (translating the query and running it on a small in-memory database), not the latency of a database
+server, and it was only measured with SQLite. With constants the cache stopped growing at about 1,000 entries, where it was full and each
+new value pushed another query's plan out. When the same value is used again, no difference between them could be measured.
+
+**Building a filter is cheap beside what you do with it.** A filter of 3, 20 and 100 conditions becomes an expression in 5, 29 and 172 µs;
+moving its values into variables is 0.7, 5 and 30 µs of that. Turning the expression into a delegate for a list (`list.Where(filter)`) is
+.NET's expression compiler, and takes 0.2, 1.5 and 7 ms, so keep the delegate if you use a filter more than once (`Func<Person, bool> matches = filter;`).
+A compiled filter runs as fast as the same expression tree written by hand, and roughly 10% slower than a compiled C# lambda that does
+the same work.
+
+**The rest, briefly:** finding an operation by name takes about 20 ns once the first lookup of the process (about 26 ms, which loads the
+operation assemblies) is done; reading a saved filter takes about 3 µs per condition as JSON and 1.3 µs as protobuf; the web builder's
+schema for a class takes 11 µs for 7 fields and 95 µs for 126.
 
 ## Contributing
 
