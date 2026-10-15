@@ -5,8 +5,9 @@ this file says where to start, what you need to do yourself, and what to watch f
 
 ## Where things stand
 
-- Branch `refactor/repo-restructure-and-filter-builder`, version `1.0.0-rc.1`, `net10.0` only, SDK 10.0.402+ (`global.json`). Nothing is
-  released. The branch has been pushed; whether it has a pull request open is yours to check.
+- Branch `refactor/repo-restructure-and-filter-builder`, `net10.0` only, SDK 10.0.402+ (`global.json`). The file says `1.0.0-rc.1`,
+  but that candidate was published in 2024-09-19 and the next is `rc.2` (see item 4 below). Nothing *from this branch* is released.
+  The branch has been pushed; whether it has a pull request open is yours to check.
 - Done: .NET 10, package and tooling bumps, custom operations and manipulators, restyling by templates, accessibility fixes, browser
   tests, Entity Framework Core tests, values sent to the database as parameters, **and performance (section 4)**: the benchmark project
   (`tools/ExpressionBuilder.Benchmarks`, with `RESULTS.md`), the README "Performance" section, a draft announcement
@@ -24,11 +25,17 @@ this file says where to start, what you need to do yourself, and what to watch f
 3. **Check the announcement and the README "Performance" numbers on your own machine before you publish anything.** They are from one
    machine on 2026-10-15. `cd tools/ExpressionBuilder.Benchmarks; dotnet run -c Release -- ef` takes a few minutes; the whole suite
    (`-- --filter "*"`) about 25. Close other programs first. Delete `announcement-draft.md` once it has been used.
-4. **Decide, when you are ready (none block the next session):**
-   - whether to cache the filter schema. The recommendation is no; what it would take is in `RESULTS.md` ("Not cached");
-   - whether the CSharpier check should cover the root `*.props` files (`dotnet csharpier check .` shows them);
-   - whether to build a `FilterBuilderOptions` map of class names (build it when a second user needs it);
-   - when to publish `1.0.0-rc.1` (publishing is a separate step from merging: `ai/skills/release.md`).
+4. **Decided (2026-10-15), and what is left to do about each:**
+   - *Cache the filter schema:* **no.** What it would take stays recorded in `RESULTS.md` ("Not cached"). Nothing to do.
+   - *CSharpier:* **cover the whole repository**, including the root `*.props` files (`dotnet csharpier check .`). To do, as one
+     mechanical change on its own: `AGENTS.md`, `CONTRIBUTING.md`, `docs/standards/testing.md`, `ai/skills/release.md` and the CI
+     workflow say `check src tests samples tools`; reformat the root props in the same commit.
+   - *A `FilterBuilderOptions` map of class names:* **parked**, see "Parked" in [next-steps.md](next-steps.md). The report builder
+     registers settings per class (`AddRoot`, `Restrict<T>`), so decide the two together if it comes back.
+   - *The version:* `1.0.0-rc.1` was **already published** (tag `v1.0.0-rc.1`, 2024-09-19, and on NuGet), so this branch is
+     the next candidate: **`1.0.0-rc.2`**. To do, in its own commit: `VersionSuffix` in `Directory.Build.props`, the
+     benchmarks' `RESULTS.md` header, `announcement-draft.md`, and the lines in this file and `next-steps.md` that say nothing has
+     been released. Publishing stays a separate step (`ai/skills/release.md`).
 
 ## The prompt
 

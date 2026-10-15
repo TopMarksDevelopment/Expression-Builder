@@ -43,6 +43,22 @@ through over several sessions, not one task. Tick items off here (and delete the
   without its assembly (`Type.GetType(name)` only finds corelib and Core types); now it says its assembly (`TypeNames.For`, tests in
   `SavedTypeTests`). The README has a "Performance" section, and `ai/instructions/announcement-draft.md` is a draft announcement.
 
+- **Report builder (section 5): design drafted, awaiting review.** [docs/architecture/report-builder.md](../../docs/architecture/report-builder.md):
+  recommendations with alternatives, four decisions for the owner (D1-D4), the slices with their tests, saved reports, and the
+  measurements (throwaway code in `tools/ExpressionBuilder.Benchmarks`: `-- report`, and the `Report*` / `NonGenericBuild*` classes).
+  Nothing is built. Found on the way: `1.0.0-rc.1` was already published (2024-09-19), so the next candidate is `rc.2`.
+
+## Parked
+
+Ideas that were decided against for now, with what would bring them back. Good candidates for a GitHub Discussion, so they are
+not lost in a file.
+
+- **A `FilterBuilderOptions` map of class names**: settings looked up per class rather than passed to each builder. Build it
+  when a second user needs it. The report builder (section 5, [design](../../docs/architecture/report-builder.md)) registers
+  settings per class of its own (`AddRoot`, `Restrict<T>`), which is the likeliest second user; decide the two together.
+- **Caching the filter schema.** Decided against: it is the gate for what a post may do, and it is 11-95 µs. What it would take is in
+  `tools/ExpressionBuilder.Benchmarks/RESULTS.md` ("Not cached").
+
 For the very next session, use [next-session.md](next-session.md): it has a prompt that is ready to paste, and the current state.
 The prompt below is the original, covering every section.
 
