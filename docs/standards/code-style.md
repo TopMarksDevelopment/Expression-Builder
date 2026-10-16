@@ -22,7 +22,7 @@ CSS alike.
 ## C#
 
 - **CSharpier owns formatting** (`.csharpierrc`, pinned in `.config/dotnet-tools.json`):
-  `dotnet csharpier format src tests samples tools` to write, `dotnet csharpier check src tests samples tools` to verify. The pinned version is the
+  `dotnet csharpier format .` to write, `dotnet csharpier check .` to verify. The pinned version is the
   one the code was formatted with; bump it deliberately, in its own commit, because a new version reformats existing files.
 - **Nullable reference types are on.** Don't suppress with `!` unless the line below proves it; say why in a comment if it isn't
   obvious.

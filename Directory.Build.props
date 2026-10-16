@@ -1,5 +1,4 @@
 <Project>
-
   <!--
     Settings shared by every project in the repository. Packaging metadata lives in
     src/Directory.Build.props and test-only settings in tests/Directory.Build.props.
@@ -19,5 +18,4 @@
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
-
 </Project>
