@@ -19,6 +19,22 @@ jobs:
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+            # The packages are versioned by Directory.Build.props, not by the tag, so a mistyped tag would otherwise
+            # publish a version nobody tagged. A suffix means a pre-release, and the release must say so.
+            - name: The release matches the version in Directory.Build.props
+              if: github.event_name == 'release'
+              shell: pwsh
+              env:
+                  TAG: ${{ github.event.release.tag_name }}
+                  PRERELEASE: ${{ github.event.release.prerelease }}
+              run: |
+                  $prefix = (Select-Xml -Path Directory.Build.props -XPath '//VersionPrefix').Node.InnerText.Trim()
+                  $suffix = (Select-Xml -Path Directory.Build.props -XPath '//VersionSuffix').Node.InnerText.Trim()
+                  $version = if ($suffix) { "$prefix-$suffix" } else { $prefix }
+                  if ($env:TAG -ne "v$version") { throw "The tag is '$env:TAG' but Directory.Build.props says v$version." }
+                  $expected = [bool]$suffix
+                  if ([bool]::Parse($env:PRERELEASE) -ne $expected) { throw "The release's pre-release flag is $env:PRERELEASE but the version is v$version." }
+
             - name: Setup .NET
               uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
               with:

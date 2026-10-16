@@ -20,4 +20,6 @@ publish unless explicitly asked, and never handle the NuGet API key: it is a Git
    where they use it) and **not** on the generator; the web package contains `staticwebassets` for `js/` and `css/`; each has
    `README.md`, `LICENSE.md` and the icon.
 6. Commit as `chore(release): x.y.z` (with the `Co-Authored-By` trailer when AI-assisted), open the PR, and leave publishing to the
-   human: create a GitHub release for tag `vx.y.z`, which runs the **Nuget Push CI** workflow.
+   human: create a GitHub release for tag `vx.y.z` (tick "pre-release" when the version has a suffix), which runs the **Nuget Push
+   CI** workflow. Its first step fails the run, before anything is built or pushed, if the tag is not `v` + the version in
+   `Directory.Build.props` or the pre-release flag does not match the suffix.
