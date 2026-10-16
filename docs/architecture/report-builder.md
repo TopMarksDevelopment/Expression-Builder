@@ -58,7 +58,7 @@ are the project owner's to make are marked **DECISION** and collected [at the en
 | R15 | Where the code lives | In `ExpressionBuilder.Web`, in a `Reports/` folder; `<report-builder>` composes the filter builder | A new package now | **Decided (D1):** stay in `Web` |
 | R16 | When it ships | Slices a to d in **`1.0.0-rc.3`**, after `rc.2` (the current branch); the rest after | After 1.0.0, as 1.1.0 | **Decided (D2):** `rc.3` |
 | R17 | A shared report that uses a column the runner may not see | Refuse the report | Leave the column out and say so | **Decided (D3):** refuse |
-| R18 | What the output of a report can be | A ladder: property columns, then totals, then per-row measures, then grouping, then computed columns; charts draw a grouped result | One expression language for everything, now | [Outputs beyond columns](#outputs-beyond-columns); **open: D5, D6** |
+| R18 | What the output of a report can be | A ladder: property columns, then totals, then per-row measures, then grouping, then computed columns; charts draw a grouped result | One expression language for everything, now | [Outputs beyond columns](#outputs-beyond-columns); **decided: D5, D6** |
 
 ## What exists and what is reused
 
@@ -604,7 +604,7 @@ e3. Neither is in `rc.3`.
 
 **Order after `rc.3` (recommendation):** e1, f, e2, e3, g, h. e1 is the cheapest thing a reader of a table asks for; f is what
 makes reports something a workforce comes back to; e3 and h are the biggest changes and want the soak's feedback first. The order
-is open (D5).
+is decided (D5).
 
 ## Saved reports and built-in reports
 
@@ -832,12 +832,12 @@ Made on review, 2026-10-16:
 | **D3** | A shared report that uses a column the runner may not see | **Refuse** | Simplest and never changes what a report means; authors of global reports use common columns. The same rule for computed columns and measures |
 | **D4** | Reordering columns | **Buttons.** Drag and drop is in the backlog (`ai/instructions/next-steps.md`, "Parked") | Keyboard, touch and screen readers work from day one; drag can be added on top, with the buttons kept |
 
-Open, raised by the review's questions about output ([Outputs beyond columns](#outputs-beyond-columns)). None blocks `rc.3`:
+Also decided on review (2026-10-16), raised by the questions about output ([Outputs beyond columns](#outputs-beyond-columns)):
 
-| # | Decision | Recommendation | Consequence |
+| # | Decision | Made | Consequence |
 | --- | --- | --- | --- |
-| **D5** | **What comes after `rc.3`, and in what order** | e1 totals, f saved reports, e2 per-row measures, e3 grouping, g computed columns, h charts | Totals and measures keep the simple row shape and are the cheapest things a table reader asks for; grouping and charts are the big changes and benefit from the soak. If reports must be saved before totals are wanted, swap e1 and f |
-| **D6** | **How charts are drawn** | The library supplies the data (JSON and an event) and the accessible table; the application draws. A small built-in SVG renderer only if asked for later | No charting dependency, no CSP surprises, and nothing to keep up with. The cost is that an application that wants a chart writes a few lines against its own library |
+| **D5** | What comes after `rc.3`, and in what order | **As recommended:** e1 totals, f saved reports, e2 per-row measures, e3 grouping, g computed columns, h charts | Totals and measures keep the simple row shape and are the cheapest things a table reader asks for; grouping and charts are the big changes and benefit from the soak. If reports must be saved before totals are wanted, swap e1 and f |
+| **D6** | How charts are drawn | **Data mainly:** the library supplies the data (JSON and an event) and the accessible table, and the application draws. **Consider a tiny built-in SVG renderer when slice h is picked up**, not before | No charting dependency, no CSP surprises, and nothing to keep up with. When h starts, weigh the small renderer then (bar and line, CSS custom properties, strict CSP, the table kept as the accessible alternative) against what the application already uses |
 
 ## Documents that change
 
