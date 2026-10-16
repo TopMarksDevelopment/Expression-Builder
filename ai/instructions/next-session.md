@@ -17,8 +17,9 @@ says where to start, what you need to do yourself, and what to watch for.
   (not in the solution; needs browsers): 66 across Chromium, Firefox and WebKit; 26 in Chromium alone, which passed when this was written.
 - **The decisions on the report builder (2026-10-16):** D1 stays in `ExpressionBuilder.Web` (a second tag helper that renders the filter
   builder); **D2 ships as `1.0.0-rc.3` = slices a to d** (so the public surface of those slices becomes part of 1.0.0: keep it small);
-  D3 refuse a shared report that uses a column the runner cannot see; D4 buttons to reorder columns (drag and drop is parked). Open and
-  not blocking: D5 (order after `rc.3`) and D6 (how charts are drawn); see "Outputs beyond columns" in the design.
+  D3 refuse a shared report that uses a column the runner cannot see; D4 buttons to reorder columns (drag and drop is parked); D5 the order after
+  `rc.3` is totals, saved reports, measures, grouping, computed columns, charts; D6 charts are data mainly, and a tiny built-in SVG
+  renderer is to be considered when slice h is picked up. See "Outputs beyond columns" in the design.
 
 ## What you need to do yourself
 

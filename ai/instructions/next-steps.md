@@ -49,8 +49,9 @@ through over several sessions, not one task. Tick items off here (and delete the
   `ExpressionBuilder.Web` (a second tag helper that renders the filter builder); **D2** it ships as **`1.0.0-rc.3`** (slices a to
   d), with `rc.2` being this branch; **D3** refuse a shared report that uses a column the runner cannot see; **D4** buttons to
   reorder columns (drag and drop is parked). The review also asked about totals, sums, custom tables, computed columns and charts:
-  designed as a ladder in "Outputs beyond columns" (slices e1 to e3, g, h), with two open decisions (D5 order, D6 how charts are
-  drawn) that do not block `rc.3`.
+  designed as a ladder in "Outputs beyond columns" (slices e1 to e3, g, h), and two further decisions: **D5** the order after
+  `rc.3` is e1 totals, f saved reports, e2 measures, e3 grouping, g computed columns, h charts; **D6** charts are data mainly (the
+  application draws), and a tiny built-in SVG renderer is to be considered when slice h is picked up.
 - **Version and formatting (2026-10-16): done.** `Directory.Build.props` says `1.0.0-rc.2` (`1.0.0-rc.1` was published on
   2024-09-19). CSharpier covers the whole repository (`dotnet csharpier check .`); the commands in the docs, CI and the VS Code task
   say so.

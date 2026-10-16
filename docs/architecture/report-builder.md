@@ -481,12 +481,13 @@ rendering question once the result is right.
   **cross-tab** (rows by one thing, columns by another) is a grouped result with two keys drawn as a grid: a renderer on e3.
 - **Charts need e3.** A chart is a grouped report with one or two group-by columns and one or more measures: "orders per month"
   is `groupBy: month`, `measure: count`. A chart of ungrouped rows is a chart of the page, which is rarely what anyone wants.
-- **Do not ship a charting library.** The platform and the project's KISS rule point the same way. Recommendation (D6):
+- **Do not ship a charting library.** The platform and the project's KISS rule point the same way. Decided (D6): data mainly, and a tiny built-in
+  renderer to be considered when slice h is picked up:
   1. **Data first.** The result is available as JSON (the page's script keeps it, fires an event with it, and the application can
      ask for it as JSON), so the application can use whatever it already uses to draw.
   2. **The table is always there.** A chart without its data table is not accessible; the table is the accessible alternative and
      stays rendered.
-  3. **A built-in chart later, if wanted**: a small inline SVG bar and line renderer in the report script, coloured by the same CSS
+  3. **A built-in chart, to be considered when h is picked up**: a small inline SVG bar and line renderer in the report script, coloured by the same CSS
      custom properties as the rest, working under the strict CSP (no inline script or style), with the browser and axe tests the
      filter builder has. Not before the application has a reason to prefer it over its own.
 - **What the application can do now.** Slice c gives it a checked column list and slice d a page of `object?[]` with headings, so
