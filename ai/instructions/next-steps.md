@@ -43,10 +43,17 @@ through over several sessions, not one task. Tick items off here (and delete the
   without its assembly (`Type.GetType(name)` only finds corelib and Core types); now it says its assembly (`TypeNames.For`, tests in
   `SavedTypeTests`). The README has a "Performance" section, and `ai/instructions/announcement-draft.md` is a draft announcement.
 
-- **Report builder (section 5): design drafted, awaiting review.** [docs/architecture/report-builder.md](../../docs/architecture/report-builder.md):
-  recommendations with alternatives, four decisions for the owner (D1-D4), the slices with their tests, saved reports, and the
-  measurements (throwaway code in `tools/ExpressionBuilder.Benchmarks`: `-- report`, and the `Report*` / `NonGenericBuild*` classes).
-  Nothing is built. Found on the way: `1.0.0-rc.1` was already published (2024-09-19), so the next candidate is `rc.2`.
+- **Report builder (section 5): design reviewed and decided (2026-10-16); nothing built.** [docs/architecture/report-builder.md](../../docs/architecture/report-builder.md):
+  recommendations with alternatives, the slices with their tests, saved reports, and the measurements (throwaway code in
+  `tools/ExpressionBuilder.Benchmarks`: `-- report`, and the `Report*` / `NonGenericBuild*` classes). Decided: **D1** stay in
+  `ExpressionBuilder.Web` (a second tag helper that renders the filter builder); **D2** it ships as **`1.0.0-rc.3`** (slices a to
+  d), with `rc.2` being this branch; **D3** refuse a shared report that uses a column the runner cannot see; **D4** buttons to
+  reorder columns (drag and drop is parked). The review also asked about totals, sums, custom tables, computed columns and charts:
+  designed as a ladder in "Outputs beyond columns" (slices e1 to e3, g, h), with two open decisions (D5 order, D6 how charts are
+  drawn) that do not block `rc.3`.
+- **Version and formatting (2026-10-16): done.** `Directory.Build.props` says `1.0.0-rc.2` (`1.0.0-rc.1` was published on
+  2024-09-19). CSharpier covers the whole repository (`dotnet csharpier check .`); the commands in the docs, CI and the VS Code task
+  say so.
 
 ## Parked
 
@@ -58,9 +65,14 @@ not lost in a file.
   settings per class of its own (`AddRoot`, `Restrict<T>`), which is the likeliest second user; decide the two together.
 - **Caching the filter schema.** Decided against: it is the gate for what a post may do, and it is 11-95 µs. What it would take is in
   `tools/ExpressionBuilder.Benchmarks/RESULTS.md` ("Not cached").
+- **Drag and drop to reorder report columns** (decided 2026-10-16: the report builder ships with move up / move down buttons).
+  Bring it back when users ask for it after the soak. It must sit **on top of** the buttons, never replace them: the platform has no
+  keyboard or screen-reader equivalent for dragging, touch is poor, and the browser tests hold the builders to keyboard-only use and
+  axe. It would need its own keyboard model and announcements (`aria-live`), and tests in all three browsers.
 
 For the very next session, use [next-session.md](next-session.md): it has a prompt that is ready to paste, and the current state.
-The prompt below is the original, covering every section.
+The prompt below is the original, covering every section (section 5's design is done; its slices are in
+[the design](../../docs/architecture/report-builder.md)).
 
 ```text
 Read AGENTS.md and ai/instructions/engineering-principles.md first (standing instruction: call out anything in my requests that
@@ -164,8 +176,8 @@ review it. Constraints and a suggested direction:
 - Docs site and a hosted demo of the sample app (GitHub Pages cannot host ASP.NET; use a container host or record a short GIF).
 - More operations people ask for (for example date-part comparisons: IsToday, InLastNDays; regex; collection Count) via the
   documented "add an operation" skill.
-- A release candidate plan: 1.0.0-rc.2 from this work, a soak period, then 1.0.0. Update ChangeLog.md and use the release skill
-  (ai/skills/release.md).
+- A release candidate plan: 1.0.0-rc.2 from this work, 1.0.0-rc.3 with the report builder (slices a to d), a soak period, then
+  1.0.0. Update ChangeLog.md and use the release skill (ai/skills/release.md).
 
 Finish each section by telling me what changed, what you verified and how, what you could not verify, and what you suggest next.
 ```

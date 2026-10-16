@@ -1,7 +1,9 @@
 # Report builder: design
 
-**Status: draft for review. Nothing in this document is built.** The only code written for it is measurement code in
-`tools/ExpressionBuilder.Benchmarks` (see [Measurements](#measurements)). Names of types and members below are illustrative.
+**Status: reviewed; decisions D1 to D4 made (2026-10-16); nothing in this document is built.** The only code written for it is
+measurement code in `tools/ExpressionBuilder.Benchmarks` (see [Measurements](#measurements)). Names of types and members below
+are illustrative. What the review decided is in [Decisions](#decisions); the review also asked how computed columns, totals,
+custom tables and charts would fit, which is answered in [Outputs beyond columns](#outputs-beyond-columns).
 
 A report builder lets a user pick **what to report on** (one of several classes), build the filter for it with the existing
 [filter builder](../web-filter-builder.md), choose **columns** and **sorting**, and get **results** (a page of them, or a CSV
@@ -21,10 +23,11 @@ file). It is section 5 of `ai/instructions/next-steps.md`.
 - [Security](#security)
 - [The interface](#the-interface)
 - [Export](#export)
+- [Outputs beyond columns](#outputs-beyond-columns)
 - [Delivery in slices](#delivery-in-slices)
 - [Saved reports and built-in reports](#saved-reports-and-built-in-reports)
 - [Measurements](#measurements)
-- [Decisions for you](#decisions-for-you)
+- [Decisions](#decisions)
 - [Documents that change](#documents-that-change)
 
 ## What "done" means for this document
@@ -32,7 +35,7 @@ file). It is section 5 of `ai/instructions/next-steps.md`.
 It is done when a reviewer can answer, without reading code: what will be built and in which order; what each slice delivers
 on its own and how it is tested; what an application has to write to use it; what the security model is and what stays the
 application's job; and what it costs, measured. Every choice carries a recommendation and the main alternative; the ones that
-are the project owner's to make are marked **DECISION** and collected [at the end](#decisions-for-you).
+are the project owner's to make are marked **DECISION** and collected [at the end](#decisions).
 
 ## Recommendations at a glance
 
@@ -49,12 +52,13 @@ are the project owner's to make are marked **DECISION** and collected [at the en
 | R9 | Paging | **Offset** paging, one extra row to know there is another page, a total only on request, a maximum offset | Keyset paging | Random access and simplicity; keyset needs a total order on mixed, nullable columns |
 | R10 | Column headings | The schema's labels only | Headings the user types | Less to encode, escape and store |
 | R11 | Export | **CSV**, streamed, a row cap checked **before** streaming, text cells neutralised against formulas | Truncate silently or at the cap; XLSX | A partial file that looks complete is worse than a refusal |
-| R12 | Grouping and totals | **Not in the first release.** The row shape will have to change for it | Build it now on `object[]` | Measured: `GroupBy` on an `object[]` key does not translate |
+| R12 | Grouping | **Not in `rc.3`.** The row shape will have to change for it; totals and per-row measures do not need grouping and come first | Build it now on `object[]` | Measured: `GroupBy` on an `object[]` key does not translate |
 | R13 | Saved reports | An `IReportStore`, a document stored as plain text, **re-validated for whoever runs it**; an EF store later, as its own package | Run a stored report with its author's rights | A shared report must not be a way to borrow someone's access |
-| R14 | Reordering columns | Move up / move down **buttons** | Drag and drop | **DECISION D4**: keyboard, touch and screen-reader use |
-| R15 | Where the code lives | In `ExpressionBuilder.Web`, in a `Reports/` folder | A new package now | **DECISION D1** |
-| R16 | When it ships | After 1.0.0, as 1.1.0 | Inside 1.0.0 | **DECISION D2** |
-| R17 | A shared report that uses a column the runner may not see | Refuse the report | Leave the column out and say so | **DECISION D3** |
+| R14 | Reordering columns | Move up / move down **buttons** | Drag and drop | **Decided (D4):** buttons; drag and drop is in the backlog (`next-steps.md`, "Parked") |
+| R15 | Where the code lives | In `ExpressionBuilder.Web`, in a `Reports/` folder; `<report-builder>` composes the filter builder | A new package now | **Decided (D1):** stay in `Web` |
+| R16 | When it ships | Slices a to d in **`1.0.0-rc.3`**, after `rc.2` (the current branch); the rest after | After 1.0.0, as 1.1.0 | **Decided (D2):** `rc.3` |
+| R17 | A shared report that uses a column the runner may not see | Refuse the report | Leave the column out and say so | **Decided (D3):** refuse |
+| R18 | What the output of a report can be | A ladder: property columns, then totals, then per-row measures, then grouping, then computed columns; charts draw a grouped result | One expression language for everything, now | [Outputs beyond columns](#outputs-beyond-columns); **open: D5, D6** |
 
 ## What exists and what is reused
 
@@ -81,18 +85,22 @@ argued with:
    switching; it can be added later by sending several schemas, since each is already complete.
 2. **Buttons, not drag and drop, to reorder columns (R14).** The brief says "drag to order". Drag and drop has no keyboard
    equivalent in the platform, is poor on touch, and the project's browser tests hold the filter builder to keyboard-only
-   operation and axe. Move up / move down buttons are the platform (`AGENTS.md`: prefer the platform). **DECISION D4.**
+   operation and axe. Move up / move down buttons are the platform (`AGENTS.md`: prefer the platform). **Decided (D4):** buttons;
+   drag and drop is parked.
 3. **The library composes queries but does not run them (R8).** The brief says "gets results". Running needs `ToListAsync`, which
    is EF Core's. Composing `IQueryable<object?[]>` and leaving three lines of materialising to the app keeps EF Core out of the
    package and out of its version policy. If every app writes the same three lines, add a convenience package then (KISS: the
    second use, not the first).
-4. **The first release stops at columns, sorting and paging (R12).** Grouping stays in the brief as "only if still wanted"; the
-   measurements show it cannot use the row shape recommended here, which is a reason to wait and see.
+4. **The first candidate with reports (`rc.3`) stops at columns, sorting, paging and CSV (R12).** Grouping stays in the brief as
+   "only if still wanted"; the measurements show it cannot use the row shape recommended here. The review asked for totals,
+   sums, custom tables and charts as well: they are designed in [Outputs beyond columns](#outputs-beyond-columns) and come after
+   `rc.3`, in an order that keeps each step useful on its own.
 5. **The long-lived branch (house rule: trunk-based, review continuously).** `refactor/repo-restructure-and-filter-builder` holds
    sections 1 to 4 and has not been merged; its `browsers` CI job has never run. Do not add this on top of it. Merge it first,
-   then branch each slice from `main` (see [delivery](#delivery-in-slices)).
-6. **The version.** `1.0.0-rc.1` was published on 2024-09-19 (tag `v1.0.0-rc.1`, NuGet). The branch still says `rc.1`, and several
-   documents say nothing has been released. The next candidate is `1.0.0-rc.2`; do that bump in its own commit before anything else.
+   then branch each slice from `main` (see [delivery](#delivery-in-slices)). The review wants reports in an application soon,
+   which is a reason to merge and publish `rc.2` promptly, not a reason to stack the slices on the branch.
+6. **The version.** `1.0.0-rc.1` was published on 2024-09-19 (tag `v1.0.0-rc.1`, NuGet). This branch is now `1.0.0-rc.2`
+   (bumped in its own commit); the report builder ships as `1.0.0-rc.3` (D2).
 
 ## How a request flows
 
@@ -350,6 +358,15 @@ projection or the scope then cannot write. This is the app's job and the guide s
 
 ## The interface
 
+**It is a composition, in the same Razor class library (D1).** `ExpressionBuilder.Web` is already a Razor SDK project
+(`Microsoft.NET.Sdk.Razor`): a tag helper (`<filter-builder>`), a view component it wraps, a view, and static assets served from
+the package. `<report-builder>` is a second tag helper in that library. It draws the root picker and the columns, sort and run
+parts, and renders the **same filter builder view component** for the filter, so the filter builder's markup, templates,
+script and tests are reused, not copied. The one change to the filter builder is an overload of the view component that takes a
+`FilterSchema` that was already built (for this user and root) instead of a `Type`; `FilterBuilderTagHelper` keeps calling the
+`Type` one. The report script wraps the filter builder through its public API (`FilterBuilder.attach`, `.json`, `.load`,
+`eb:change`).
+
 The page for a root, from top to bottom, in the same markup contract as the filter builder (`data-eb-*` attributes and
 `<template>`s that the view owns and the script clones):
 
@@ -358,7 +375,8 @@ The page for a root, from top to bottom, in the same markup contract as the filt
    whole filter into the URL). If the filter has conditions, the script asks before leaving.
 2. **The filter builder**, unchanged, for the chosen root's schema.
 3. **Columns.** A `<select>` of the fields that can be shown (grouped like the filter builder's field list), an *Add column*
-   button, and an ordered list of the chosen ones, each with move up, move down and remove buttons (R14). Focus goes to a sensible
+   button, and an ordered list of the chosen ones, each with move up, move down and remove buttons (R14, decided; drag and drop
+   is parked, and would sit on top of the buttons). Focus goes to a sensible
    neighbour after every removal or move: this is where the filter builder had bugs (focus lost after removing a condition), and the
    keyboard tests will cover it from the start.
 4. **Sort.** Up to three rows of field, direction and remove, with *Add sort*.
@@ -385,17 +403,123 @@ columns and the sort. The Razor view can be replaced as the filter builder's can
   `X-Content-Type-Options: nosniff`.
 - Not in the first release: Excel files (a dependency), JSON (a few lines in the app from `object?[]`).
 
+## Outputs beyond columns
+
+*Raised in the review:* who chooses what is output ("SELECT") and how it is formatted: does the library, or the application? Can
+a report have custom columns (a sum of some variable), custom tables, charts? How would they tie in?
+
+**Recommendation (R18): the library owns choosing and formatting the output, in a closed vocabulary, and builds it up in steps
+that each stand alone.** The user never types an expression: they pick from a list, and the server compiles only what the schema
+for that user allows, exactly as for a filter. An application that needs something outside the vocabulary still has a way out:
+slice c delivers a **checked, ordered list of columns** the application can project itself.
+
+### The ladder
+
+| Step | A report can then show | How it is built | Row shape | Measured |
+| --- | --- | --- | --- | --- |
+| 0. Slices c, d | A property or a path through related objects (`Customer.Name`) | `object?[]` projection, as above | `object?[]` | Yes |
+| **e1** Totals | A **totals row** under the table: count, sum, average, minimum, maximum of chosen columns **over every matching row**, not just the page | One more query over the same `Where` (the scope plus the user's filter), only when asked, like the total | Unchanged; the totals are a separate small result | No |
+| **e2** Measures | A column that is an aggregate **of a collection on the row**: "number of lines", "sum of `Lines.Quantity`", optionally only the lines that match a filter | A correlated aggregate inside the same `Select` (`o.Lines.Where(f).Sum(l => l.Quantity)`); the filter is the filter builder again, aimed at the collection's type | Unchanged: it is still one value per row | No |
+| **e3** Grouping | "Total by customer", "orders per month": group-by columns plus measures | `GroupBy` with a key that EF can compare; the key is **not** an `object[]` (see Measurements, section 5) | Changes | Translation only (two columns) |
+| **g** Computed columns | A value worked out from other columns: `Quantity × UnitPrice`, a text join, a date part, `if filter then a else b` | A small expression tree of validated nodes (below) inside the `Select` | Unchanged | No |
+| **h** Charts | A bar, line or pie drawn from a grouped result | Rendering only; needs e3 | | |
+
+Nothing above the first row is measured. Each of e1 and e2 should be translated and costed (in the benchmark project, as this
+document's numbers were) **before** its slice is built; that is the first task of the slice, and the numbers go in this document.
+EF Core normally translates an aggregate over a navigation collection inside a `Select`, but that is a belief until it is run
+against the providers in use.
+
+**Per-row measures (e2) are the cheap way to get "sums of certain variables"**, and they do not need grouping: the answer is
+still one value per row, so the `object?[]` shape is kept. Only summing across rows into groups (e3) changes the shape. What
+e2 costs is database work: each measure is a correlated subquery, so a report with ten of them is ten subqueries per row of the
+page. They are limited (a few per report) and each one counts towards the report's cost limits.
+
+### "An output expression, not a result-type expression"
+
+The filter side builds a **predicate**: every `IOperation` produces a `bool`. The output side builds a **value**, which is a
+different family and does not reuse the operations. It should be a small tree in the posted document, validated against the
+schema, never text that is compiled:
+
+```json
+{ "columns": [
+    { "field": "Reference" },
+    { "measure": "sum", "field": "Lines.Quantity", "where": { "type": "group", "connector": "And", "items": [] } },
+    { "expr": { "op": "multiply", "left": { "field": "Quantity" }, "right": { "field": "UnitPrice" } } }
+] }
+```
+
+- **Nodes are a closed set**, each type-checked when read: a field (from the schema), a constant, arithmetic (`add`, `subtract`,
+  `multiply`, `divide`), text join, a date part, `coalesce`, and `if` whose condition is a **filter** (the existing builder and
+  compiler) with two values. There is no member that names a method, a type or SQL.
+- **The existing manipulators are the unary steps.** `IEntityManipulator` (`ExpressionMethodManipulator`, `ReplaceManipulator`)
+  already turns a value into a value (the library's "adjustments"), so a text or date column can use the same list the filter
+  does. That is reuse, not a new mechanism.
+- **Operations, filters and output share one gate.** A field inside a measure, an arithmetic node or an `if` is resolved through
+  the schema built for the user. `Sum(Salary)`, `Salary * 0` and `if Salary > 100 then 1 else 0` all leak Salary as surely as a
+  filter on it does, so none of them can name it. (The test is the matrix again: every restricted property, in every node type.)
+- **Types are checked.** Arithmetic only on numbers, with the result type promoted as C# does; a mismatch is a refusal with the
+  usual message, not an exception from EF. Division by zero and overflow are the database's behaviour, and the guide says so.
+- **Limits**: nodes per expression, expressions and measures per report, depth. Each is a setting with a proposed default, and
+  each is tested by posting one over it.
+- **The UI is the expensive part, not the compiler.** A free tree editor is hard to make keyboard-, touch- and
+  screen-reader-friendly. Recommendation: start with **one row per column**, `[operation] [left] [right]` where each side is a
+  field or a constant (so `Quantity × UnitPrice`, and chain by adding another computed column that uses the first only if a need
+  appears), and `if` as a row with a nested filter builder. That covers the sums, differences and ratios that reports ask for.
+- **Headings.** A computed column has no schema label, so its heading must come from somewhere. Start with a generated one
+  ("Sum of Lines.Quantity", "Quantity × UnitPrice"); a heading the user types is [R10's](#recommendations-at-a-glance)
+  alternative and arrives here if it is wanted, with the encoding rules (HTML, CSV) that come with it.
+- **Sorting by a computed column or measure** is an alias in the `OrderBy`; allowed in the slice that adds the column, with the
+  tie-break unchanged.
+
+### Tables and charts
+
+A result is **headings, a kind per column, and rows of cells**. A table, a CSV file, a JSON response and a chart are *renderers*
+of that one result; none of them should know how the query was built. That is what makes "custom tables and charts" a
+rendering question once the result is right.
+
+- **A custom table**: with e1 to e3 it is already one: chosen columns, measures as columns, a totals row, or groups. A
+  **cross-tab** (rows by one thing, columns by another) is a grouped result with two keys drawn as a grid: a renderer on e3.
+- **Charts need e3.** A chart is a grouped report with one or two group-by columns and one or more measures: "orders per month"
+  is `groupBy: month`, `measure: count`. A chart of ungrouped rows is a chart of the page, which is rarely what anyone wants.
+- **Do not ship a charting library.** The platform and the project's KISS rule point the same way. Recommendation (D6):
+  1. **Data first.** The result is available as JSON (the page's script keeps it, fires an event with it, and the application can
+     ask for it as JSON), so the application can use whatever it already uses to draw.
+  2. **The table is always there.** A chart without its data table is not accessible; the table is the accessible alternative and
+     stays rendered.
+  3. **A built-in chart later, if wanted**: a small inline SVG bar and line renderer in the report script, coloured by the same CSS
+     custom properties as the rest, working under the strict CSP (no inline script or style), with the browser and axe tests the
+     filter builder has. Not before the application has a reason to prefer it over its own.
+- **What the application can do now.** Slice c gives it a checked column list and slice d a page of `object?[]` with headings, so
+  it can already render a table of its own, or feed a chart.
+
+### Security and cost of this section
+
+The table in [Security](#security) already lists aggregating a hidden column; computed columns, `if` and measures add the same
+row for each new node type. Two new costs to bound: **correlated subqueries** (measures) and **expression size**. Both are
+limits that a post can exceed, and both have a test that posts one over. Totals and group counts are limited like the page and
+export. A totals or grouped query is read-only and scoped exactly as the page is: the scope first, then the user's filter, then the
+aggregate, and a test pins that with the "true for every row" filter for every new query the library composes.
+
 ## Delivery in slices
 
 **Before the first slice** (each its own commit or branch, none is feature work):
 
 1. Merge the current branch to `main` once the first CI run is green (it has not run the `browsers` job yet); branch each slice
-   from `main`.
-2. Bump to `1.0.0-rc.2`: `Directory.Build.props`, and the documents that say rc.1 or "nothing released".
-3. Mechanical: split `FilterCompiler.Compile(string)` into reading and `Compile(FilterNode)`; no behaviour change.
+   from `main`. Publish `1.0.0-rc.2` from it (the bump is done; publishing is a separate step, `ai/skills/release.md`).
+2. Mechanical: split `FilterCompiler.Compile(string)` into reading and `Compile(FilterNode)`; no behaviour change.
+3. Small and behaviour-neutral: a `FilterBuilder` view component overload that takes a built `FilterSchema`.
 
 Each slice stands on its own: after it, the library does something useful, the documentation says what, and `main` can be
 released. They are released behind documentation, not a flag.
+
+**What ships when (D2).** `rc.2` is the current branch. **`rc.3` is slices a to d**: several roots, the picker, columns and sort,
+and running with CSV export, in the sample app and in an application. Slices a to c are useful alone, so a slice may be
+published as a prerelease of its own if the application wants it earlier. After `rc.3` comes a soak (the owner's own
+application and workforce), then `1.0.0`. **Consequence to weigh:** `1.0.0` freezes the public API it contains. Everything
+in `rc.3` that is public becomes a promise, so keep the new surface small: `internal` until an application needs it, and the
+members that are illustrative above (`ReportQuery`, `ReportRun`, the root builder) are the ones to review hardest during the
+soak. Slices e to h (below) are additive and can ship in `1.0.x` or `1.1.0`; the "unknown members are refused" rule (R5) is what
+lets a document gain `totals`, `groupBy` or computed columns later without a version bump.
 
 ### Slice a. Several roots, the user's schema, a non-generic build
 
@@ -461,16 +585,26 @@ a soft-delete global filter, a Finance-only column, a customer from another tena
 - Browser tests: run a report; download the CSV and compare; the published-app test under a strict CSP.
 - Benchmarks kept in `tools/ExpressionBuilder.Benchmarks` (the ones used for this document).
 
-### Slice e. Grouping and totals (only if still wanted)
+### Slice e. Totals, measures and grouping (after `rc.3`)
 
-Not designed here beyond the constraints it must meet. The row shape changes (a `ValueTuple` or generated key; see above).
-Aggregates are an allow-list by kind (count for all; sum and average for numbers; minimum and maximum for numbers and dates) and
-go through the same schema, because `Sum(Salary)` leaks Salary as surely as a filter does. A group count is limited. Tests: an
-oracle, and every restricted property refused as a group key and as an aggregate.
+Designed in [Outputs beyond columns](#outputs-beyond-columns), as three steps that each stand alone: **e1** a totals row, **e2**
+measures per row, **e3** grouping. Aggregates are an allow-list by kind (count for all; sum and average for numbers; minimum
+and maximum for numbers and dates) and go through the same schema, because `Sum(Salary)` leaks Salary as surely as a filter
+does. Tests, for each step: an oracle against LINQ over the same data, and every restricted property refused as an aggregate
+and (e3) as a group key.
 
 ### Slice f. Saved reports and built-in reports
 
-See the next section.
+See [the section below](#saved-reports-and-built-in-reports). It depends on c and d, not on e, so it can come before or after it.
+
+### Slices g and h. Computed columns; charts
+
+Designed in [Outputs beyond columns](#outputs-beyond-columns). **g** needs a value-expression vocabulary of its own; **h** needs
+e3. Neither is in `rc.3`.
+
+**Order after `rc.3` (recommendation):** e1, f, e2, e3, g, h. e1 is the cheapest thing a reader of a table asks for; f is what
+makes reports something a workforce comes back to; e3 and h are the biggest changes and want the soak's feedback first. The order
+is open (D5).
 
 ## Saved reports and built-in reports
 
@@ -509,9 +643,9 @@ people than the page.
 
 - A condition that cannot be satisfied (a property removed, or one the runner may not see) **refuses the whole report**. Leaving
   it out would widen the result, which is the wrong direction to fail in.
-- A column that cannot be shown: refuse (recommended) or leave it out with a visible note. **DECISION D3.** Refusing means the
-  author of a global report must stick to columns everyone has; leaving out is friendlier and quietly changes what the report
-  says.
+- A column that cannot be shown: **refuse the report (decided, D3).** The author of a global report has to stick to columns
+  everyone who runs it can see. (Leaving the column out with a note would be friendlier but quietly changes what the report
+  says; the same rule applies to a computed column or measure that reaches a hidden property.)
 - The message to the runner is the single generic one; the detail (which property, which report) goes to the log.
 
 **Saving.** A user may save privately. Choosing *Global* needs a permission the app defines
@@ -687,14 +821,23 @@ The CSV writer and the results table (they are not written, and are bounded by t
 plans; the stored-report store; the browser side (columns and sort UI); a quiet machine. The cost limits in this document are
 proposals, not results.
 
-## Decisions for you
+## Decisions
+
+Made on review, 2026-10-16:
+
+| # | Decision | Made | Consequence |
+| --- | --- | --- | --- |
+| **D1** | Where the code lives | **Stay in `ExpressionBuilder.Web`**, under `Reports/`. `<report-builder>` is a second tag helper in the same Razor class library and renders the filter builder view component for the filter ([The interface](#the-interface)) | The schema and compiler are in `Web` (a `Reports` package would depend on a package full of Razor); splitting them out is a refactor of its own. Someone who wants reports without MVC still references the MVC package. Revisit when a second consumer needs the core without the UI |
+| **D2** | When it ships | **`1.0.0-rc.3`.** `rc.2` is the current branch; `rc.3` is slices a to d; then a soak, then `1.0.0` ([what ships when](#delivery-in-slices)) | Reports are in the 1.0 line and are tested by the owner's application and workforce during the candidates. `1.0.0` freezes whatever is public in `rc.3`, so the public surface of slices a to d is kept small |
+| **D3** | A shared report that uses a column the runner may not see | **Refuse** | Simplest and never changes what a report means; authors of global reports use common columns. The same rule for computed columns and measures |
+| **D4** | Reordering columns | **Buttons.** Drag and drop is in the backlog (`ai/instructions/next-steps.md`, "Parked") | Keyboard, touch and screen readers work from day one; drag can be added on top, with the buttons kept |
+
+Open, raised by the review's questions about output ([Outputs beyond columns](#outputs-beyond-columns)). None blocks `rc.3`:
 
 | # | Decision | Recommendation | Consequence |
 | --- | --- | --- | --- |
-| **D1** | **Where the code lives.** In `ExpressionBuilder.Web` under `Reports/`, or a new package | Stay in `Web` | The schema and compiler are in `Web` (a `Reports` package would depend on a package full of Razor); splitting them out is a refactor of its own. Cost: someone who wants reports without MVC still references the MVC package. Revisit when a second consumer needs the core without the UI |
-| **D2** | **When it ships.** Inside 1.0.0, or after it as 1.1.0 | After: merge, `1.0.0-rc.2`, soak, `1.0.0`; the slices then land on `main` and ship as `1.1.0` | A stable 1.0.0 then does not carry a new, unsoaked feature. If it goes inside 1.0.0 instead, the release candidates need another soak and the slices have to merge first |
-| **D3** | **A shared report that uses a column the runner may not see.** Refuse, or leave the column out with a note | Refuse | Simplest and never changes what a report means; authors of global reports use common columns |
-| **D4** | **Reordering columns.** Buttons, or drag and drop | Buttons | Keyboard, touch and screen readers work from day one; drag could be added later on top (with the buttons kept) |
+| **D5** | **What comes after `rc.3`, and in what order** | e1 totals, f saved reports, e2 per-row measures, e3 grouping, g computed columns, h charts | Totals and measures keep the simple row shape and are the cheapest things a table reader asks for; grouping and charts are the big changes and benefit from the soak. If reports must be saved before totals are wanted, swap e1 and f |
+| **D6** | **How charts are drawn** | The library supplies the data (JSON and an event) and the accessible table; the application draws. A small built-in SVG renderer only if asked for later | No charting dependency, no CSP surprises, and nothing to keep up with. The cost is that an application that wants a chart writes a few lines against its own library |
 
 ## Documents that change
 
