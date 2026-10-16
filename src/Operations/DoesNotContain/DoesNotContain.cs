@@ -38,9 +38,7 @@ public struct DoesNotContain : IOperation
                         Expression.Call(
                             m,
                             HelperMethods.ContainsMethod,
-                            options.ApplyManipulators(
-                                v.ToTrimLowerStringConstant()
-                            )
+                            v.ToTrimLowerStringConstant(options)
                         )
                     )
             );

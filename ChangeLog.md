@@ -74,6 +74,7 @@ A ready-made filter builder for ASP.NET Core, for MVC and Razor Pages. Users pic
 -   `FilterCollection` could not be given the values of another collection, and threw from `SyncRoot`/`IsSynchronized`
 -   A manipulator argument that is a variable (`x => x.Name.Replace(term, "")`) threw an `InvalidCastException`; it can now be any value that does not depend on the item being filtered
 -   Deserialising a filter no longer re-scans the assembly for each group, and its errors say what was wrong
+-   A case-changing adjustment (`x => x.Name.ToUpper()`) made Contains, Ends with and Does not contain find nothing: the value was upper-cased but the property was folded to lower case afterwards. Case is now folded last on both sides, and Starts with, Does not start with and Does not end with apply adjustments to their values as the others do
 -   Saved filters (JSON and `byte[]`) whose values are of a type from your application, such as your own enum, could not be read back: the type was saved by name without its assembly. It now says which assembly it is in (`App.Tier, App`, without a version). Types of the framework are saved as before, so nothing already saved changes
 
 #### Security

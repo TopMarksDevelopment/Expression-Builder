@@ -117,6 +117,31 @@ public static class ExpressionExtensions
     ) => Expression.Constant(item?.ToString()?.ToLower().Trim());
 
     /// <summary>
+    /// Convert the item to a string, apply the manipulators, then trim it and make it lowercase
+    /// </summary>
+    /// <remarks>
+    /// The case is folded last so a manipulator such as <c>ToUpper()</c> can't undo it: the member is
+    /// folded after its manipulators too, and the two sides have to meet in the same case.
+    /// </remarks>
+    /// <typeparam name="TPropertyType">The type of the property</typeparam>
+    /// <param name="item">The item to convert</param>
+    /// <param name="options">The options holding the manipulators to apply</param>
+    /// <returns>An expression representing the full operation</returns>
+    public static Expression ToTrimLowerStringConstant<TPropertyType>(
+        this TPropertyType? item,
+        IFilterStatementOptions? options
+    ) =>
+        Expression.Constant(
+            (
+                item?.ToString() is { } text
+                    ? options.ApplyManipulators(text)?.ToString()
+                    : null
+            )
+                ?.ToLower()
+                .Trim()
+        );
+
+    /// <summary>
     /// Convert the member to a string
     /// </summary>
     /// <param name="expression">The expression to convert</param>

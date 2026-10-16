@@ -37,7 +37,7 @@ public struct EndsWith : IOperation
                     Expression.Call(
                         m,
                         H.EndsWithMethod,
-                        options.ApplyManipulators(v.ToTrimLowerStringConstant())
+                        v.ToTrimLowerStringConstant(options)
                     )
             );
 
