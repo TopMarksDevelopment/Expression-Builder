@@ -40,7 +40,7 @@ editor of choice (the repo includes VS Code tasks).
    ```powershell
    dotnet build ExpressionBuilder.sln -c Release       # no warnings: they are errors in CI
    dotnet test ExpressionBuilder.sln -c Release --no-build
-   dotnet csharpier check src tests samples tools
+   dotnet csharpier check .
    ```
    and, if you changed `src/ExpressionBuilder.Web/client`: `npm ci && npm run check`, then commit the rebuilt
    `wwwroot/js/filter-builder.js`.

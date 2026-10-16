@@ -95,5 +95,5 @@ Cover, at least: the value types the operation is meant for, `null` values and m
 ```powershell
 dotnet build ExpressionBuilder.sln
 dotnet test ExpressionBuilder.sln
-dotnet csharpier check src tests samples tools
+dotnet csharpier check .
 ```

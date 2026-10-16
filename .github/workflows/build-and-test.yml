@@ -81,7 +81,7 @@ jobs:
             - name: CSharpier (version pinned in .config/dotnet-tools.json)
               run: |
                   dotnet tool restore
-                  dotnet csharpier check src tests samples tools
+                  dotnet csharpier check .
 
     # Real browsers, driving the sample app and apps built from the packed packages. It is a job of its own because it
     # downloads the browsers and the tests are slower; see docs/standards/testing.md.
