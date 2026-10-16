@@ -1,0 +1,33 @@
+version: 2
+updates:
+    - package-ecosystem: nuget
+      directory: /
+      schedule:
+          interval: monthly
+      groups:
+          test-dependencies:
+              patterns:
+                  - "xunit*"
+                  - "Microsoft.NET.Test.Sdk"
+                  - "coverlet.*"
+                  - "Microsoft.AspNetCore.Mvc.Testing"
+                  - "Microsoft.Playwright"
+                  - "Deque.AxeCore.*"
+          roslyn:
+              patterns:
+                  - "Microsoft.CodeAnalysis.*"
+      open-pull-requests-limit: 10
+
+    - package-ecosystem: npm
+      directory: /src/ExpressionBuilder.Web/client
+      schedule:
+          interval: monthly
+      groups:
+          development-dependencies:
+              dependency-type: development
+      open-pull-requests-limit: 10
+
+    - package-ecosystem: github-actions
+      directory: /
+      schedule:
+          interval: monthly

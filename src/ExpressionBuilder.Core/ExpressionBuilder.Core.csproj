@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Title>Expression Builder (Core Functionality)</Title>
+    <Description>Core package, with no operations included - pick and choose what you use. $(ExpressionBuilderBlurb)</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ExpressionBuilder.Api\ExpressionBuilder.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="protobuf-net" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ExpressionBuilder.Core.Tests" />
+    <InternalsVisibleTo Include="ExpressionBuilder.Benchmarks" />
+  </ItemGroup>
+</Project>

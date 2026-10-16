@@ -6,30 +6,129 @@ on:
         paths:
             - "**.cs"
             - "**.csproj"
+            - "**.props"
+            - "**.sln"
+            - "**.cshtml"
+            - "**.template"
+            - "**.ts"
+            - "**/package*.json"
+            - "src/ExpressionBuilder.Web/wwwroot/**"
+            - ".config/dotnet-tools.json"
+            - ".github/workflows/**"
+    push:
+        branches: [main]
+    workflow_dispatch:
 
 env:
-    DOTNET_VERSION: "8.0.*"
+    DOTNET_VERSION: "10.0.x"
+    DOTNET_NOLOGO: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
-    build-and-test:
-        name: build-and-test-${{matrix.os}}
+    dotnet:
+        name: dotnet (${{ matrix.os }})
         runs-on: ${{ matrix.os }}
         strategy:
+            fail-fast: false
             matrix:
-                os: [ubuntu-latest, windows-latest, macOS-latest]
+                os: [ubuntu-latest, windows-latest, macos-latest]
 
         steps:
-            - uses: actions/checkout@v4
-            - name: Setup .NET Core
-              uses: actions/setup-dotnet@v3
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
               with:
                   dotnet-version: ${{ env.DOTNET_VERSION }}
 
-            - name: Install dependencies
+            - name: Restore
               run: dotnet restore
 
+            # GITHUB_ACTIONS=true turns on ContinuousIntegrationBuild, which makes warnings errors in src/
             - name: Build
               run: dotnet build --configuration Release --no-restore
 
             - name: Test
-              run: dotnet test --configuration Release --no-build --verbosity normal
+              run: >
+                  dotnet test --configuration Release --no-build --verbosity normal
+                  --collect:"XPlat Code Coverage" --results-directory ./TestResults
+
+            # Proves every package can be built (a file the main package packs once went missing from git)
+            - name: Pack
+              if: matrix.os == 'ubuntu-latest'
+              run: dotnet pack --configuration Release --no-build
+
+            - name: Upload coverage
+              if: matrix.os == 'ubuntu-latest'
+              uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+              with:
+                  name: coverage
+                  path: TestResults/**/coverage.cobertura.xml
+                  if-no-files-found: warn
+
+    format:
+        name: formatting
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+              with:
+                  dotnet-version: ${{ env.DOTNET_VERSION }}
+
+            - name: CSharpier (version pinned in .config/dotnet-tools.json)
+              run: |
+                  dotnet tool restore
+                  dotnet csharpier check .
+
+    # Real browsers, driving the sample app and apps built from the packed packages. It is a job of its own because it
+    # downloads the browsers and the tests are slower; see docs/standards/testing.md.
+    e2e:
+        name: browsers
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+              with:
+                  dotnet-version: ${{ env.DOTNET_VERSION }}
+
+            - name: Build
+              run: dotnet build tests/ExpressionBuilder.Web.E2E --configuration Release
+
+            # Chromium, Firefox and WebKit, and the system libraries they need
+            - name: Install the browsers
+              run: pwsh tests/ExpressionBuilder.Web.E2E/bin/Release/net10.0/playwright.ps1 install --with-deps
+
+            - name: Test
+              run: dotnet test tests/ExpressionBuilder.Web.E2E --configuration Release --no-build --verbosity normal
+
+    client:
+        name: web client
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: src/ExpressionBuilder.Web/client
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+            - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: 24
+                  cache: npm
+                  cache-dependency-path: src/ExpressionBuilder.Web/client/package-lock.json
+
+            - run: npm ci
+
+            - name: Type-check, bundle and test
+              run: npm run check
+
+            # The bundle is committed so consumers (and the .NET build) never need node. If this fails,
+            # run `npm run build` and commit the result.
+            - name: The committed bundle is up to date
+              run: git diff --exit-code -- ../wwwroot/js/filter-builder.js

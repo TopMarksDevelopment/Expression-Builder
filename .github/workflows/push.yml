@@ -5,42 +5,59 @@ on:
         types:
             - published
 
-        # ALLOW MANUAL RUNS
-        workflow_dispatch:
+    # Allow manual runs
+    workflow_dispatch:
+
+env:
+    DOTNET_NOLOGO: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
     build:
         runs-on: windows-latest
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+            # The packages are versioned by Directory.Build.props, not by the tag, so a mistyped tag would otherwise
+            # publish a version nobody tagged. A suffix means a pre-release, and the release must say so.
+            - name: The release matches the version in Directory.Build.props
+              if: github.event_name == 'release'
+              shell: pwsh
+              env:
+                  TAG: ${{ github.event.release.tag_name }}
+                  PRERELEASE: ${{ github.event.release.prerelease }}
+              run: |
+                  $prefix = (Select-Xml -Path Directory.Build.props -XPath '//VersionPrefix').Node.InnerText.Trim()
+                  $suffix = (Select-Xml -Path Directory.Build.props -XPath '//VersionSuffix').Node.InnerText.Trim()
+                  $version = if ($suffix) { "$prefix-$suffix" } else { $prefix }
+                  if ($env:TAG -ne "v$version") { throw "The tag is '$env:TAG' but Directory.Build.props says v$version." }
+                  $expected = [bool]$suffix
+                  if ([bool]::Parse($env:PRERELEASE) -ne $expected) { throw "The release's pre-release flag is $env:PRERELEASE but the version is v$version." }
 
             - name: Setup .NET
-              uses: actions/setup-dotnet@v4
+              uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
               with:
-                  dotnet-version: 8.0.x
+                  dotnet-version: 10.0.x
 
             - name: Restore dependencies
               run: dotnet restore
 
             - name: Build
-              run: dotnet build --no-restore
+              run: dotnet build --configuration Release --no-restore
 
             - name: Test
-              run: dotnet test --no-build --verbosity normal
+              run: dotnet test --configuration Release --no-build --verbosity normal
 
+            # Every packable project in src/ (the tests, sample, tools and generator are not packable)
             - name: Create the packages
-              if: success()
-              run: dotnet pack
+              run: dotnet pack --configuration Release --no-build
 
             - name: Publish Nuget
-              if: success()
-              run: dotnet nuget push **/Release/*.nupkg --api-key ${{ secrets.NUGET_KEY }} --source https://api.nuget.org/v3/index.json
+              run: dotnet nuget push **/Release/*.nupkg --api-key ${{ secrets.NUGET_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
-            - name: Upload asset
-              uses: actions/upload-artifact@v4.3.3
+            - name: Upload packages
+              uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
               with:
-                  path: |
-                      **/Release/*.nupkg
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  name: packages
+                  path: "**/Release/*.nupkg"

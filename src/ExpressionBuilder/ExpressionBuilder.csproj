@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Title>Expression Builder</Title>
+    <Description>Easily build a filter that can be applied to lists and database queries (even dynamically). Packed with features, you can: easily convert API requests into expressions, save and re-run filters, have `NULL` checks done automatically, build complex queries with groups and so much more!</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ExpressionBuilder.Core\ExpressionBuilder.Core.csproj" />
+    <ProjectReference Include="..\Operations\Between\ExpressionBuilder.Operations.Between.csproj" />
+    <ProjectReference Include="..\Operations\BetweenExclusive\ExpressionBuilder.Operations.BetweenExclusive.csproj" />
+    <ProjectReference Include="..\Operations\Contains\ExpressionBuilder.Operations.Contains.csproj" />
+    <ProjectReference Include="..\Operations\DoesNotContain\ExpressionBuilder.Operations.DoesNotContain.csproj" />
+    <ProjectReference Include="..\Operations\DoesNotEndWith\ExpressionBuilder.Operations.DoesNotEndWith.csproj" />
+    <ProjectReference Include="..\Operations\DoesNotStartWith\ExpressionBuilder.Operations.DoesNotStartWith.csproj" />
+    <ProjectReference Include="..\Operations\EndsWith\ExpressionBuilder.Operations.EndsWith.csproj" />
+    <ProjectReference Include="..\Operations\Equal\ExpressionBuilder.Operations.Equal.csproj" />
+    <ProjectReference Include="..\Operations\GreaterThan\ExpressionBuilder.Operations.GreaterThan.csproj" />
+    <ProjectReference Include="..\Operations\GreaterThanOrEqual\ExpressionBuilder.Operations.GreaterThanOrEqual.csproj" />
+    <ProjectReference Include="..\Operations\In\ExpressionBuilder.Operations.In.csproj" />
+    <ProjectReference Include="..\Operations\IsEmpty\ExpressionBuilder.Operations.IsEmpty.csproj" />
+    <ProjectReference Include="..\Operations\IsNotEmpty\ExpressionBuilder.Operations.IsNotEmpty.csproj" />
+    <ProjectReference Include="..\Operations\IsNotNull\ExpressionBuilder.Operations.IsNotNull.csproj" />
+    <ProjectReference Include="..\Operations\IsNotNullOrWhiteSpace\ExpressionBuilder.Operations.IsNotNullOrWhiteSpace.csproj" />
+    <ProjectReference Include="..\Operations\IsNull\ExpressionBuilder.Operations.IsNull.csproj" />
+    <ProjectReference Include="..\Operations\IsNullOrWhiteSpace\ExpressionBuilder.Operations.IsNullOrWhiteSpace.csproj" />
+    <ProjectReference Include="..\Operations\LessThan\ExpressionBuilder.Operations.LessThan.csproj" />
+    <ProjectReference Include="..\Operations\LessThanOrEqual\ExpressionBuilder.Operations.LessThanOrEqual.csproj" />
+    <ProjectReference Include="..\Operations\NotBetween\ExpressionBuilder.Operations.NotBetween.csproj" />
+    <ProjectReference Include="..\Operations\NotBetweenExclusive\ExpressionBuilder.Operations.NotBetweenExclusive.csproj" />
+    <ProjectReference Include="..\Operations\NotEqual\ExpressionBuilder.Operations.NotEqual.csproj" />
+    <ProjectReference Include="..\Operations\NotIn\ExpressionBuilder.Operations.NotIn.csproj" />
+    <ProjectReference Include="..\Operations\SmartSearch\ExpressionBuilder.Operations.SmartSearch.csproj" />
+    <ProjectReference Include="..\Operations\StartsWith\ExpressionBuilder.Operations.StartsWith.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None
+      Include="build\TopMarksDevelopment.ExpressionBuilder.props"
+      Pack="true"
+      PackagePath="build;buildTransitive"
+    />
+  </ItemGroup>
+</Project>

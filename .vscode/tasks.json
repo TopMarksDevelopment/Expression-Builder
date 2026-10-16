@@ -1,74 +1,76 @@
 {
     "version": "2.0.0",
     "tasks": [
-        { 
-            "label": ".NET Core Test with debugger", 
-            "type": "process", 
-            "isBackground": true, 
-            "command": "dotnet", 
-            "args": [ "test" ], 
-            "options": 
-                { 
-                    "cwd": "${workspaceFolder}/Packages/Core/tests", 
-                    "env": 
-                    { 
-                        "VSTEST_HOST_DEBUG": "1" 
-                    }, 
-                }, 
-            "group": "test", "presentation": 
-                { 
-                    "echo": true,
-                    "reveal": "always",
-                    "focus": false,
-                    "panel": "shared"
-                },
-            "problemMatcher": [] 
-        },
         {
             "label": "build",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Packages/Main/tests/TopMarksDevelopment.ExpressionBuilder.Tests.csproj",
+                "${workspaceFolder}/ExpressionBuilder.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
+            "group": "build",
             "problemMatcher": "$msCompile"
         },
         {
             "label": "test",
             "command": "dotnet",
             "type": "process",
-            "args": [
-                "test",
-                "${workspaceFolder}/Packages/Main/tests/TopMarksDevelopment.ExpressionBuilder.Tests.csproj"
-            ],
-            "dependsOn": "buld",
+            "args": ["test", "${workspaceFolder}/ExpressionBuilder.sln"],
+            "group": "test",
+            "dependsOn": "build",
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "publish",
-            "command": "dotnet",
+            "label": "test with debugger (Core)",
             "type": "process",
-            "args": [
-                "publish",
-                "${workspaceFolder}/Packages/Main/tests/TopMarksDevelopment.ExpressionBuilder.Tests.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "problemMatcher": "$msCompile"
+            "isBackground": true,
+            "command": "dotnet",
+            "args": ["test"],
+            "options": {
+                "cwd": "${workspaceFolder}/tests/ExpressionBuilder.Core.Tests",
+                "env": {
+                    "VSTEST_HOST_DEBUG": "1"
+                }
+            },
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
         },
         {
-            "label": "watch",
+            "label": "format (CSharpier)",
+            "command": "dotnet",
+            "type": "process",
+            "args": ["csharpier", "format", "."],
+            "problemMatcher": []
+        },
+        {
+            "label": "web client: build and test",
+            "command": "npm",
+            "type": "process",
+            "args": ["run", "check"],
+            "options": {
+                "cwd": "${workspaceFolder}/src/ExpressionBuilder.Web/client"
+            },
+            "problemMatcher": "$tsc"
+        },
+        {
+            "label": "run the web sample",
             "command": "dotnet",
             "type": "process",
             "args": [
-                "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/Packages/Main/tests/TopMarksDevelopment.ExpressionBuilder.Tests.csproj"
+                "${workspaceFolder}/samples/ExpressionBuilder.Web.Sample"
             ],
+            "isBackground": true,
             "problemMatcher": "$msCompile"
         }
     ]

@@ -1,0 +1,1359 @@
+{
+  "root": "t0",
+  "types": {
+    "t1": {
+      "id": "t1",
+      "label": "Branch",
+      "fields": [
+        {
+          "path": "Town",
+          "label": "Town",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Staff",
+          "label": "Staff",
+          "kind": "number",
+          "nullable": false,
+          "input": "number",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ],
+          "step": "1"
+        }
+      ]
+    },
+    "t3": {
+      "id": "t3",
+      "label": "String",
+      "fields": [
+        {
+          "path": "",
+          "label": "Value",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        }
+      ]
+    },
+    "t2": {
+      "id": "t2",
+      "label": "Contact",
+      "fields": [
+        {
+          "path": "Type",
+          "label": "Type",
+          "kind": "enum",
+          "nullable": false,
+          "input": "select",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "In",
+            "NotIn"
+          ],
+          "options": [
+            {
+              "value": "Telephone",
+              "label": "Telephone"
+            },
+            {
+              "value": "Email",
+              "label": "Email"
+            }
+          ]
+        },
+        {
+          "path": "Value",
+          "label": "Value",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Comments",
+          "label": "Comments",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Owner",
+          "label": "Owner",
+          "kind": "object",
+          "nullable": true,
+          "input": "",
+          "operations": [
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Owner.Id",
+          "label": "Owner \u203A Id",
+          "kind": "number",
+          "nullable": false,
+          "input": "number",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ],
+          "step": "1"
+        },
+        {
+          "path": "Owner.Name",
+          "label": "Owner \u203A Name",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Owner.Email",
+          "label": "Owner \u203A Email",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Owner.Age",
+          "label": "Owner \u203A Age",
+          "kind": "number",
+          "nullable": true,
+          "input": "number",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn",
+            "IsNull",
+            "IsNotNull"
+          ],
+          "step": "1"
+        },
+        {
+          "path": "Owner.Salary",
+          "label": "Owner \u203A Salary",
+          "kind": "number",
+          "nullable": false,
+          "input": "number",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ],
+          "step": "any"
+        },
+        {
+          "path": "Owner.Score",
+          "label": "Owner \u203A Score",
+          "kind": "number",
+          "nullable": false,
+          "input": "number",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ],
+          "step": "any"
+        },
+        {
+          "path": "Owner.Born",
+          "label": "Owner \u203A Born",
+          "kind": "date",
+          "nullable": false,
+          "input": "date",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ]
+        },
+        {
+          "path": "Owner.LastSeen",
+          "label": "Owner \u203A Last seen",
+          "kind": "dateTime",
+          "nullable": true,
+          "input": "datetime-local",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Owner.Joined",
+          "label": "Owner \u203A Joined",
+          "kind": "date",
+          "nullable": false,
+          "input": "date",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ]
+        },
+        {
+          "path": "Owner.StartsAt",
+          "label": "Owner \u203A Starts at",
+          "kind": "time",
+          "nullable": false,
+          "input": "time",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ]
+        },
+        {
+          "path": "Owner.Duration",
+          "label": "Owner \u203A Duration",
+          "kind": "time",
+          "nullable": false,
+          "input": "time",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ]
+        },
+        {
+          "path": "Owner.Active",
+          "label": "Owner \u203A Active",
+          "kind": "boolean",
+          "nullable": false,
+          "input": "boolean",
+          "operations": [
+            "Equal",
+            "NotEqual"
+          ]
+        },
+        {
+          "path": "Owner.Verified",
+          "label": "Owner \u203A Verified",
+          "kind": "boolean",
+          "nullable": true,
+          "input": "boolean",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Owner.Favourite",
+          "label": "Owner \u203A Favourite",
+          "kind": "enum",
+          "nullable": false,
+          "input": "select",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "In",
+            "NotIn"
+          ],
+          "options": [
+            {
+              "value": "Red",
+              "label": "Red"
+            },
+            {
+              "value": "Green",
+              "label": "Green"
+            },
+            {
+              "value": "Blue",
+              "label": "Deep blue"
+            }
+          ]
+        },
+        {
+          "path": "Owner.Reference",
+          "label": "Owner \u203A Reference",
+          "kind": "guid",
+          "nullable": false,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "In",
+            "NotIn"
+          ]
+        },
+        {
+          "path": "Owner.Home",
+          "label": "Owner \u203A Home address",
+          "kind": "object",
+          "nullable": true,
+          "input": "",
+          "operations": [
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Owner.Employer",
+          "label": "Owner \u203A Employer",
+          "kind": "object",
+          "nullable": true,
+          "input": "",
+          "operations": [
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Owner.Contacts",
+          "label": "Owner \u203A Contacts",
+          "kind": "collection",
+          "nullable": false,
+          "input": "",
+          "operations": [],
+          "itemType": "t2"
+        },
+        {
+          "path": "Owner.Tags",
+          "label": "Owner \u203A Tags",
+          "kind": "collection",
+          "nullable": false,
+          "input": "",
+          "operations": [],
+          "itemType": "t3"
+        },
+        {
+          "path": "Owner.Nickname_With_Underscores",
+          "label": "Owner \u203A Nickname with underscores",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Owner.ReadOnly",
+          "label": "Owner \u203A Read only",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        }
+      ]
+    },
+    "t0": {
+      "id": "t0",
+      "label": "Person",
+      "fields": [
+        {
+          "path": "Id",
+          "label": "Id",
+          "kind": "number",
+          "nullable": false,
+          "input": "number",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ],
+          "step": "1"
+        },
+        {
+          "path": "Name",
+          "label": "Name",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Email",
+          "label": "Email",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Age",
+          "label": "Age",
+          "kind": "number",
+          "nullable": true,
+          "input": "number",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn",
+            "IsNull",
+            "IsNotNull"
+          ],
+          "step": "1"
+        },
+        {
+          "path": "Salary",
+          "label": "Salary",
+          "kind": "number",
+          "nullable": false,
+          "input": "number",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ],
+          "step": "any"
+        },
+        {
+          "path": "Score",
+          "label": "Score",
+          "kind": "number",
+          "nullable": false,
+          "input": "number",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ],
+          "step": "any"
+        },
+        {
+          "path": "Born",
+          "label": "Born",
+          "kind": "date",
+          "nullable": false,
+          "input": "date",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ]
+        },
+        {
+          "path": "LastSeen",
+          "label": "Last seen",
+          "kind": "dateTime",
+          "nullable": true,
+          "input": "datetime-local",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Joined",
+          "label": "Joined",
+          "kind": "date",
+          "nullable": false,
+          "input": "date",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ]
+        },
+        {
+          "path": "StartsAt",
+          "label": "Starts at",
+          "kind": "time",
+          "nullable": false,
+          "input": "time",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ]
+        },
+        {
+          "path": "Duration",
+          "label": "Duration",
+          "kind": "time",
+          "nullable": false,
+          "input": "time",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual",
+            "Between",
+            "BetweenExclusive",
+            "NotBetween",
+            "NotBetweenExclusive",
+            "In",
+            "NotIn"
+          ]
+        },
+        {
+          "path": "Active",
+          "label": "Active",
+          "kind": "boolean",
+          "nullable": false,
+          "input": "boolean",
+          "operations": [
+            "Equal",
+            "NotEqual"
+          ]
+        },
+        {
+          "path": "Verified",
+          "label": "Verified",
+          "kind": "boolean",
+          "nullable": true,
+          "input": "boolean",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Favourite",
+          "label": "Favourite",
+          "kind": "enum",
+          "nullable": false,
+          "input": "select",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "In",
+            "NotIn"
+          ],
+          "options": [
+            {
+              "value": "Red",
+              "label": "Red"
+            },
+            {
+              "value": "Green",
+              "label": "Green"
+            },
+            {
+              "value": "Blue",
+              "label": "Deep blue"
+            }
+          ]
+        },
+        {
+          "path": "Reference",
+          "label": "Reference",
+          "kind": "guid",
+          "nullable": false,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "In",
+            "NotIn"
+          ]
+        },
+        {
+          "path": "Home",
+          "label": "Home address",
+          "kind": "object",
+          "nullable": true,
+          "input": "",
+          "operations": [
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Home.Postcode",
+          "label": "Home address \u203A Postcode",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Home.City",
+          "label": "Home address \u203A City",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Home.Country",
+          "label": "Home address \u203A Country",
+          "kind": "object",
+          "nullable": true,
+          "input": "",
+          "operations": [
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Employer",
+          "label": "Employer",
+          "kind": "object",
+          "nullable": true,
+          "input": "",
+          "operations": [
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Employer.Name",
+          "label": "Employer \u203A Name",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "Employer.Branches",
+          "label": "Employer \u203A Branches",
+          "kind": "collection",
+          "nullable": false,
+          "input": "",
+          "operations": [],
+          "itemType": "t1"
+        },
+        {
+          "path": "Contacts",
+          "label": "Contacts",
+          "kind": "collection",
+          "nullable": false,
+          "input": "",
+          "operations": [],
+          "itemType": "t2"
+        },
+        {
+          "path": "Tags",
+          "label": "Tags",
+          "kind": "collection",
+          "nullable": false,
+          "input": "",
+          "operations": [],
+          "itemType": "t3"
+        },
+        {
+          "path": "Nickname_With_Underscores",
+          "label": "Nickname with underscores",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        },
+        {
+          "path": "ReadOnly",
+          "label": "Read only",
+          "kind": "string",
+          "nullable": true,
+          "input": "text",
+          "operations": [
+            "Equal",
+            "NotEqual",
+            "Contains",
+            "DoesNotContain",
+            "StartsWith",
+            "DoesNotStartWith",
+            "EndsWith",
+            "DoesNotEndWith",
+            "SmartSearch",
+            "In",
+            "NotIn",
+            "IsEmpty",
+            "IsNotEmpty",
+            "IsNullOrWhiteSpace",
+            "IsNotNullOrWhiteSpace",
+            "IsNull",
+            "IsNotNull"
+          ]
+        }
+      ]
+    }
+  },
+  "operations": [
+    {
+      "name": "Equal",
+      "label": "Equals",
+      "arity": "one",
+      "supportsMatch": false,
+      "defaultMatch": "Any"
+    },
+    {
+      "name": "NotEqual",
+      "label": "Does not equal",
+      "arity": "one",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "Contains",
+      "label": "Contains",
+      "arity": "many",
+      "supportsMatch": true,
+      "defaultMatch": "Any"
+    },
+    {
+      "name": "DoesNotContain",
+      "label": "Does not contain",
+      "arity": "many",
+      "supportsMatch": true,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "StartsWith",
+      "label": "Starts with",
+      "arity": "many",
+      "supportsMatch": false,
+      "defaultMatch": "Any"
+    },
+    {
+      "name": "DoesNotStartWith",
+      "label": "Does not start with",
+      "arity": "many",
+      "supportsMatch": true,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "EndsWith",
+      "label": "Ends with",
+      "arity": "many",
+      "supportsMatch": false,
+      "defaultMatch": "Any"
+    },
+    {
+      "name": "DoesNotEndWith",
+      "label": "Does not end with",
+      "arity": "many",
+      "supportsMatch": true,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "SmartSearch",
+      "label": "Matches search terms",
+      "arity": "many",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "GreaterThan",
+      "label": "Is greater than",
+      "arity": "one",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "GreaterThanOrEqual",
+      "label": "Is greater than or equal to",
+      "arity": "one",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "LessThan",
+      "label": "Is less than",
+      "arity": "one",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "LessThanOrEqual",
+      "label": "Is less than or equal to",
+      "arity": "one",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "Between",
+      "label": "Is between",
+      "arity": "two",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "BetweenExclusive",
+      "label": "Is between (not including the ends)",
+      "arity": "two",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "NotBetween",
+      "label": "Is not between",
+      "arity": "two",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "NotBetweenExclusive",
+      "label": "Is not between (not including the ends)",
+      "arity": "two",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "In",
+      "label": "Is one of",
+      "arity": "many",
+      "supportsMatch": false,
+      "defaultMatch": "Any"
+    },
+    {
+      "name": "NotIn",
+      "label": "Is not one of",
+      "arity": "many",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "IsEmpty",
+      "label": "Is empty text",
+      "arity": "none",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "IsNotEmpty",
+      "label": "Is not empty text",
+      "arity": "none",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "IsNullOrWhiteSpace",
+      "label": "Is blank",
+      "arity": "none",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "IsNotNullOrWhiteSpace",
+      "label": "Is not blank",
+      "arity": "none",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "IsNull",
+      "label": "Is not set",
+      "arity": "none",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    },
+    {
+      "name": "IsNotNull",
+      "label": "Is set",
+      "arity": "none",
+      "supportsMatch": false,
+      "defaultMatch": "All"
+    }
+  ],
+  "manipulators": [
+    {
+      "name": "Trim",
+      "label": "Trim spaces",
+      "parameters": [],
+      "kinds": [
+        "string"
+      ]
+    },
+    {
+      "name": "ToLower",
+      "label": "Make lower case",
+      "parameters": [],
+      "kinds": [
+        "string"
+      ]
+    },
+    {
+      "name": "ToUpper",
+      "label": "Make upper case",
+      "parameters": [],
+      "kinds": [
+        "string"
+      ]
+    },
+    {
+      "name": "Replace",
+      "label": "Replace text",
+      "parameters": [
+        {
+          "label": "Find",
+          "required": true
+        },
+        {
+          "label": "Replace with",
+          "required": false
+        }
+      ],
+      "kinds": [
+        "string"
+      ]
+    }
+  ],
+  "labels": {
+    "conditions": "Conditions",
+    "group": "Group",
+    "collectionGroup": "Any {0} where",
+    "emptyGroup": "Add a condition to this group.",
+    "addCondition": "Add condition",
+    "addGroup": "Add group",
+    "collections": "Collections (any item where\u2026)",
+    "removeCondition": "Remove condition",
+    "removeGroup": "Remove group",
+    "and": "And",
+    "or": "Or",
+    "connector": "How this connects to the next",
+    "field": "Property",
+    "fieldPlaceholder": "Choose a property\u2026",
+    "operation": "Condition",
+    "operationPlaceholder": "Choose a condition\u2026",
+    "value": "Value",
+    "valueFrom": "From",
+    "valueTo": "To",
+    "addValue": "Add value",
+    "removeValue": "Remove value",
+    "options": "Options",
+    "match": "When there are several values, match",
+    "matchAny": "any of them",
+    "matchAll": "all of them",
+    "manipulators": "Adjust the text before comparing",
+    "trim": "Trim spaces",
+    "toLower": "Make lower case",
+    "toUpper": "Make upper case",
+    "replace": "Replace text",
+    "replaceFind": "Find",
+    "replaceWith": "Replace with",
+    "standardGroup": "Standard",
+    "customGroup": "Custom",
+    "yes": "Yes",
+    "no": "No",
+    "summaryEmpty": "No conditions, so everything matches.",
+    "incomplete": "Some conditions are incomplete.",
+    "required": "Required",
+    "needsScript": "The filter builder needs JavaScript to be turned on."
+  }
+}

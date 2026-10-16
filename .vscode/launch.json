@@ -2,20 +2,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            // Use IntelliSense to find out which attributes exist for C# debugging
-            // Use hover for the description of the existing attributes
-            // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
-            "name": ".NET Core Launch (console)",
+            "name": "Web sample",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/Packages/Core/tests/bin/Debug/net8.0/TopMarksDevelopment.ExpressionBuilder.Core.Tests.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/Packages/Core/tests",
-            // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
-            "console": "internalConsole",
-            "stopAtEntry": false,
+            "program": "${workspaceFolder}/samples/ExpressionBuilder.Web.Sample/bin/Debug/net10.0/ExpressionBuilder.Web.Sample.dll",
+            "cwd": "${workspaceFolder}/samples/ExpressionBuilder.Web.Sample",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://localhost:5099"
+            },
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
             "justMyCode": false
         },
         {

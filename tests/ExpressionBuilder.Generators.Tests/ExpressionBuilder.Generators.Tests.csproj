@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ExpressionBuilder.Generators\ExpressionBuilder.Generators.csproj" />
+    <ProjectReference Include="..\..\src\ExpressionBuilder.Api\ExpressionBuilder.Api.csproj" />
+  </ItemGroup>
+</Project>

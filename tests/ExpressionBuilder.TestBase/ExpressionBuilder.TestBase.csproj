@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ExpressionBuilder.Api\ExpressionBuilder.Api.csproj" />
+    <ProjectReference Include="..\..\src\ExpressionBuilder.Core\ExpressionBuilder.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,19 @@
+{
+    "name": "expression-builder-web-client",
+    "private": true,
+    "description": "The script of the Expression Builder filter builder. Built into ../wwwroot/js/filter-builder.js, which is committed.",
+    "type": "module",
+    "scripts": {
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "build": "npm run typecheck && node build.mjs",
+        "test": "tsc -p tsconfig.test.json && node --test \".test-build/test/**/*.test.js\"",
+        "check": "npm run build && npm test"
+    },
+    "devDependencies": {
+        "@types/jsdom": "^30.0.0",
+        "@types/node": "^24.19.2",
+        "esbuild": "^0.28.2",
+        "jsdom": "^30.1.2",
+        "typescript": "~7.0.2"
+    }
+}

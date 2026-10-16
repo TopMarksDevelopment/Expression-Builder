@@ -12,6 +12,7 @@ With this library you can quickly create a filter that can be applied to a list/
 
 -   [Features](#features)
 -   [Installation](#installation)
+-   [Web filter builder (Razor & MVC)](#web-filter-builder-razor--mvc)
 -   [Suggestions & Issues](#suggestions--issues)
 -   [Conventions (ref by string)](#conventions-reference-by-strings)
 -   [Examples](#examples)
@@ -22,6 +23,8 @@ With this library you can quickly create a filter that can be applied to a list/
     -   [`SmartSearch`](#smartsearch)
 -   [Serialization](#serialization)
 -   [Built-in operations](#built-in-operations)
+-   [Your own operations](#your-own-operations)
+-   [Performance](#performance)
 -   You can check these out too:
     -   [Changelog](./ChangeLog.md)
     -   [License](./LICENSE.md)
@@ -42,14 +45,63 @@ The Expression Builder offers a wide range of features, including:
     -   plus, build your own using the API!  
          _(All operations use the API. So any one of these can start you off on building your own)_
 -   The ability to match lists of values, such as finding "John" and "Jess" (See example [here](#matching-lists))
+-   A ready-made [filter builder for ASP.NET Core](#web-filter-builder-razor--mvc) (MVC and Razor Pages): users pick the property, condition, value and connector in the browser, you post it to a page
 
 ## Installation
+
+Requires **.NET 10** or later.
 
 To install the Expression Builder, you can use the .NET CLI, Package Manager console, or another method of your choice. You can find these installation methods and more information about the package on the [NuGet package](https://www.nuget.org/packages/TopMarksDevelopment.ExpressionBuilder/).
 
 But, for example, to install the package using the .NET CLI, run the following command:
 
 > dotnet add package TopMarksDevelopment.ExpressionBuilder
+
+That package includes everything below. If you'd rather pick and choose, the pieces are also available on their own:
+
+| Package                                                | What it is                                                                                    |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `TopMarksDevelopment.ExpressionBuilder`                | The core and **every** built-in operation (start here)                                        |
+| `TopMarksDevelopment.ExpressionBuilder.Core`           | `Filter<T>` and serialisation, with no operations                                             |
+| `TopMarksDevelopment.ExpressionBuilder.Operations.<X>` | One operation, such as `...Operations.Equal`                                                  |
+| `TopMarksDevelopment.ExpressionBuilder.Api`            | Just the interfaces, for building your own operations                                         |
+| `TopMarksDevelopment.ExpressionBuilder.Web`            | The [filter builder](#web-filter-builder-razor--mvc) for ASP.NET Core (includes the main package) |
+
+## Web filter builder (Razor & MVC)
+
+Want users to build their own filters? `TopMarksDevelopment.ExpressionBuilder.Web` gives your MVC or Razor Pages app a
+filter editor you can just post to a page: users pick a property (or a collection), a condition, a value (if one is needed)
+and how it connects to the next condition, with groups and the advanced options a click away.
+
+```cshtml
+<form method="post">
+    <filter-builder for="Filter" type="typeof(Product)" />
+    <button type="submit">Search</button>
+</form>
+```
+
+```csharp
+var result = search.Filter.Build<Product>();           // validates what the browser posted
+
+var products = db.Products.Where(result.Filter!);      // then it's an ordinary Expression Builder filter
+```
+
+See the [guide](./docs/web-filter-builder.md) and the [sample app](./samples/ExpressionBuilder.Web.Sample).
+### Which `using` do I need?
+
+Only `using TopMarksDevelopment.ExpressionBuilder;`. That covers `Filter<T>`, every fluent method (`filter.Equal(...)`) and
+`Operation.Equal` (as in `filter.Add("Id", Operation.Between, 2, 4)`).
+
+The operation types themselves (`new Equal()`, `SmartSearch.SplitTerm(...)`) live in `TopMarksDevelopment.ExpressionBuilder.Operations`.
+If you use them directly, add the namespace once for the whole project instead of in every file:
+
+```xml
+<PropertyGroup>
+    <ExpressionBuilderImplicitUsings>true</ExpressionBuilderImplicitUsings>
+</PropertyGroup>
+```
+
+It is opt-in because names such as `Equal` and `In` could otherwise clash with your own types.
 
 ## Suggestions & Issues
 
@@ -288,7 +340,7 @@ var smartTerms = SmartSearch.SplitTerm(term);
 var filteredPeople =
     myDbContext.People
         .AsFilterable()
-        .SmartsSearch(x => x.Name, smartTerms);
+        .SmartSearch(x => x.Name, smartTerms);
 ```
 
 ## Serialization
@@ -299,6 +351,13 @@ We support two different serialization methods:
 
 -   a JSON string (for a human-friendly version)
 -   a `byte[]`/stream (for more compact storage on disk or a DB)
+
+Saved filters find their operations again by name, so an application can load a filter before it has used any operation in
+code. Operations in your own assemblies are found too (see [your own operations](#your-own-operations)).
+
+> ⚠ Only load a saved filter from storage you trust. Its JSON names the .NET types of its values and the methods of its
+> manipulators. To take a filter from a **browser** use the [web filter builder](#web-filter-builder-razor--mvc), whose
+> format is plain text that is validated before anything is built. See [SECURITY.md](./SECURITY.md).
 
 ### JSON serialisation
 
@@ -330,7 +389,7 @@ filter
 
 // To serialise the filter
 var jsonString =
-    JsonSerializer.Serialize(_filter);
+    JsonSerializer.Serialize(filter);
 
 // To deserialise the filter
 var filterFromJson =
@@ -363,7 +422,7 @@ var filterFromBytes = Filter<Category>.DeserializeFrom(bytes);
 
 #### GRPC / Protobuf
 
-This storage method, combined with the [`.proto`](./Packages/Core/src/Proto/ExpressionBuilder.proto) file means you can actually transfer this data through a GRPC message. Just create a service that consumes the `FilterGroup` message and you're away.
+This storage method, combined with the [`.proto`](./src/ExpressionBuilder.Core/Proto/ExpressionBuilder.proto) file means you can actually transfer this data through a GRPC message. Just create a service that consumes the `FilterGroup` message and you're away.
 
 ## Built-in operations
 
@@ -383,12 +442,65 @@ These are all the operations included in the main package:
 -   GreaterThanOrEqual
 -   LessThan
 -   LessThanOrEqual
+-   In
+-   NotIn
 -   IsEmpty
 -   IsNotEmpty
 -   IsNull
 -   IsNotNull
 -   IsNullOrWhiteSpace
--   IsNotNullNorWhiteSpace
+-   IsNotNullOrWhiteSpace
 -   SmartSearch
 -   StartsWith
 -   DoesNotStartWith
+
+Every one of them is available on `Operation` (`Operation.Between`), and as a fluent method (`filter.Between(...)`).
+
+## Your own operations
+
+An operation is a small struct that implements `IOperation` from the [`Api` package](https://www.nuget.org/packages/TopMarksDevelopment.ExpressionBuilder.Api)
+(all of the built-in ones are written the same way, so any of them can be a starting point). Use it with `filter.Add("Property", new MyOperation(), value)`.
+
+To have it found by name when a saved filter is loaded, make sure its assembly has been loaded, or register it when your
+application starts:
+
+```csharp
+OperationRegistry.Register<MyOperation>();            // or OperationRegistry.RegisterAssembly(typeof(MyOperation).Assembly)
+```
+
+Contributing a built-in operation? See [adding-an-operation.md](./docs/adding-an-operation.md).
+
+## Performance
+
+These numbers come from the benchmarks in [tools/ExpressionBuilder.Benchmarks](./tools/ExpressionBuilder.Benchmarks/) (BenchmarkDotNet,
+plus an Entity Framework Core experiment), run on an Intel Core i5-12600KF with Windows 11, .NET 10.0.13 and EF Core 10.0.13 with
+SQLite in memory. It is one machine on one day: use them to compare one thing with another, not as a promise about yours. The method,
+every table and how to repeat them are in [RESULTS.md](./tools/ExpressionBuilder.Benchmarks/RESULTS.md).
+
+**Values reach the database as parameters.** `ToExpression()` keeps the values of a filter in variables, so EF Core sends SQL parameters
+and one query plan serves every value. With constants (what `ToExpression().InlineValues()` gives) each different value is a new query
+for EF to translate and a new entry in its query cache. The same number of queries, each with a different text and number:
+
+| Different values | Constants, per query | Parameters, per query | Faster | EF query-cache entries added (constants / parameters) |
+| ---: | ---: | ---: | ---: | ---: |
+| 10 | 3.6 ms | 0.42 ms | 9× | 20 / 0 |
+| 100 | 3.0 ms | 0.21 ms | 14× | 200 / 0 |
+| 1,000 | 2.6 ms | 0.10 ms | 26× | 991 / 0 |
+
+This is time spent in your process (translating the query and running it on a small in-memory database), not the latency of a database
+server, and it was only measured with SQLite. With constants the cache stopped growing at about 1,000 entries, where it was full and each
+new value pushed another query's plan out. When the same value is used again, no difference between them could be measured.
+
+**Building a filter is cheap beside what you do with it.** A filter of 3, 20 and 100 conditions becomes an expression in 5, 29 and 172 µs;
+moving its values into variables is 0.7, 5 and 30 µs of that. Turning the expression into a delegate for a list (`list.Where(filter)`) is
+.NET's expression compiler, and takes 0.2, 1.5 and 7 ms, so keep the delegate if you use a filter more than once (`Func<Person, bool> matches = filter;`).
+A compiled filter runs as fast as the same expression tree written by hand, and roughly 10% slower than a compiled C# lambda that does
+the same work.
+
+**The rest, briefly:** finding an operation by name takes about 20 ns once the first lookup of the process (about 26 ms, which loads the
+operation assemblies) is done; reading a saved filter takes about 3 µs per condition as JSON and 1.3 µs as protobuf; the web builder's
+schema for a class takes 11 µs for 7 fields and 95 µs for 126.
+
+## Contributing
+
+Issues and pull requests are welcome; see [CONTRIBUTING.md](./CONTRIBUTING.md). To report a security problem, see [SECURITY.md](./SECURITY.md).
