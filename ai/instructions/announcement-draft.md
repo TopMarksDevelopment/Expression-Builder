@@ -1,4 +1,4 @@
-# Announcement draft: 1.0.0-rc.1
+# Announcement draft: 1.0.0-rc.2
 
 A draft for the release notes, a blog post or a discussion thread. Not published; delete this file once it has been used. Every
 figure is from [tools/ExpressionBuilder.Benchmarks/RESULTS.md](../../tools/ExpressionBuilder.Benchmarks/RESULTS.md) (Core i5-12600KF,
@@ -7,10 +7,10 @@ or the code has changed since 2026-10-15.
 
 ---
 
-## Expression Builder 1.0.0-rc.1
+## Expression Builder 1.0.0-rc.2
 
 Expression Builder builds LINQ filters at run time (from code, from strings, from saved JSON or protobuf) and applies them to lists and
-to Entity Framework Core queries. The first release candidate of 1.0 is out.
+to Entity Framework Core queries. The second release candidate of 1.0 is out.
 
 **A filter builder for ASP.NET Core.** `TopMarksDevelopment.ExpressionBuilder.Web` adds a ready-made editor for MVC and Razor Pages:
 users pick a property, a condition and a value, group conditions, and you post the result to a page and apply it to your data. The

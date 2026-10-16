@@ -10,7 +10,7 @@
 
     <!-- One version for every package, so they can always be installed together. -->
     <VersionPrefix>1.0.0</VersionPrefix>
-    <VersionSuffix>rc.1</VersionSuffix>
+    <VersionSuffix>rc.2</VersionSuffix>
 
     <Deterministic>true</Deterministic>
   </PropertyGroup>

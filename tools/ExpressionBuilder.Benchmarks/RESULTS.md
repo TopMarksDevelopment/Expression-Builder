@@ -9,7 +9,7 @@ machine; do not read them as promises about yours. To reproduce, see the [README
 | CPU | 12th Gen Intel Core i5-12600KF, 10 cores / 16 threads |
 | OS | Windows 11 (10.0.26300) |
 | .NET | SDK 10.0.402, runtime 10.0.13 (X64 RyuJIT, x86-64-v3) |
-| Libraries | Expression Builder 1.0.0-rc.1 (this branch), BenchmarkDotNet 0.15.8, Entity Framework Core 10.0.13 with SQLite in memory |
+| Libraries | Expression Builder 1.0.0-rc.2 (this branch), BenchmarkDotNet 0.15.8, Entity Framework Core 10.0.13 with SQLite in memory |
 
 Times are the mean of BenchmarkDotNet's default job (its own output has the error and standard deviation; the figures here are
 rounded); the figure in brackets is managed memory allocated per call (1 KB = 1,024 bytes). "Small", "medium" and "large" filters are 3, 20 and 100 conditions (see `FilterShapes.cs`).
