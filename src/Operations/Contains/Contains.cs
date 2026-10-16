@@ -37,7 +37,7 @@ public struct Contains : IOperation
                     Expression.Call(
                         m,
                         H.ContainsMethod,
-                        options.ApplyManipulators(v.ToTrimLowerStringConstant())
+                        v.ToTrimLowerStringConstant(options)
                     )
             );
 

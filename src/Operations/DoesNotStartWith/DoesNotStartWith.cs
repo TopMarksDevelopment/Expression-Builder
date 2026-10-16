@@ -38,7 +38,7 @@ public struct DoesNotStartWith : IOperation
                         Expression.Call(
                             m,
                             HelperMethods.StartsWithMethod,
-                            v.ToTrimLowerStringConstant()
+                            v.ToTrimLowerStringConstant(options)
                         )
                     )
             );

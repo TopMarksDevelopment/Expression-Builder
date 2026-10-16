@@ -38,7 +38,7 @@ public struct DoesNotEndWith : IOperation
                         Expression.Call(
                             m,
                             HelperMethods.EndsWithMethod,
-                            v.ToTrimLowerStringConstant()
+                            v.ToTrimLowerStringConstant(options)
                         )
                     )
             );

@@ -42,7 +42,7 @@ public struct StartsWith : IOperation
                         Expression.Call(
                             m,
                             H.StartsWithMethod,
-                            v.ToTrimLowerStringConstant()
+                            v.ToTrimLowerStringConstant(options)
                         )
                 );
 
