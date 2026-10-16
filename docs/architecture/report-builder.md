@@ -542,7 +542,7 @@ Costs were measured with throwaway code in `tools/ExpressionBuilder.Benchmarks` 
 | CPU | AMD Ryzen 5 3600X, 6 cores / 12 threads |
 | OS | Windows 11 (10.0.26200) |
 | .NET | SDK 10.0.402, runtime 10.0.13 (X64 RyuJIT, x86-64-v3) |
-| Libraries | Expression Builder 1.0.0-rc.1 (the branch), BenchmarkDotNet 0.15.8 (default job), Entity Framework Core 10.0.13 with SQLite in memory |
+| Libraries | Expression Builder 1.0.0-rc.2 (the branch), BenchmarkDotNet 0.15.8 (default job), Entity Framework Core 10.0.13 with SQLite in memory |
 
 - **This is not the machine of `tools/ExpressionBuilder.Benchmarks/RESULTS.md`** (an i5-12600KF). Do not mix the two: building the
   126-field schema took 222 µs here and 95 µs there. Every comparison below is within this one session.
