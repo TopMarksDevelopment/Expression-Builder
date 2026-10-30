@@ -21,6 +21,12 @@ static class Program
 
             return;
         }
+        if (args is ["report"])
+        {
+            ReportExperiment.Run();
+
+            return;
+        }
 
         BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
     }

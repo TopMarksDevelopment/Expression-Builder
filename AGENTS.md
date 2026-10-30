@@ -83,6 +83,7 @@ See [docs/standards/testing.md](docs/standards/testing.md).
 | `CONTRIBUTING.md`                                          | Local setup and the contribution workflow                  |
 | `SECURITY.md`                                              | Reporting a vulnerability, and the trust boundaries        |
 | `docs/architecture/overview.md`                            | How the packages fit together and why                      |
+| `docs/architecture/report-builder.md`                      | The report builder design: decisions, slices, security     |
 | `docs/adding-an-operation.md`                              | Adding an operation (and its tests) step by step           |
 | `docs/web-filter-builder.md`                               | The Razor/MVC filter builder: guide and reference          |
 | `docs/standards/{git,code-style,testing,docs-conventions}.md` | The mechanics behind the conventions above              |
