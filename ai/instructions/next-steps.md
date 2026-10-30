@@ -52,7 +52,7 @@ conflicts with them, and give a real recommendation when I ask for an opinion). 
 docs/web-filter-builder.md and SECURITY.md. We are on (or branching from) the branch
 refactor/repo-restructure-and-filter-builder, which restructured the repo, replaced the hand-copied fluent methods with a source
 generator, added OperationRegistry, fixed several bugs and added the TopMarksDevelopment.ExpressionBuilder.Web package (Razor/MVC
-filter builder with a TypeScript front end). The version is 1.0.0-rc.1 and nothing has been released from this branch.
+filter builder with a TypeScript front end). The version is 1.0.0-rc.2; `rc.1` is the only release so far.
 
 Work through the to-do list below one section at a time. For each section: say what you will do and what "done" means before you
 start; keep mechanical changes (moves, renames, version bumps) in their own commits; add or update tests with every behaviour
@@ -100,30 +100,9 @@ before handing back; and do not commit unless I ask. Stop and ask me where a dec
   .NET version, what was compared), commit the benchmark project so people can reproduce it, and draft an announcement.
   Do not claim anything the benchmarks do not show.
 
-## 5. A more dynamic builder: reports that can start from many different classes
-Goal: in my app I want a report generator. The user picks *what* to report on (one of several tables/classes), builds the filter
-for it, chooses columns, sorting and (later) grouping, and gets results. Today the builder is bound to one class via
-type="typeof(Product)". Design this properly before coding, write the design to docs/architecture/report-builder.md and ask me to
-review it. Constraints and a suggested direction:
-- Roots are an allow-list, chosen by a stable key (for example "orders"), never a .NET type name from the browser. Something like
-  options.AddRoot<Order>("orders", "Orders") / AddRoot<Customer>(...), with per-root and per-property authorisation hooks.
-- The schema already supports many types (types by id, collections lead to other types); extend it to several *roots*. The page
-  gets a root picker; changing the root resets the filter. A non-generic server path (Build(rootKey) returning an IFilter /
-  LambdaExpression) alongside Build<T>().
-- Version the posted document (it has "version": 1) and add root, columns (paths, labels, order), sort (path, direction), then
-  later grouping/aggregates. Keep it plain text validated against the schema, as now.
-- Executing: projecting to selected columns means building a Select expression for a root only known at run time. Decide between
-  an expression-tree projection to a generated/anonymous shape, a dictionary/object[] shape, or a typed result you register.
-  Make it translate in EF Core, support paging, and think about cost limits (max columns, max rows, timeouts).
-- Security is the main risk: column and row-level authorisation per user, never allow a column the user cannot see to be used in a
-  filter or sort (it leaks values), apply the app's own mandatory filters (tenant, soft-delete) before the user's filter, and
-  limit result sizes. Update SECURITY.md.
-- UI: root picker, column chooser (drag to order), sort rows, saved/shared reports (FromFilter already shows a saved filter),
-  export (CSV at least). Keep the markup overridable and the data-eb-* contract.
-- Deliver in slices: (a) multi-root schema and non-generic build with tests, (b) root picker UI, (c) columns and sort, (d) execution
-  and export in the sample app, (e) grouping/aggregates only if still wanted. Each slice stands on its own and is released behind
-  docs, not a flag.
-- With "export" in mind, allow any report that's been generated to be saved as a "built-in" report for the app that's using it (pluging it in to a dashboard or a "Your reports" page). This would mean teh report would need a anem and for the data to be stored (maybe even a custom storage mechanism to allow a report to be "global" - shown to everyone)
+## 5. A more dynamic builder: reports that can start from many different classes (NOT in rc.2)
+Held back from `1.0.0-rc.2` and kept on its own branch (`feat/report-builder`), with its design and notes. Nothing for it is in this
+branch, so there is nothing to do here until `rc.2` is published.
 
 ## 6. Other things I would do (decide with me which, and in what order)
 - Fix the rough edges listed in docs/architecture/overview.md: Filter<T>.CloseGroup swallowing exceptions, IsNotNullable using

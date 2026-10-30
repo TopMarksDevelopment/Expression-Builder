@@ -1,12 +1,12 @@
-# Next session: the report builder design (section 5 of next-steps.md)
+# Next session: publish `1.0.0-rc.2`
 
-Paste the prompt below to start. Sections 1 to 4 of [next-steps.md](next-steps.md) are done (its "Progress" section has the history);
+Paste the prompt below to start. Sections 1 to 4 of [next-steps.md](next-steps.md) are done (its "Progress" section has the history; section 5 is parked on its own branch);
 this file says where to start, what you need to do yourself, and what to watch for.
 
 ## Where things stand
 
-- Branch `refactor/repo-restructure-and-filter-builder`, version `1.0.0-rc.1`, `net10.0` only, SDK 10.0.402+ (`global.json`). Nothing is
-  released. The branch has been pushed; whether it has a pull request open is yours to check.
+- Branch `refactor/repo-restructure-and-filter-builder`, version `1.0.0-rc.2`, `net10.0` only, SDK 10.0.402+ (`global.json`). `rc.1` is the
+  only release so far. The branch has been pushed; whether it has a pull request open is yours to check.
 - Done: .NET 10, package and tooling bumps, custom operations and manipulators, restyling by templates, accessibility fixes, browser
   tests, Entity Framework Core tests, values sent to the database as parameters, **and performance (section 4)**: the benchmark project
   (`tools/ExpressionBuilder.Benchmarks`, with `RESULTS.md`), the README "Performance" section, a draft announcement
@@ -28,37 +28,23 @@ this file says where to start, what you need to do yourself, and what to watch f
    - whether to cache the filter schema. The recommendation is no; what it would take is in `RESULTS.md` ("Not cached");
    - whether the CSharpier check should cover the root `*.props` files (`dotnet csharpier check .` shows them);
    - whether to build a `FilterBuilderOptions` map of class names (build it when a second user needs it);
-   - when to publish `1.0.0-rc.1` (publishing is a separate step from merging: `ai/skills/release.md`).
+   - when to publish `1.0.0-rc.2` (publishing is a separate step from merging: `ai/skills/release.md`).
 
 ## The prompt
 
 ```text
 Read AGENTS.md and ai/instructions/engineering-principles.md first (standing instruction: call out anything in my requests that
 conflicts with them, and give a real recommendation when I ask for an opinion). Then read ai/instructions/next-session.md and
-ai/instructions/next-steps.md (its "Progress" section says what is done, and section 5 is this session's job),
+ai/instructions/next-steps.md (its "Progress" section says what is done),
 docs/architecture/overview.md, docs/web-filter-builder.md, docs/standards/testing.md, SECURITY.md and
-tools/ExpressionBuilder.Benchmarks/RESULTS.md (the costs you will want to budget against).
+tools/ExpressionBuilder.Benchmarks/RESULTS.md.
 
-We are on branch refactor/repo-restructure-and-filter-builder (or a branch from it if it has been merged), version 1.0.0-rc.1, net10.0
-only, nothing released. Sections 1 to 4 are done.
+We are on branch refactor/repo-restructure-and-filter-builder (or a branch from it if it has been merged), version 1.0.0-rc.2, net10.0
+only; 1.0.0-rc.1 is the only release. Sections 1 to 4 are done. Section 5 (the report builder) is not part of rc.2 and lives on its own
+branch; leave it alone.
 
-Do section 5, and only the design: a report builder, where the user picks what to report on (one of several classes), builds the
-filter for it, chooses columns and sorting, and gets results. Do not write the feature yet.
-- Say what you will do and what "done" means before you start.
-- Write the design to docs/architecture/report-builder.md, following the constraints and suggested direction in section 5 of
-  next-steps.md: roots are an allow-list chosen by a stable key and never a .NET type name from the browser; a versioned posted
-  document; execution by projection (compare an expression-tree projection, a dictionary/object[] shape and a registered typed result,
-  and recommend one); paging, cost limits; and security first (column and row-level authorisation, never filtering or sorting on a
-  column the user cannot see, the app's own mandatory filters applied before the user's, result-size limits). Say what changes in
-  SECURITY.md.
-- For each design choice, give a recommendation and the main alternative, not a neutral list. Where the choice is mine, mark it
-  DECISION and stop.
-- Break the delivery into slices that each stand alone (multi-root schema and non-generic build; root picker; columns and sort;
-  execution and export in the sample app; grouping only if still wanted), with the tests each needs. Include the "save a report as a
-  built-in report" idea at the end of section 5 and what storage it needs.
-- Use the benchmark project to cost anything on a hot path (a non-generic build, a projection per request) before recommending it; do
-  not claim a cost you have not measured.
-- Then stop and ask me to review the document. No code, and no commits until I have.
+Check what is left before 1.0.0-rc.2 is published: the pull request and its CI run, the checks in AGENTS.md, ChangeLog.md, and
+ai/skills/release.md. Tell me what is left and stop; publishing is my step.
 
 Working rules: keep mechanical changes in their own commits; tests with every behaviour change; keep the solution warning-free; run
 the AGENTS.md checks before handing back. Commit in logical slices only when I have asked you to, and push only when I say so. Finish
