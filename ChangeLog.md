@@ -27,6 +27,10 @@ All notable changes to this project will be documented in this file.
 
 <small>[Compare to the latest release][comp:unreleased]</small>
 
+## [1.0.0-rc.2] - 2026-10-30
+
+<small>[Compare to previous release][comp:1.0.0-rc.2]</small>
+
 ### Breaking Changes (Overview)
 
 -   The packages now target `net10.0` only; `net8.0` is no longer supported (its support ends in November 2026). Apps on .NET 8 or 9 should stay on the previous release or move to .NET 10
@@ -420,8 +424,10 @@ A ready-made filter builder for ASP.NET Core, for MVC and Razor Pages. Users pic
 
 **Initial release**
 
-[unreleased]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v1.0.0-rc.1...HEAD
-[comp:unreleased]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v1.0.0-rc.1...HEAD
+[unreleased]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v1.0.0-rc.2...HEAD
+[comp:unreleased]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v1.0.0-rc.2...HEAD
+[1.0.0-rc.2]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v1.0.0-rc.2
+[comp:1.0.0-rc.2]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v1.0.0-rc.1...v1.0.0-rc.2
 [1.0.0-rc.1]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v1.0.0-rc.1
 [comp:1.0.0-rc.1]: https://github.com/TopMarksDevelopment/Expression-Builder/compare/v0.4.0-beta...v1.0.0-rc.1
 [0.4.0-beta]: https://github.com/TopMarksDevelopment/Expression-Builder/releases/tag/v0.4.0-beta
