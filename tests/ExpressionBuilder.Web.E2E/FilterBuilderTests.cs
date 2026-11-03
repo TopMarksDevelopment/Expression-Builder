@@ -138,6 +138,91 @@ public class FilterBuilderTests(SampleApp app)
     }
 
     [Theory(
+        DisplayName = "A property of a related object is chosen through a path, and the path posts"
+    )]
+    [MemberData(nameof(Browsers))]
+    public async Task PropertyBehindARelationship(string engine)
+    {
+        var page = await app.OpenAsync(engine, "/Products");
+        var builder = new Builder(page);
+
+        var row = await builder.AddConditionAsync();
+
+        // The supplier moves into the path above the list, which then offers what a supplier has
+        await row.Locator("[data-eb-field]")
+            .SelectOptionAsync(new SelectOptionValue { Label = "Supplier" });
+
+        var path = row.Locator("[data-eb-path]");
+        await Expect(path).ToBeVisibleAsync();
+        await Expect(path.Locator("[data-eb-path-step]"))
+            .ToHaveTextAsync(["Product", "Supplier"]);
+        await Expect(row.Locator("[data-eb-field] option[value='Name']"))
+            .ToHaveCountAsync(1);
+        await Expect(row.Locator("[data-eb-field] option[value='Price']"))
+            .ToHaveCountAsync(0);
+
+        await Builder.FillAsync(row, "Country", "Is", "France");
+        await builder.SearchAsync();
+
+        var expected = app
+            .Catalog.Where(p => p.Supplier?.Country == "France")
+            .Select(p => p.Id)
+            .Order()
+            .ToList();
+
+        Assert.NotEmpty(expected);
+        Assert.Equal(expected, await builder.ResultIdsAsync());
+
+        // The saved filter shows the same path when the page comes back
+        await Expect(
+                page.Locator(
+                    "[data-eb-condition] [data-eb-path] [data-eb-path-step]"
+                )
+            )
+            .ToHaveTextAsync(["Product", "Supplier"]);
+    }
+
+    [Theory(
+        DisplayName = "A collection can be asked for every item, not just any"
+    )]
+    [MemberData(nameof(Browsers))]
+    public async Task EveryItemOfACollection(string engine)
+    {
+        var page = await app.OpenAsync(engine, "/Products");
+        var builder = new Builder(page);
+
+        var reviews = await builder.AddConditionAsync();
+        await reviews
+            .Locator("[data-eb-field]")
+            .SelectOptionAsync(new SelectOptionValue { Label = "Reviews" });
+
+        var group = page.Locator("[data-eb-group] [data-eb-group]");
+        await group
+            .Locator("[data-eb-group-match]")
+            .SelectOptionAsync(new SelectOptionValue { Label = "Every item" });
+
+        await Builder.FillAsync(
+            group.Locator("[data-eb-condition]"),
+            "Stars",
+            "Is greater than or equal to",
+            "3"
+        );
+        await builder.SearchAsync();
+
+        // A product with no reviews has none that fall short, so it is among them
+        var expected = app
+            .Catalog.Where(p => p.Reviews.All(r => r.Stars >= 3))
+            .Select(p => p.Id)
+            .Order()
+            .ToList();
+
+        Assert.Contains(app.Catalog, p => p.Reviews.Count == 0);
+        Assert.Equal(expected, await builder.ResultIdsAsync());
+        await Expect(group.Locator("[data-eb-group-match]"))
+            .ToHaveValueAsync("All");
+    }
+
+    [Theory(
         DisplayName = "The app's own operation and adjustment are offered apart, and work"
     )]
     [MemberData(nameof(Browsers))]

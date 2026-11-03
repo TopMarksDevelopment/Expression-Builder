@@ -33,9 +33,10 @@ runs on what the user typed: check it in `IEntityManipulator.Validate` / your op
 
 ### What the web filter builder enforces
 
-A property path is only ever looked up in the schema (never used to reach into the class); an operation must suit the property;
+A property path is only ever looked up in the schema (never used to reach into the class), one name at a time through the
+relationships the schema offers, and never through a collection; an operation must suit the property;
 values are parsed as the property's type (enum values must be a member name); adjustments are chosen from a fixed list and apply
-to text only; and the sizes of a filter (conditions, values, value length, group depth, adjustments, payload) are limited
+to text only; and the sizes of a filter (conditions, values, value length, group depth, path length, adjustments, payload) are limited
 (`FilterBuilderOptions`). Posted text is never rendered as markup, and the form is protected by ASP.NET Core's anti-forgery token
 in the usual way.
 

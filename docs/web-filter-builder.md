@@ -131,8 +131,13 @@ var result = search.Filter.Build<Product>(options.Value);
 
 ## What users can do
 
-- **Pick a property** (including properties of related objects, shown as `Home address › Postcode`), or **a collection**.
-  Picking a collection turns the row into a group that filters the *items* of that collection ("Any Reviews where…").
+- **Pick a property.** The list has up to three headings: *Properties* (the class's own), *Collections* and
+  *Relationships* (a related object, such as an order's customer). Choosing a relationship moves it into a path above the
+  list (`Order › Customer ›`) and the list then offers what a customer has, so a chain of related objects reads as one
+  choice. Each earlier step of the path takes you back to it, and "Customer itself" asks whether the relationship is set.
+- **Pick a collection** to turn the row into a group that filters the *items* of that collection ("Any item of Reviews
+  where…"). A collection reached through relationships shows the way (`Customer › Orders`). The group's switch says whether
+  *any* item has to satisfy it or *every* item does; *every* is also true of a collection with no items, as in LINQ.
 - **Pick a condition** that suits the property: text offers *contains*, *starts with*, *is blank*…; numbers and dates
   offer *greater than*, *between*…; booleans and enums offer *equals*; anything that can be missing offers *is set*.
 - **Enter a value** with the right input: text, number, date, date and time, time, yes/no, or a list of an enum's members.
@@ -148,8 +153,13 @@ var result = search.Filter.Build<Product>(options.Value);
 
 ## What can be filtered
 
-By default every public readable property of your class can, plus the properties of related objects (to
-`MaxNavigationDepth`, default 2 names, as in `Birth.Country`) and collections:
+By default every public readable property of your class can, plus its collections, and the properties of the objects it is
+related to - followed one at a time, as far as `MaxNavigationDepth` allows (default 5 names, as in
+`Customer.Address.Country.Name`). Relationships can lead back to where they started (an order's customer has orders), which
+is why there is a limit. The script stops offering relationships at the limit and the server refuses a longer path.
+
+Every class the schema can reach is sent to the page, so keep what you do not want filtered out of it (below): on a large
+model the schema can be big.
 
 | .NET type                                          | Kind     | Input            |
 | -------------------------------------------------- | -------- | ---------------- |
@@ -161,7 +171,7 @@ By default every public readable property of your class can, plus the properties
 | `bool`                                             | yes/no   | select           |
 | `enum` (display names from `[Display]`)            | enum     | select           |
 | `Guid`                                             | guid     | text             |
-| another class                                      | object   | *is set / not set* only |
+| another class                                      | relationship | its own properties, and *is set / not set* |
 | `IEnumerable<T>`                                   | collection | its own group  |
 
 `byte[]`, dictionaries, delegates and `Stream`s are left out. Nullable types behave as their underlying type, and gain
@@ -206,7 +216,7 @@ uses a property that is ignored, or a manipulator the builder does not know.
 | `MaxValuesPerCondition` | 50      | Values in one condition.                                          |
 | `MaxValueLength`        | 500     | Characters in one value.                                          |
 | `MaxPayloadLength`      | 65536   | Characters of posted JSON that are read.                          |
-| `MaxNavigationDepth`    | 2       | Names in a property path (`Name` = 1, `Birth.Country` = 2).       |
+| `MaxNavigationDepth`    | 5       | Names in a path through relationships (`Name` = 1, `Birth.Country` = 2). |
 | `Labels`                | English | All the text of the builder (`FilterBuilderLabels`).              |
 | `OperationLabels`       | -       | Replace an operation's text: `["Equal"] = "Is"`.                  |
 | `ManipulatorLabels`     | -       | Replace an adjustment's text: `["Trim"] = "Remove spaces"`.        |
@@ -316,10 +326,11 @@ named in `data-eb-invalid-class` on the builder's element (`eb-invalid` if you l
 
 | Template            | Made for                                       | Parts the script looks for (all `data-eb-…`)                                                                                                 |
 | ------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `group`             | The top level, a bracketed group, a collection | `title`, `remove-group`, `items`, `empty`, `add-condition`, `add-group`                                                                      |
+| `group`             | The top level, a bracketed group, a collection | `title`, `group-match` (a select with `Any` and `All`, shown for a collection), `remove-group`, `items`, `empty`, `add-condition`, `add-group` |
 | `item`              | A place in a group's list (a `li`)             | the element itself                                                                                                                           |
-| `condition`         | One condition                                  | `field`, `operation`, `values`, `add-value`, `toggle-options`, `remove`, `options`, `match`, `match-wrap`, `manipulators-wrap`, `manipulators`, `error` |
+| `condition`         | One condition                                  | `field`, `path` (where the steps of the path go), `operation`, `values`, `add-value`, `toggle-options`, `remove`, `options`, `match`, `match-wrap`, `manipulators-wrap`, `manipulators`, `error` |
 | `value`             | One value of a condition                       | `control="input"` **and** `control="select"` (the unused one is removed), `remove-value`; optional `value-joiner`, `value-label`            |
+| `path-step`         | One step of the path to a property (a way back to it) | `path-step` (a button)                                                                                                                |
 | `connector`         | What joins an item to the next (it goes inside the item's `li`) | `connector` (a select with `And` and `Or`)                                                                                                   |
 | `manipulator-group` | A group of adjustments                         | `manipulator-group-title`, `manipulator-group-items`                                                                                         |
 | `manipulator`       | One adjustment                                 | `manipulator` (the checkbox), `manipulator-label`, `manipulator-args`                                                                        |
@@ -387,12 +398,20 @@ The hidden input holds a small JSON document. A `connector` says how an item joi
     "items": [
       { "type": "condition", "field": "Name", "operation": "Contains", "values": ["bike", "cycle"],
         "match": "Any", "manipulators": [{ "name": "ToLower" }, { "name": "Replace", "args": ["-", ""] }], "connector": "Or" },
-      { "type": "group", "collection": "Reviews", "connector": "And",
-        "items": [{ "type": "condition", "field": "Stars", "operation": "GreaterThanOrEqual", "values": ["4"] }] }
+      { "type": "group", "collection": "Reviews", "match": "All", "connector": "And",
+        "items": [{ "type": "condition", "field": "Stars", "operation": "GreaterThanOrEqual", "values": ["4"] }] },
+      { "type": "condition", "field": "Supplier.Country", "operation": "Equal", "values": ["France"] }
     ]
   }
 }
 ```
+
+- A condition's `field` is a path of names. Each name but the last must be a relationship; the server follows them through
+  the schema, one at a time, and refuses a path that goes through a collection, through a plain value, or on for more
+  names than `MaxNavigationDepth`.
+- A group's `collection` is a path too: the relationships that lead to the collection, then its name (`Customer.Orders`).
+- A group's `match` is `Any` (the default, and left out) or `All`. It is only valid on a group that has a `collection`;
+  anywhere else the post is refused.
 
 Values are always text, and are parsed as the property's type using the invariant culture (`2024-01-31`,
 `2024-01-31T09:30`, `09:30`, `1234.5`, `true`, an enum member's name). A scalar collection (`List<string>`) is filtered

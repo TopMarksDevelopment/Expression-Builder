@@ -56,6 +56,8 @@ A ready-made filter builder for ASP.NET Core, for MVC and Razor Pages. Users pic
 -   Operations and manipulators of your own, offered only when the app describes them (`OperationCatalog`, `ManipulatorCatalog`, `FilterBuilderOptions.AddOperation` / `AddManipulator`), listed in groups apart from the built-in ones, and unable to take a built-in name. A single builder can leave any operation or manipulator out (`ExcludeOperations`, `ExcludeManipulators`)
 -   Restyling: every element the script creates is cloned from a `<template>` in the view (`item`, `value`, `manipulator`…), so the script adds no classes of its own. `data-eb-invalid-class` names the classes of an incomplete condition. See the [guide](./docs/web-filter-builder.md#changing-the-markup-and-the-look)
 -   The posted form of an adjustment is `{ "name": "Replace", "args": ["find", "with"] }`
+-   Related objects are followed step by step, not flattened into the list: the list of properties has *Properties*, *Collections* and *Relationships*, and choosing a relationship moves it into a path above the list, which then offers what it leads to. `FilterBuilderOptions.MaxNavigationDepth` (default 5 names) limits how far a path goes; it is part of the schema, so the script and the server agree
+-   A group on a collection can require *any* item (the default) or *every* item to match (`"match": "All"` in the posted form). A collection can be reached through relationships (`Customer.Orders`)
 -   `FilterBuilderModel.FromFilter` to show a saved filter in the builder
 -   The TypeScript front end ships as one script and stylesheet, served from the package. Light/dark themes, keyboard accessible, no framework
 -   A posted filter is validated against the class being filtered, and sizes are limited. See [SECURITY.md](./SECURITY.md)
@@ -64,6 +66,7 @@ A ready-made filter builder for ASP.NET Core, for MVC and Razor Pages. Users pic
 
 #### Added
 
+-   `FilterGroup.Match`: a group on a collection can require `Matches.All` of its items to satisfy it (`Enumerable.All`) instead of `Matches.Any` (`Enumerable.Any`, which is still what a group without one does). It is saved in JSON and protobuf only when it is set, so filters saved before this read as they always did. An empty collection satisfies `All`, as in LINQ
 -   `OperationRegistry` and `ManipulatorRegistry`: find operations and manipulators by name, and register your own
 -   `FilterExpressionExtensions.InlineValues()` writes a filter's values back into its expression as constants
 

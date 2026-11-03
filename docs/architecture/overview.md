@@ -41,7 +41,7 @@ nothing knows of the web package.
 
 ## Where an expression comes from
 
-A `Filter<T>` is a tree: groups (optionally targeting a collection) containing statements. A statement is a property id
+A `Filter<T>` is a tree: groups (optionally targeting a collection, and then requiring any or all of its items to match) containing statements. A statement is a property id
 (`Birth.Country`, `Contacts[].Type`), an `IOperation`, values and options (match any/all, manipulators). `ToExpression()`
 walks the tree: `ExpressionExtensions.GetExpression` resolves the property chain (adding null checks and `Any(...)` for
 collections as the operation's `NullHandler` asks) and hands the member to the operation's `Build`, which returns the
