@@ -38,13 +38,15 @@ internal static class ExpressionExtensions
         string? propertyChain,
         Dictionary<string, uint> parameterLog,
         Func<Expression, Dictionary<string, uint>, Expression> applyExpressions,
-        OperationNullHandler nullHandler
+        OperationNullHandler nullHandler,
+        Matches collectionMatch = Matches.Any
     ) =>
         ((Expression)param).GetExpression(
             propertyChain,
             parameterLog,
             applyExpressions,
-            nullHandler
+            nullHandler,
+            collectionMatch
         );
 
     /// <summary>
@@ -56,13 +58,17 @@ internal static class ExpressionExtensions
     /// <param name="parameterLog">The log of parameter names used so far</param>
     /// <param name="applyExpressions">Builds the expression to apply to the property found</param>
     /// <param name="nullHandler">How null checks are done on the chain</param>
+    /// <param name="collectionMatch">
+    /// Whether the last collection in the chain needs <c>Any</c> of its items to match, or <c>All</c> of them
+    /// </param>
     /// <returns>The expression for the property</returns>
     internal static Expression GetExpression(
         this Expression member,
         string? propertyChain,
         Dictionary<string, uint> parameterLog,
         Func<Expression, Dictionary<string, uint>, Expression> applyExpressions,
-        OperationNullHandler nullHandler
+        OperationNullHandler nullHandler,
+        Matches collectionMatch = Matches.Any
     )
     {
         if (string.IsNullOrWhiteSpace(propertyChain))
@@ -87,7 +93,8 @@ internal static class ExpressionExtensions
                 propertyChain,
                 parameterLog,
                 applyExpressions,
-                nullHandler
+                nullHandler,
+                collectionMatch
             );
 
         if (IsNotNullable(subMember))
@@ -96,7 +103,8 @@ internal static class ExpressionExtensions
                 restOfTerm,
                 parameterLog,
                 applyExpressions,
-                nullHandler
+                nullHandler,
+                collectionMatch
             );
 
         return ApplyNullHandler(
@@ -114,7 +122,8 @@ internal static class ExpressionExtensions
                 restOfTerm,
                 parameterLog,
                 applyExpressions,
-                nullHandler
+                nullHandler,
+                collectionMatch
             )
         );
 
@@ -135,7 +144,8 @@ internal static class ExpressionExtensions
         string? propertyChain,
         Dictionary<string, uint> parameterLog,
         Func<Expression, Dictionary<string, uint>, Expression> applyExpressions,
-        OperationNullHandler nullHandler
+        OperationNullHandler nullHandler,
+        Matches collectionMatch
     )
     {
         if (
@@ -160,21 +170,28 @@ internal static class ExpressionExtensions
             )
         );
 
-        var anyInfo = typeof(Enumerable)
-            .GetMethods(BindingFlags.Static | BindingFlags.Public)
-            .First(m => m.Name == "Any" && m.GetParameters().Length == 2);
+        // Only the last collection in the chain is asked for All of its items; one the chain passes
+        // through only has to have an item that leads to a match
+        var quantifier =
+            collectionMatch == Matches.All && !restOfTerm.Contains("[]")
+                ? nameof(Enumerable.All)
+                : nameof(Enumerable.Any);
 
-        anyInfo = anyInfo.MakeGenericMethod(type);
+        var quantifierInfo = typeof(Enumerable)
+            .GetMethods(BindingFlags.Static | BindingFlags.Public)
+            .First(m => m.Name == quantifier && m.GetParameters().Length == 2)
+            .MakeGenericMethod(type);
 
         return Expression.Call(
-            anyInfo,
+            quantifierInfo,
             param.GetMemberExpression(propertyName[..^2]),
             Expression.Lambda(
                 listParam.GetExpression(
                     restOfTerm,
                     parameterLog,
                     applyExpressions,
-                    nullHandler
+                    nullHandler,
+                    collectionMatch
                 ),
                 listParam
             )
