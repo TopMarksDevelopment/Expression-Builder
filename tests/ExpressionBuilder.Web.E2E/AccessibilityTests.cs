@@ -119,6 +119,11 @@ public class AccessibilityTests(SampleApp app)
             .Locator("[data-eb-field]")
             .SelectOptionAsync(new SelectOptionValue { Label = "Reviews" });
 
+        // A property reached through a relationship, with the path showing above the list
+        var supplier = await builder.AddConditionAsync();
+        await Builder.FillAsync(supplier, "Supplier");
+        await Builder.FillAsync(supplier, "Country", "Is", "France");
+
         // An incomplete condition, with its error showing
         var incomplete = await builder.AddConditionAsync();
         await Builder.FillAsync(incomplete, "Name", "Starts with");
