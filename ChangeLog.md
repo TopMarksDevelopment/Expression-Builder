@@ -73,6 +73,7 @@ A ready-made filter builder for ASP.NET Core, for MVC and Razor Pages. Users pic
 
 #### Changed
 
+-   `protobuf-net` is updated to 3.4.40 (it includes a fix to reading a stream after an interrupted read)
 -   `ToExpression()` makes Entity Framework Core (and other providers that parameterise captured variables) send values as SQL parameters, not text. Every different value used to be different SQL and a new entry in EF's query cache; now one plan and one cache entry serve all of them. `null`, `true`/`false` and the empty text stay in the expression, as they are part of a query's shape. A filter used on a list (`list.Where(filter)`, `ToFilterable()`) is still compiled from constants, which the expression compiler handles faster
 
 #### Fixed
