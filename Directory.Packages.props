@@ -22,7 +22,7 @@
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion
       Include="System.Reflection.MetadataLoadContext"
-      Version="10.0.13"
+      Version="10.0.14"
     />
   </ItemGroup>
 
