@@ -36,7 +36,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
     <PackageVersion
       Include="Microsoft.EntityFrameworkCore.Sqlite"
-      Version="10.0.13"
+      Version="10.0.14"
     />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageVersion Include="Microsoft.Playwright" Version="1.63.0" />
