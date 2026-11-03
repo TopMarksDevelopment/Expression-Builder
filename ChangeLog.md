@@ -27,7 +27,7 @@ All notable changes to this project will be documented in this file.
 
 <small>[Compare to the latest release][comp:unreleased]</small>
 
-## [1.0.0-rc.2] - 2026-10-30
+## [1.0.0-rc.2] - 2026-11-04
 
 <small>[Compare to previous release][comp:1.0.0-rc.2]</small>
 
@@ -37,6 +37,7 @@ All notable changes to this project will be documented in this file.
 -   The assemblies now have the same names as their packages (`TopMarksDevelopment.ExpressionBuilder.Core.dll`, not `Core.Src.dll`). Types and namespaces are unchanged, so code recompiles as it is; anything that refers to an assembly by name (`InternalsVisibleTo`, `Assembly.Load("Core.Src")`) needs updating
 -   `Operation` and `HelperMethods` are now `static class`es (they were `struct`s that only held static members). Source compatible; binary compatible code must be rebuilt
 -   `Filter<T>.ToExpression()` keeps the values a filter compares with in variables (`x.Name == value(…).Value`) instead of constants (`x.Name == "a"`), so a database provider sends them as parameters. Results are the same; code that inspects the expression for `ConstantExpression`s should use `InlineValues()` (see Core below)
+-   `IFilterGroup` has a new member, `Match`, so anything that implements it needs to add it (see Api below)
 -   `TypeTracker` is obsolete and does nothing. Operations and manipulators are found by `OperationRegistry` / `ManipulatorRegistry`
 
 ### Changes (Overview)
@@ -66,7 +67,7 @@ A ready-made filter builder for ASP.NET Core, for MVC and Razor Pages. Users pic
 
 #### Added
 
--   `FilterGroup.Match`: a group on a collection can require `Matches.All` of its items to satisfy it (`Enumerable.All`) instead of `Matches.Any` (`Enumerable.Any`, which is still what a group without one does). It is saved in JSON and protobuf only when it is set, so filters saved before this read as they always did. An empty collection satisfies `All`, as in LINQ
+-   `FilterGroup.Match` (from `IFilterGroup`): a group on a collection can require `Matches.All` of its items to satisfy it (`Enumerable.All`) instead of `Matches.Any` (`Enumerable.Any`, which is still what a group without one does). It is saved in JSON and protobuf only when it is set, so filters saved before this read as they always did. An empty collection satisfies `All`, as in LINQ
 -   `OperationRegistry` and `ManipulatorRegistry`: find operations and manipulators by name, and register your own
 -   `FilterExpressionExtensions.InlineValues()` writes a filter's values back into its expression as constants
 
@@ -89,6 +90,10 @@ A ready-made filter builder for ASP.NET Core, for MVC and Razor Pages. Users pic
 -   A saved filter can no longer name a static method as a manipulator (`System.Environment.GetEnvironmentVariable`, ...): only methods of the value being changed are accepted
 
 ### Package: TopMarksDevelopment.ExpressionBuilder.Api
+
+#### Breaking Changes
+
+-   `IFilterGroup` now expects a `Match` property (`Matches?`): whether a group on a collection needs `Any` of its items to match (`null`, the default) or `All` of them. `FilterGroup` implements it; nothing else in this repository implements the interface
 
 #### Added
 

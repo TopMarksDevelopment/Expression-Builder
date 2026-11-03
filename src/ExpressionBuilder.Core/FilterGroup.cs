@@ -45,15 +45,7 @@ public class FilterGroup : IFilterGroup, IProtoFilterItem
     [ProtoMember(2)]
     public string? ParentPropertyExpression { get; set; }
 
-    /// <summary>
-    /// For a group on a collection: whether <see cref="Matches.Any"/> of the items must satisfy the group
-    /// (<c>x.Orders.Any(...)</c>), or <see cref="Matches.All"/> of them (<c>x.Orders.All(...)</c>).
-    /// </summary>
-    /// <remarks>
-    /// <c>null</c> means <see cref="Matches.Any"/>, which is what groups have always done, so filters saved
-    /// before this existed keep their meaning. <c>All</c> is also true of an empty collection. It does
-    /// nothing for a group that is not on a collection.
-    /// </remarks>
+    /// <inheritdoc />
     [ProtoMember(4)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Matches? Match { get; set; }

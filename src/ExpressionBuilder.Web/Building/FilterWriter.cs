@@ -71,10 +71,7 @@ sealed class FilterWriter(FilterSchema schema)
             Type = FilterNode.GroupType,
             Connector = group.Connector.ToString(),
             Collection = collection,
-            Match =
-                (group as FilterGroup)?.Match == Matches.All
-                    ? nameof(Matches.All)
-                    : null,
+            Match = group.Match == Matches.All ? nameof(Matches.All) : null,
             Items = WriteItems(group.Items, childType),
         };
     }
