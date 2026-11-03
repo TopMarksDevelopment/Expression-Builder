@@ -1,4 +1,4 @@
-# Next session: publish `rc.2`, then build the report builder (slice a)
+# Next session: build the report builder (slice a), after `rc.2` is tagged
 
 Paste the prompt below to start. Sections 1 to 5 of [next-steps.md](next-steps.md) are done (its "Progress" section has the history;
 section 5 is the design, [report-builder.md](../../docs/architecture/report-builder.md), reviewed and decided on 2026-10-16). This file
@@ -6,15 +6,20 @@ says where to start, what you need to do yourself, and what to watch for.
 
 ## Where things stand
 
-- Branch `refactor/repo-restructure-and-filter-builder`, `net10.0` only, SDK 10.0.402+ (`global.json`), version **`1.0.0-rc.2`**
-  (`1.0.0-rc.1` was published on 2024-09-19; nothing *from this branch* is released). The branch has been pushed; whether it has a
-  pull request open is yours to check.
+- **`1.0.0-rc.2` is merged to `main`** (PR #25, squash commit `640cd87`; the older PR #24 was closed as superseded). It is dated
+  2026-11-04 in the changelog and is **not tagged or published yet**: that is the release step below. This branch,
+  `feat/report-builder-rc3`, is `main` plus the report builder design, benchmarks and plan, and is where `rc.3` is built.
+- **rc.2 changed how related objects work, and the report builder is built on it:** a relationship is a field that leads to the schema
+  of its class, a path is resolved one name at a time (`FilterSchema.FindField`, limited by `MaxNavigationDepth`, default 5), the
+  field picker is a path above a list (properties, collections, relationships), and a group on a collection matches `Any` or `All`
+  (`IFilterGroup.Match`). See "Relationships and paths" in the design and decision D7.
+- `net10.0` only, SDK 10.0.402+ (`global.json`), version **`1.0.0-rc.2`** (`1.0.0-rc.1` was published on 2024-09-19).
 - Done: .NET 10, package and tooling bumps, custom operations and manipulators, restyling by templates, accessibility fixes, browser
   tests, Entity Framework Core tests, values sent to the database as parameters, performance (benchmarks, README section, a draft
   announcement, two small speed-ups, the fix for saved filters holding values of the application's own types), CSharpier over the whole
   repository (`dotnet csharpier check .`), the `rc.2` version, and **the report builder design**.
-- `dotnet test ExpressionBuilder.sln`: 1583 tests. `npm run check` in the client folder: 108. `dotnet test tests/ExpressionBuilder.Web.E2E`
-  (not in the solution; needs browsers): 66 across Chromium, Firefox and WebKit; 26 in Chromium alone, which passed when this was written.
+- At the rc.2 merge, all of CI was green: `dotnet test ExpressionBuilder.sln` (Core 284, Web 596, and the rest), `npm run check` in the
+  client folder (127), and `dotnet test tests/ExpressionBuilder.Web.E2E` (not in the solution; needs browsers) in Chromium, Firefox and WebKit.
 - **The decisions on the report builder (2026-10-16):** D1 stays in `ExpressionBuilder.Web` (a second tag helper that renders the filter
   builder); **D2 ships as `1.0.0-rc.3` = slices a to d** (so the public surface of those slices becomes part of 1.0.0: keep it small);
   D3 refuse a shared report that uses a column the runner cannot see; D4 buttons to reorder columns (drag and drop is parked); D5 the order after
@@ -23,10 +28,11 @@ says where to start, what you need to do yourself, and what to watch for.
 
 ## What you need to do yourself
 
-1. **Check the pull request and its first CI run.** The `browsers` job has never run: watch browser installation (`--with-deps`) and the
-   consumer apps restoring from the local feed. Squash-merge only when it is green (see `docs/standards/git.md`).
-2. **Publish `1.0.0-rc.2`** from `main` after the merge (`ai/skills/release.md`: changelog entry, the checks, the GitHub release that
-   runs the Nuget Push CI workflow). The report builder work should start from that, not from the long-lived branch.
+1. **Publish `1.0.0-rc.2`** from `main`, on or after 2026-11-04 (`ai/skills/release.md`: the checks, the tag, the GitHub release that
+   runs the Nuget Push CI workflow). Nothing is tagged yet. Then merge `main` into this branch if anything changed.
+2. **Delete the branches that are done:** `refactor/repo-restructure-and-filter-builder` and `ccr-58c60985-dzr141` (both are the
+   old rc.2 history, replaced by the squash), `feat/report-builder` (its content is on this branch) and `ccr-4be388e8-541d66`
+   (merged).
 3. **A human screen-reader pass** (NVDA or JAWS on Windows, VoiceOver on macOS and iOS) and keyboard use on a phone. The browser tests
    check names, roles, focus and axe, which is a proxy.
 4. **Check the announcement and the README "Performance" numbers on your own machine before you publish anything.** They are from one
@@ -48,9 +54,8 @@ docs/architecture/overview.md, docs/web-filter-builder.md, docs/standards/testin
 tools/ExpressionBuilder.Benchmarks/RESULTS.md.
 
 State: the report builder design is reviewed and D1-D4 are decided (see "Decisions" in the design). The version is 1.0.0-rc.2 and
-rc.3 will be slices a to d. First check whether the branch refactor/repo-restructure-and-filter-builder has been merged to main and
-whether rc.2 is published; if not, tell me what is left and stop (do not stack the report builder on the long-lived branch). If it
-is merged, branch from main (feat/report-builder-roots).
+rc.3 will be slices a to d. First check that rc.2 is published (tagged) and that this branch includes main; if not, tell me what is left and stop.
+Then work on this branch (feat/report-builder-rc3), or a short branch off it for one slice.
 
 Do the three "before the first slice" changes as their own commits (split FilterCompiler.Compile(string) into reading and
 Compile(FilterNode); a FilterBuilder view component overload that takes a built FilterSchema; nothing else), and then slice a ONLY:
