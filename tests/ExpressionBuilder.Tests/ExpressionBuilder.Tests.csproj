@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="protobuf-net" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ExpressionBuilder\ExpressionBuilder.csproj" />
+    <ProjectReference Include="..\ExpressionBuilder.TestBase\ExpressionBuilder.TestBase.csproj" />
+
+    <!-- Run by LoadingSavedFiltersTests in its own process; only needs building first. -->
+    <ProjectReference
+      Include="..\ExpressionBuilder.Tests.Probe\ExpressionBuilder.Tests.Probe.csproj"
+      ReferenceOutputAssembly="false"
+    />
+  </ItemGroup>
+</Project>

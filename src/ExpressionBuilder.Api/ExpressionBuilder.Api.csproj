@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Title>Expression Builder (API)</Title>
+    <Description>Looking to expand the functionality of the "ExpressionBuilder" package? This is the starting point for you. $(ExpressionBuilderBlurb)</Description>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,10 @@
+@page
+@model ExpressionBuilder.Web.Sample.Pages.SearchModel
+@{
+    ViewData["Title"] = "Razor Page";
+}
+
+<h1>Product search <small>(Razor Page)</small></h1>
+
+@* "for" keeps the property name in front of what is posted (Search.Filter.Json) so it binds to the page model *@
+<partial name="_Search" for="Search" />

@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "root": {
+    "type": "group",
+    "connector": "And",
+    "items": [
+      {
+        "type": "condition",
+        "connector": "And",
+        "field": "Name",
+        "operation": "Contains",
+        "values": [
+          "turing",
+          "alan"
+        ],
+        "match": "All",
+        "manipulators": [
+          {
+            "name": "ToLower"
+          },
+          {
+            "name": "Trim"
+          }
+        ]
+      }
+    ]
+  }
+}

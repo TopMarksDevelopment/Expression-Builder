@@ -1,0 +1,46 @@
+<Project>
+  <!-- Central package management: every project takes its versions from here. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup Label="Runtime dependencies">
+    <PackageVersion Include="protobuf-net" Version="3.4.30" />
+  </ItemGroup>
+  <ItemGroup Label="Build-time dependencies">
+    <PackageVersion
+      Include="Microsoft.CodeAnalysis.Analyzers"
+      Version="5.9.0"
+    />
+    <!--
+      Must not be newer than the compiler in the SDK that global.json requires: a compiler refuses a generator
+      built against a newer Roslyn than itself (CS9057). 10.0.1xx SDKs ship Roslyn 5.0, 10.0.4xx ship 5.9.
+    -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Tooling">
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
+    <PackageVersion
+      Include="System.Reflection.MetadataLoadContext"
+      Version="10.0.13"
+    />
+  </ItemGroup>
+
+  <ItemGroup Label="Test dependencies">
+    <PackageVersion Include="coverlet.collector" Version="10.1.0" />
+    <PackageVersion Include="Deque.AxeCore.Playwright" Version="4.13.0" />
+    <PackageVersion
+      Include="Microsoft.AspNetCore.Mvc.Testing"
+      Version="10.0.13"
+    />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
+    <PackageVersion
+      Include="Microsoft.EntityFrameworkCore.Sqlite"
+      Version="10.0.13"
+    />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
+    <PackageVersion Include="Microsoft.Playwright" Version="1.63.0" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
+  </ItemGroup>
+</Project>

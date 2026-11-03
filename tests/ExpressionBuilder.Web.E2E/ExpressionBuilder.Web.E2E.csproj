@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Drives the sample app in real browsers (Chromium, Firefox and WebKit). It is deliberately not part of
+    ExpressionBuilder.sln: it needs the browsers installed, which the quick test run should not. Run it with
+    `dotnet test tests/ExpressionBuilder.Web.E2E`; see docs/standards/testing.md.
+  -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Deque.AxeCore.Playwright" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Microsoft.Playwright" />
+  </ItemGroup>
+
+  <!-- The consumer apps are built by the tests, from the packed packages; they are not part of this project -->
+  <ItemGroup>
+    <Compile Remove="Consumers/**" />
+    <Content Remove="Consumers/**" />
+    <EmbeddedResource Remove="Consumers/**" />
+    <None Remove="Consumers/**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\samples\ExpressionBuilder.Web.Sample\ExpressionBuilder.Web.Sample.csproj" />
+  </ItemGroup>
+</Project>

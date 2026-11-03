@@ -1,0 +1,7 @@
+<Project>
+  <!--
+    These apps stand in for yours: they install the packed packages from a local feed, as an app would, and are
+    published and run without Development settings. This file stops them inheriting the repository's build
+    settings (target framework, central package versions, warnings), which would hide what a consumer sees.
+  -->
+</Project>

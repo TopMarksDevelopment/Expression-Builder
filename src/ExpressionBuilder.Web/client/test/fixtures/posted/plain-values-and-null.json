@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "root": {
+    "type": "group",
+    "connector": "And",
+    "items": [
+      {
+        "type": "group",
+        "connector": "And",
+        "items": [
+          {
+            "type": "condition",
+            "connector": "And",
+            "field": "",
+            "operation": "Equal",
+            "values": [
+              "maths"
+            ]
+          }
+        ],
+        "collection": "Tags"
+      },
+      {
+        "type": "condition",
+        "connector": "And",
+        "field": "Verified",
+        "operation": "IsNotNull",
+        "values": []
+      }
+    ]
+  }
+}

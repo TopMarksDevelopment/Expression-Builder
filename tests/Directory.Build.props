@@ -1,0 +1,27 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- Projects named *.Probe are helper apps that the tests run, not test projects. -->
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject Condition="!$(MSBuildProjectName.EndsWith('.Probe'))"
+      >true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup Condition="!$(MSBuildProjectName.EndsWith('.Probe'))">
+    <PackageReference Include="coverlet.collector">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Condition="!$(MSBuildProjectName.EndsWith('.Probe'))">
+    <Using Include="Xunit" />
+  </ItemGroup>
+</Project>

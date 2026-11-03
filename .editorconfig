@@ -1,0 +1,30 @@
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# MSBuild and XML-ish files in this repo use two spaces
+[*.{csproj,props,targets,sln,slnx,config,cshtml}]
+indent_size = 2
+
+[*.cshtml]
+indent_size = 4
+
+[*.{yml,yaml}]
+indent_size = 4
+
+[*.md]
+# A trailing double space is a line break
+trim_trailing_whitespace = false
+
+[*.template]
+# The generator templates are C# but are not formatted by CSharpier
+indent_size = 4
+
+# The compiled web client bundle
+[src/ExpressionBuilder.Web/wwwroot/js/*.js]
+generated_code = true

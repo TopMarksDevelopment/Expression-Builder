@@ -1,0 +1,59 @@
+@model ProductSearch
+@*
+    The search form and its results, shared by the MVC page and the Razor Page.
+
+    The only things the filter builder needs are the <form> and one tag: filter-builder.
+      for   - a FilterBuilderModel property on your model
+      type  - the class being filtered
+*@
+<form method="post">
+    <div asp-validation-summary="All" class="validation"></div>
+
+    <filter-builder for="Filter" type="typeof(Product)" />
+
+    <p class="actions">
+        <button type="submit" class="primary">Search</button>
+        <a href="?preset=true">Load an example search</a>
+    </p>
+</form>
+
+@if (Model.Searched)
+{
+    <section aria-labelledby="results-heading">
+        <h2 id="results-heading">@Model.Results.Count @(Model.Results.Count == 1 ? "product" : "products")</h2>
+        <p class="description">The filter, in words: <code>@Model.Description</code></p>
+
+        @if (Model.Results.Count > 0)
+        {
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Stock</th>
+                            <th scope="col">Rating</th>
+                            <th scope="col">Supplier</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model.Results)
+                        {
+                            <tr>
+                                <td>@product.Id</td>
+                                <td>@product.Name</td>
+                                <td>@product.Category</td>
+                                <td>@product.Price.ToString("C")</td>
+                                <td>@product.Stock</td>
+                                <td>@(product.Rating?.ToString("0.0") ?? "-")</td>
+                                <td>@(product.Supplier?.Name ?? "-")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+}

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ExpressionBuilder.Api\ExpressionBuilder.Api.csproj" />
+    <ProjectReference Include="..\..\src\ExpressionBuilder.Core\ExpressionBuilder.Core.csproj" />
+    <ProjectReference Include="..\..\src\Operations\Equal\ExpressionBuilder.Operations.Equal.csproj" />
+    <ProjectReference Include="..\..\src\Operations\IsNull\ExpressionBuilder.Operations.IsNull.csproj" />
+    <ProjectReference Include="..\..\src\Operations\LessThanOrEqual\ExpressionBuilder.Operations.LessThanOrEqual.csproj" />
+    <ProjectReference Include="..\..\src\Operations\NotEqual\ExpressionBuilder.Operations.NotEqual.csproj" />
+    <ProjectReference Include="..\ExpressionBuilder.TestBase\ExpressionBuilder.TestBase.csproj" />
+  </ItemGroup>
+</Project>
