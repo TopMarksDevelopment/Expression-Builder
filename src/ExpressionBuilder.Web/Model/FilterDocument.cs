@@ -11,7 +11,7 @@ using System.Text.Json.Serialization;
 /// { "version": 1, "root": { "type": "group", "connector": "And", "items": [
 ///     { "type": "condition", "field": "Name", "operation": "Contains", "values": ["bike"],
 ///       "match": "Any", "manipulators": [{ "name": "ToLower" }], "connector": "Or" },
-///     { "type": "group", "collection": "Contacts", "connector": "And", "items": [ ... ] }
+///     { "type": "group", "collection": "Contacts", "match": "All", "connector": "And", "items": [ ... ] }
 /// ] } }
 /// </code>
 /// It is deliberately not the library's own serialised filter: that names .NET types, which a
@@ -63,13 +63,19 @@ sealed class FilterNode
     /// <summary>Condition: the values, as text.</summary>
     public List<string?>? Values { get; set; }
 
-    /// <summary>Condition: <c>Any</c> or <c>All</c> of several values.</summary>
+    /// <summary>
+    /// Condition: <c>Any</c> or <c>All</c> of several values. Group on a collection: <c>Any</c> (the default) or
+    /// <c>All</c> of the items must satisfy the group.
+    /// </summary>
     public string? Match { get; set; }
 
     /// <summary>Condition: changes applied to the property and the values first.</summary>
     public List<ManipulatorNode>? Manipulators { get; set; }
 
-    /// <summary>Group: the collection it filters the items of, if it filters one.</summary>
+    /// <summary>
+    /// Group: the collection it filters the items of, if it filters one: a name, or a path through
+    /// relationships such as <c>Customer.Orders</c>.
+    /// </summary>
     public string? Collection { get; set; }
 
     /// <summary>Group: what is in it.</summary>

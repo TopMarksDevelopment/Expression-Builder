@@ -148,7 +148,8 @@ public partial class SampleAppTests(WebApplicationFactory<Program> factory)
             .Value;
 
         Assert.Contains("\"path\":\"Name\"", schema);
-        Assert.Contains("\"path\":\"Supplier.Country\"", schema);
+        Assert.Contains("\"path\":\"Supplier\"", schema);
+        Assert.Contains("\"path\":\"Country\"", schema);
         Assert.Contains("\"path\":\"Reviews\"", schema);
         Assert.DoesNotContain("Cost", schema);
     }

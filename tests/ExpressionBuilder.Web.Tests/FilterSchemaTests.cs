@@ -122,53 +122,50 @@ public class FilterSchemaTests
         );
 
     [Fact(
-        DisplayName = "Properties of related objects are reached with a path"
+        DisplayName = "A related object is a field that leads to the schema of its class"
     )]
-    public void ReachesIntoRelatedObjects()
+    public void RelationshipsLeadToTheirOwnSchema()
     {
-        var postcode = Field("Home.Postcode");
+        var home = Field("Home");
 
-        Assert.Equal(FieldKind.String, postcode.Kind);
-        Assert.Equal("Home address › Postcode", postcode.Label);
-        Assert.Contains("Home.City", Root.Fields.Select(f => f.Path));
+        Assert.Equal(FieldKind.Object, home.Kind);
+        Assert.Equal("Home address", home.Label);
+        Assert.NotNull(home.ItemType);
+
+        // Its properties belong to its class, not to this one
+        var address = Schema.Types[home.ItemType!];
+
+        Assert.Equal(FieldKind.String, Field("Postcode", address).Kind);
+        Assert.DoesNotContain(Root.Fields, f => f.Path.Contains('.'));
+        Assert.DoesNotContain(Root.Fields, f => f.Path == "Postcode");
     }
 
     [Fact(
-        DisplayName = "How far to reach is limited, so cycles can't run away"
+        DisplayName = "Relationships can lead back to where they started, so the schema doesn't repeat itself"
     )]
-    public void LimitsHowFarItReaches()
+    public void CyclesShareTheirTypes()
     {
-        // Person > Home > Country > Head > ... would never end
-        Assert.DoesNotContain(
-            Root.Fields,
-            f => f.Path.Count(c => c == '.') >= 2
-        );
+        // Person > Home > Country > Head is a Person again
+        var country = Schema.Types[
+            Field("Country", Schema.Types[Field("Home").ItemType!]).ItemType!
+        ];
 
-        var deeper = FilterSchema.For<Person>(
-            new FilterBuilderOptions { MaxNavigationDepth = 3 }
-        );
-        var paths = deeper
-            .Types[deeper.Root]
-            .Fields.Select(f => f.Path)
-            .ToList();
-
-        Assert.Contains("Home.Country.Name", paths);
-        Assert.DoesNotContain(paths, p => p.Count(c => c == '.') >= 3);
+        Assert.Equal(Schema.Root, Field("Head", country).ItemType);
     }
 
     [Fact(
-        DisplayName = "A depth of one only offers the class's own properties"
+        DisplayName = "How far a path can go is part of the schema, for the script and the server"
     )]
-    public void DepthOfOneIsFlat()
+    public void TheLimitIsInTheSchema()
     {
-        var flat = FilterSchema.For<Person>(
-            new FilterBuilderOptions { MaxNavigationDepth = 1 }
+        Assert.Equal(5, Schema.MaxNavigationDepth);
+
+        var short_ = FilterSchema.For<Person>(
+            new FilterBuilderOptions { MaxNavigationDepth = 2 }
         );
 
-        Assert.DoesNotContain(
-            flat.Types[flat.Root].Fields,
-            f => f.Path.Contains('.')
-        );
+        Assert.Equal(2, short_.MaxNavigationDepth);
+        Assert.Contains("\"maxNavigationDepth\":2", short_.ToJson());
     }
 
     [Fact(
@@ -182,7 +179,7 @@ public class FilterSchemaTests
         Assert.Empty(contacts.Operations);
         Assert.Equal(
             ["Type", "Value", "Comments", "Owner"],
-            item.Fields.Where(f => !f.Path.Contains('.')).Select(f => f.Path)
+            item.Fields.Select(f => f.Path)
         );
     }
 

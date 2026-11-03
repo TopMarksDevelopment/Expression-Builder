@@ -54,9 +54,11 @@ public sealed class FilterBuilderOptions
     public int MaxPayloadLength { get; set; } = 64 * 1024;
 
     /// <summary>
-    /// How many names a property's path can have: <c>Name</c> is one and <c>Birth.Country</c> is two.
+    /// How many names a path can have when it follows relationships: <c>Name</c> is one,
+    /// <c>Birth.Country</c> is two and <c>Customer.Address.Country.Name</c> is four. Relationships can lead back
+    /// to where they started (an order's customer has orders), so there has to be a limit.
     /// </summary>
-    public int MaxNavigationDepth { get; set; } = 2;
+    public int MaxNavigationDepth { get; set; } = 5;
 
     /// <summary>
     /// The text of the filter builder.

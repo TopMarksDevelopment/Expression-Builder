@@ -11,8 +11,6 @@ using System.Text.RegularExpressions;
 /// </summary>
 sealed partial class SchemaBuilder(FilterBuilderOptions options)
 {
-    const string PathSeparator = " › ";
-
     static readonly HashSet<Type> IntegralTypes =
     [
         typeof(byte),
@@ -49,6 +47,7 @@ sealed partial class SchemaBuilder(FilterBuilderOptions options)
 
         return new FilterSchema(
             rootId,
+            options.MaxNavigationDepth,
             _types,
             _operations
                 .Select(o => new OperationSchema(
@@ -120,7 +119,7 @@ sealed partial class SchemaBuilder(FilterBuilderOptions options)
     }
 
     /// <summary>
-    /// Adds a class (and, through its collections, the classes they hold) to the schema.
+    /// Adds a class (and the classes it relates to, and the classes its collections hold) to the schema.
     /// </summary>
     string AddType(Type type)
     {
@@ -132,52 +131,34 @@ sealed partial class SchemaBuilder(FilterBuilderOptions options)
         _ids[type] = id;
 
         var fields = new List<FieldSchema>();
-        AddFields(type, prefix: "", labelPrefix: "", depth: 0, fields);
+
+        foreach (var property in GetProperties(type))
+            AddField(property, fields);
 
         _types[id] = new TypeSchema(id, Humanize(type.Name), fields);
 
         return id;
     }
 
-    void AddFields(
-        Type type,
-        string prefix,
-        string labelPrefix,
-        int depth,
-        List<FieldSchema> fields
-    )
+    void AddField(PropertyInfo property, List<FieldSchema> fields)
     {
-        foreach (var property in GetProperties(type))
-        {
-            var path = prefix + property.Name;
-            var label = labelPrefix + GetLabel(property);
-            var propertyType = property.PropertyType;
+        var path = property.Name;
+        var label = GetLabel(property);
+        var propertyType = property.PropertyType;
 
-            if (TryGetCollectionItem(propertyType, out var itemType))
-            {
-                fields.Add(CollectionField(path, label, itemType));
-            }
-            else if (TryClassifyValue(propertyType, property, out var kind))
-            {
-                fields.Add(ValueField(path, label, kind, propertyType));
-            }
-            else if (IsNavigation(propertyType))
-            {
-                fields.Add(
-                    ValueField(path, label, FieldKind.Object, propertyType)
-                );
-
-                // Reach into one-to-one relationships, as far as the options allow
-                if (depth < options.MaxNavigationDepth - 1)
-                    AddFields(
-                        propertyType,
-                        path + ".",
-                        label + PathSeparator,
-                        depth + 1,
-                        fields
-                    );
-            }
-        }
+        if (TryGetCollectionItem(propertyType, out var itemType))
+            fields.Add(CollectionField(path, label, itemType));
+        else if (TryClassifyValue(propertyType, property, out var kind))
+            fields.Add(ValueField(path, label, kind, propertyType));
+        else if (IsNavigation(propertyType))
+            // A relationship leads to the schema of the class it points to; a path follows them
+            // one at a time, as far as MaxNavigationDepth allows
+            fields.Add(
+                ValueField(path, label, FieldKind.Object, propertyType) with
+                {
+                    ItemType = AddType(propertyType),
+                }
+            );
     }
 
     IEnumerable<PropertyInfo> GetProperties(Type type) =>

@@ -391,6 +391,122 @@ public class FilterBuilderModelTests
             )
         );
 
+    [Fact(DisplayName = "A path follows relationships, one after another")]
+    public void PathsFollowRelationships()
+    {
+        Assert.Equal<int>(
+            [.. People.Where(p => p.Home.Country?.Name == "UK").Ids()],
+            Run(Cond("Home.Country.Name", "Equal", ["UK"]))
+        );
+        Assert.Equal<int>(
+            [.. People.Where(p => p.Home.Country == null).Ids()],
+            Run(Cond("Home.Country", "IsNull"))
+        );
+    }
+
+    [Fact(
+        DisplayName = "A path can be as long as MaxNavigationDepth, and no longer"
+    )]
+    public void PathsAreLimited()
+    {
+        var path = Doc(Cond("Home.Country.Name", "Equal", ["UK"]));
+
+        Assert.True(Build(path, new() { MaxNavigationDepth = 3 }).Succeeded);
+        Assert.False(Build(path, new() { MaxNavigationDepth = 2 }).Succeeded);
+        Assert.False(
+            Build(
+                Doc(Cond("Home.City", "Equal", ["x"])),
+                new() { MaxNavigationDepth = 1 }
+            ).Succeeded
+        );
+    }
+
+    [Fact(DisplayName = "A collection group can lead on from relationships")]
+    public void CollectionAfterRelationships()
+    {
+        Assert.Equal<int>(
+            [
+                .. People
+                    .Where(p => p.Employer != null)
+                    .Where(p => p.Employer!.Branches.Any(b => b.Staff > 100))
+                    .Ids(),
+            ],
+            Run(
+                Group(
+                    [Cond("Staff", "GreaterThan", ["100"])],
+                    collection: "Employer.Branches",
+                    match: "Any"
+                )
+            )
+        );
+    }
+
+    [Fact(
+        DisplayName = "A collection group can ask for all of its items to match"
+    )]
+    public void CollectionGroupsMatchAll()
+    {
+        var all = Run(
+            Group(
+                [Cond("Staff", "GreaterThan", ["100"])],
+                collection: "Employer.Branches",
+                match: "All"
+            )
+        );
+        var any = Run(
+            Group(
+                [Cond("Staff", "GreaterThan", ["100"])],
+                collection: "Employer.Branches"
+            )
+        );
+
+        Assert.Equal<int>(
+            [
+                .. People
+                    .Where(p => p.Employer != null)
+                    .Where(p => p.Employer!.Branches.All(b => b.Staff > 100))
+                    .Ids(),
+            ],
+            all
+        );
+        // Not the same question: an employer with no branches has none that fall short
+        Assert.NotEqual(any, all);
+    }
+
+    [Fact(
+        DisplayName = "A collection group's match comes back out of a built filter"
+    )]
+    public void MatchRoundTrips()
+    {
+        var json = Doc(
+            Group(
+                [Cond("Staff", "GreaterThan", ["100"])],
+                collection: "Employer.Branches",
+                match: "All"
+            )
+        );
+
+        var shown = FilterBuilderModel.FromFilter(Build(json).Filter!);
+
+        Assert.Contains("\"match\":\"All\"", shown.Json);
+        Assert.Contains("\"collection\":\"Employer.Branches\"", shown.Json);
+
+        // Any is what a group means without one, so it is not written
+        var any = FilterBuilderModel.FromFilter(
+            Build(
+                Doc(
+                    Group(
+                        [Cond("Staff", "GreaterThan", ["100"])],
+                        collection: "Employer.Branches",
+                        match: "Any"
+                    )
+                )
+            ).Filter!
+        );
+
+        Assert.DoesNotContain("\"match\"", any.Json);
+    }
+
     [Fact(
         DisplayName = "A collection group can hold a further collection group"
     )]
@@ -519,10 +635,21 @@ public class FilterBuilderModelTests
             { Doc(Cond("GetType()", "Equal", ["1"])), "is not a property" },
             { Doc(Cond("", "Equal", ["1"])), "is not a property" },
             { Doc(Cond("Photo", "IsNull")), "is not a property" },
+            // Six names is one more than the default allows
             {
-                Doc(Cond("Home.Country.Name", "Equal", ["UK"])),
+                Doc(
+                    Cond("Home.Country.Head.Home.Country.Name", "Equal", ["UK"])
+                ),
                 "is not a property"
             },
+            // A path goes through relationships, never through a collection or a plain value
+            {
+                Doc(Cond("Contacts.Value", "Equal", ["x"])),
+                "is not a property"
+            },
+            { Doc(Cond("Home..City", "Equal", ["x"])), "is not a property" },
+            { Doc(Cond("Home.Nope", "Equal", ["x"])), "is not a property" },
+            { Doc(Cond("Name.Length", "Equal", ["1"])), "is not a property" },
             { Doc(Cond("Contacts", "IsNull")), "is not a property" },
             {
                 Doc(Cond("Salary", "Contains", ["1"])),
@@ -671,6 +798,21 @@ public class FilterBuilderModelTests
             {
                 Doc(Group([Cond("Name", "Equal", ["a"])], collection: "Home")),
                 "not a collection"
+            },
+            {
+                Doc(
+                    Group(
+                        [Cond("Name", "Equal", ["a"])],
+                        collection: "Contacts",
+                        match: "Most"
+                    )
+                ),
+                "any, or all, of the items"
+            },
+            {
+                // Only a group on a collection has items to match
+                Doc(Group([Cond("Name", "Equal", ["a"])], match: "All")),
+                "Only a group on a collection"
             },
             { Doc(Group([])), "at least one condition" },
             {

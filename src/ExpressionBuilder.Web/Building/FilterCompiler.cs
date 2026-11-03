@@ -187,6 +187,17 @@ sealed class FilterCompiler(FilterSchema schema, FilterBuilderOptions options)
 
             group.ParentPropertyExpression = field.Path + "[]";
             childType = field.ItemType;
+
+            if (!TryReadGroupMatch(node, path, out var match))
+                return null;
+
+            group.Match = match;
+        }
+        else if (!string.IsNullOrEmpty(node.Match))
+        {
+            Error(path, "Only a group on a collection can match any or all.");
+
+            return null;
         }
 
         if (node.Items is not { Count: > 0 })
@@ -205,6 +216,29 @@ sealed class FilterCompiler(FilterSchema schema, FilterBuilderOptions options)
         group.Items = items;
 
         return group;
+    }
+
+    bool TryReadGroupMatch(FilterNode node, string path, out Matches? match)
+    {
+        match = null;
+
+        if (string.IsNullOrEmpty(node.Match))
+            return true;
+
+        if (
+            !Enum.TryParse(node.Match, ignoreCase: true, out Matches parsed)
+            || !Enum.IsDefined(parsed)
+        )
+        {
+            Error(path, "Choose to match any, or all, of the items.");
+
+            return false;
+        }
+
+        // Any is what a group on a collection means when nothing is said, so it is left as that
+        match = parsed == Matches.All ? Matches.All : null;
+
+        return true;
     }
 
     IFilterStatement? CompileCondition(

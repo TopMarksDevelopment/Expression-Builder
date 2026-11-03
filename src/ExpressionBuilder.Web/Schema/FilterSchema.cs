@@ -26,6 +26,7 @@ public sealed class FilterSchema
 
     internal FilterSchema(
         string root,
+        int maxNavigationDepth,
         IReadOnlyDictionary<string, TypeSchema> types,
         IReadOnlyList<OperationSchema> operations,
         IReadOnlyList<ManipulatorSchema> manipulators,
@@ -38,6 +39,7 @@ public sealed class FilterSchema
     )
     {
         Root = root;
+        MaxNavigationDepth = maxNavigationDepth;
         Types = types;
         Operations = operations;
         Manipulators = manipulators;
@@ -52,7 +54,14 @@ public sealed class FilterSchema
     public string Root { get; }
 
     /// <summary>
-    /// Every class that is filtered, by id: the root and the items of any collections.
+    /// How many names a path can have when it follows relationships (<c>Birth.Country.Name</c> is three).
+    /// The script stops offering relationships at this length and the server refuses a longer path.
+    /// </summary>
+    public int MaxNavigationDepth { get; }
+
+    /// <summary>
+    /// Every class that is filtered, by id: the root, the classes it relates to, and the items of any
+    /// collections.
     /// </summary>
     public IReadOnlyDictionary<string, TypeSchema> Types { get; }
 
@@ -112,14 +121,55 @@ public sealed class FilterSchema
         ManipulatorDescriptor
     > ManipulatorDescriptors { get; }
 
-    internal FieldSchema? FindField(string typeId, string path) =>
-        Types.TryGetValue(typeId, out var type)
-            ? type.Fields.FirstOrDefault(f => f.Path == path)
-            : null;
+    /// <summary>
+    /// Finds a property or collection by its path from a class, following relationships one name at a
+    /// time. Only what the schema offers is ever found, and never through a collection (a group does that).
+    /// </summary>
+    /// <returns>
+    /// The field with its whole <paramref name="path"/> and a label that shows the way (
+    /// <c>Home address › Postcode</c>), or <c>null</c> if the schema doesn't offer it or the path is too long
+    /// </returns>
+    internal FieldSchema? FindField(string typeId, string path)
+    {
+        if (!Types.TryGetValue(typeId, out var type))
+            return null;
+
+        // The empty path is the item of a collection of plain values
+        if (path.Length == 0)
+            return type.Fields.FirstOrDefault(f => f.Path.Length == 0);
+
+        var names = path.Split('.');
+
+        if (names.Length > MaxNavigationDepth || names.Any(n => n.Length == 0))
+            return null;
+
+        var label = "";
+
+        for (var i = 0; i < names.Length - 1; i++)
+        {
+            var step = type.Fields.FirstOrDefault(f => f.Path == names[i]);
+
+            if (
+                step is not { Kind: FieldKind.Object, ItemType: { } next }
+                || !Types.TryGetValue(next, out type!)
+            )
+                return null;
+
+            label += step.Label + RelationshipSeparator;
+        }
+
+        var field = type.Fields.FirstOrDefault(f => f.Path == names[^1]);
+
+        return names.Length == 1 ? field
+            : field is null ? null
+            : field with { Path = path, Label = label + field.Label };
+    }
+
+    internal const string RelationshipSeparator = " › ";
 }
 
 /// <summary>
-/// A class that is filtered: the root, or the items of a collection.
+/// A class that is filtered: the root, a class it is related to, or the items of a collection.
 /// </summary>
 /// <param name="Id">Identifies the class within the schema</param>
 /// <param name="Label">What to call it</param>
@@ -131,12 +181,11 @@ public sealed record TypeSchema(
 );
 
 /// <summary>
-/// Something that can be filtered on: a property (or a property of a related object), or a
-/// collection.
+/// Something that can be filtered on: a property, a relationship to another class, or a collection.
 /// </summary>
 /// <param name="Path">
-/// How the property is referred to, as in the string conventions of the filter: <c>Name</c>,
-/// <c>Birth.Country</c>. Empty for the item of a collection of plain values.
+/// The name of the property: <c>Name</c>. Empty for the item of a collection of plain values. A path
+/// through relationships (<c>Birth.Country</c>) is made of these, one for each class on the way.
 /// </param>
 /// <param name="Label">What to call it</param>
 /// <param name="Kind">What it holds</param>
@@ -145,7 +194,10 @@ public sealed record TypeSchema(
 /// <param name="Operations">The names of the operations that suit it</param>
 /// <param name="Step">For numbers, how much a value changes by (<c>1</c> or <c>any</c>)</param>
 /// <param name="Options">For enums, the choices</param>
-/// <param name="ItemType">For collections, the id of the class of the items</param>
+/// <param name="ItemType">
+/// For collections, the id of the class of the items; for relationships (<see cref="FieldKind.Object"/>), the id
+/// of the class they lead to
+/// </param>
 public sealed record FieldSchema(
     string Path,
     string Label,

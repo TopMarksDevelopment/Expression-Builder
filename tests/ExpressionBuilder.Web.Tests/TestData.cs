@@ -250,13 +250,15 @@ static class TestData
     public static object Group(
         object[] items,
         string? collection = null,
-        string? connector = null
+        string? connector = null,
+        string? match = null
     ) =>
         new
         {
             type = "group",
             collection,
             connector,
+            match,
             items,
         };
 
