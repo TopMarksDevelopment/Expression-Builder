@@ -64,7 +64,7 @@ are the project owner's to make are marked **DECISION** and collected [at the en
 
 | Piece | Today | In the report builder |
 | --- | --- | --- |
-| `FilterSchema.For(Type, FilterBuilderOptions)` | Builds, by reflection, what of one class can be filtered, with the id of each class reached. About 95 µs for a 126-field class; not cached on purpose (`RESULTS.md`, "Not cached") | Used as it is, once per root per request. It gains one internal input: whether a property is allowed for this user |
+| `FilterSchema.For(Type, FilterBuilderOptions)` | Builds, by reflection, what of one class can be filtered. Since `rc.2` a class holds only its own properties, collections and relationships; a relationship leads to the schema of the class it points to ([Relationships](#relationships-and-paths-from-rc2)). About 95 µs for a 126-field class, measured **before** relationships were followed rather than copied: the schema now holds every class it can reach, so measure again with slice a. Not cached on purpose (`RESULTS.md`, "Not cached") | Used as it is, once per root per request. It gains one internal input: whether a property is allowed for this user |
 | `FilterCompiler` | Checks a posted filter against a schema and makes statements. Reflection is already used for the property type of each statement | Used as it is. One mechanical change first: a method that takes the parsed filter node, so the report document can hand it its `filter` |
 | `FilterBuilderModel.Build<T>` | The typed entry point | Unchanged. A report has its own model (`ReportBuilderModel`) with a non-generic `Build` |
 | `Filter<T>.ToExpression()` | Values become variables, so a database sends parameters | Used as it is. The report adds nothing that carries a user's value into a query except through it |
@@ -189,8 +189,36 @@ FilterSchema.For(root type, options, allowed: property => rule is satisfied for 
   claims and roles; do not call a database from it. Its cost, measured on its own, is in [Measurements](#measurements).
 - The schema is built per request and per user and is **not cached** (`RESULTS.md`, "Not cached": a stale schema is a security
   fault, not a slow page). A per-user schema makes that more true, not less.
-- The page carries the schema of **one root** (R3). The columns and sort lists are derived from the same fields (not related
-  objects or collections, which are not a value to show or to order by), so they are not a second source of truth.
+- The page carries the schema of **one root** (R3). The columns and sort lists are derived from the same fields, so they are not
+  a second source of truth. A column or sort key is a **value**: a property of the root or of a class reached through
+  relationships (`Customer.Name`). A collection is not a value to show or to order by (until measures, e2), and a relationship
+  itself is not either.
+
+## Relationships and paths (from `rc.2`)
+
+`rc.2` changes how related objects reach the filter builder, and the report builder is built on the changed model, so it is
+written down here once.
+
+- **A relationship is a field that leads to a class**, not a copy of that class's properties under a dotted name. The schema is
+  a graph of classes by id (cycles share a class: an order's customer has orders). `FieldSchema.ItemType` is the class a
+  collection holds, or the class a relationship leads to.
+- **A path is resolved one name at a time through the schema** (`FilterSchema.FindField`): every name but the last must be a
+  relationship the schema offers, never a collection or a plain value, and the path may have at most `MaxNavigationDepth`
+  names (default 5, part of the schema so that the script and the server agree). Filter conditions, collection groups,
+  **columns and sort keys all use this one lookup** (R4: the one gate). A rule on a type applies at every step, so a hidden
+  type removes every relationship that leads to it.
+- **The picker is a path above a list.** Choosing a relationship moves it into a path (`Order › Customer ›`) and the list
+  offers what it leads to; earlier steps are a way back. The list has up to three headings: properties, collections,
+  relationships. The report builder's **column and sort pickers are the same control** over the same schema, offering the
+  value fields and the relationships that lead to more, but not collections (D7).
+- **A collection group matches any item or every item** (`"match": "All"` in the posted form, `FilterGroup.Match` in the
+  library), and the collection can sit behind relationships (`Customer.Orders`). A measure over a collection (e2) is a
+  different question ("how many lines", "the sum of quantity") and does not use it; a measure's filter is a filter, and may
+  contain such groups.
+- **A schema holds every class it can reach**, so on a large model the page for a root can carry a lot. Slice a measures it
+  (size and build time) on a realistic model, and `Exclude<T>` / `[FilterBuilderIgnore]` / `Restrict<T>` are the way to keep
+  classes out. If the schema is too big, the answer is to send the classes a root's paths can reach within the limit, not to
+  go back to copying their properties.
 
 ## The posted document, version 2
 
@@ -374,8 +402,8 @@ The page for a root, from top to bottom, in the same markup contract as the filt
    showing only the roots the user may use. It is a GET: no script, no form (a `<select>` inside the user's form would submit the
    whole filter into the URL). If the filter has conditions, the script asks before leaving.
 2. **The filter builder**, unchanged, for the chosen root's schema.
-3. **Columns.** A `<select>` of the fields that can be shown (grouped like the filter builder's field list), an *Add column*
-   button, and an ordered list of the chosen ones, each with move up, move down and remove buttons (R14, decided; drag and drop
+3. **Columns.** The path picker of the filter builder (a path of relationships above a list of the fields that can be shown;
+   D7), an *Add column* button, and an ordered list of the chosen ones, each with move up, move down and remove buttons (R14, decided; drag and drop
    is parked, and would sit on top of the buttons). Focus goes to a sensible
    neighbour after every removal or move: this is where the filter builder had bugs (focus lost after removing a condition), and the
    keyboard tests will cover it from the start.
@@ -561,7 +589,8 @@ builder shows that root's fields, the filter is reset, axe in light and dark; th
 alone: an app gets a **checked, ordered list of columns and sort keys** it can use with its own projection.
 
 *Tests:* a hidden property refused as a column and as a sort with the same message as a missing one; non-value fields (related
-objects, collections) refused; duplicates; limits (columns, sorts); order preserved; the matrix extended to columns and sort; the
+objects, collections) refused; a path through a collection, through a plain value, or longer than `MaxNavigationDepth` refused
+with the same message; a column behind a restricted type refused; duplicates; limits (columns, sorts); order preserved; the matrix extended to columns and sort; the
 fixtures in both directions (`client/test/fixtures/posted/` gains report documents, and a .NET test builds each);
 client model and DOM tests; browser tests for the whole flow with the keyboard alone, **focus after every add, move and remove**,
 names and roles, axe.
@@ -839,6 +868,7 @@ Also decided on review (2026-10-16), raised by the questions about output ([Outp
 | --- | --- | --- | --- |
 | **D5** | What comes after `rc.3`, and in what order | **As recommended:** e1 totals, f saved reports, e2 per-row measures, e3 grouping, g computed columns, h charts | Totals and measures keep the simple row shape and are the cheapest things a table reader asks for; grouping and charts are the big changes and benefit from the soak. If reports must be saved before totals are wanted, swap e1 and f |
 | **D6** | How charts are drawn | **Data mainly:** the library supplies the data (JSON and an event) and the accessible table, and the application draws. **Consider a tiny built-in SVG renderer when slice h is picked up**, not before | No charting dependency, no CSP surprises, and nothing to keep up with. When h starts, weigh the small renderer then (bar and line, CSS custom properties, strict CSP, the table kept as the accessible alternative) against what the application already uses |
+| **D7** | Columns and sort keys behind relationships | **One path picker for filter, columns and sort** ([Relationships and paths](#relationships-and-paths-from-rc2)): a column is a value reached through relationships, never a collection or a relationship itself | One lookup and one control to test and to make accessible, and nothing new for the server to trust. Decided with the `rc.2` change to relationships, 2026-11-03 |
 
 ## Documents that change
 
