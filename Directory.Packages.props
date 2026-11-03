@@ -4,7 +4,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup Label="Runtime dependencies">
-    <PackageVersion Include="protobuf-net" Version="3.4.30" />
+    <PackageVersion Include="protobuf-net" Version="3.4.40" />
   </ItemGroup>
   <ItemGroup Label="Build-time dependencies">
     <PackageVersion
