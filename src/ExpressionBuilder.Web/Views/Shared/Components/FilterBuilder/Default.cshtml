@@ -25,6 +25,11 @@
     <template data-eb-template="group">
         <section class="eb-group" role="group" data-eb-group>
             <header class="eb-group-header">
+                @* Only shown for a group on a collection: any item or every item has to satisfy it *@
+                <select class="eb-select eb-group-match" data-eb-group-match aria-label="@l.GroupMatch">
+                    <option value="Any">@l.GroupMatchAny</option>
+                    <option value="All">@l.GroupMatchAll</option>
+                </select>
                 <span class="eb-group-title" data-eb-title></span>
                 <button type="button" class="eb-btn eb-btn-text eb-btn-remove" data-eb-remove-group>@l.RemoveGroup</button>
             </header>
@@ -46,7 +51,12 @@
     <template data-eb-template="condition">
         <div class="eb-condition" data-eb-condition>
             <div class="eb-row">
-                <select class="eb-select eb-field" data-eb-field aria-label="@l.Field"></select>
+                @* The property is chosen from a list. Choosing a relationship moves it into the path above the list, and
+                   the list then offers what it leads to, so the path and the list read as one *@
+                <div class="eb-picker" data-eb-picker>
+                    <ol class="eb-path" data-eb-path aria-label="@l.Field" hidden></ol>
+                    <select class="eb-select eb-field" data-eb-field aria-label="@l.Field"></select>
+                </div>
                 <select class="eb-select eb-operation" data-eb-operation aria-label="@l.Operation"></select>
                 <div class="eb-values" data-eb-values></div>
                 <button type="button" class="eb-btn eb-btn-text eb-btn-add-value" data-eb-add-value hidden>@l.AddValue</button>
@@ -68,6 +78,14 @@
             </div>
             <p class="eb-error" role="alert" data-eb-error hidden></p>
         </div>
+    </template>
+
+    @* One step of the path to a property: a way back to it. The last one is where the list below is looking *@
+    <template data-eb-template="path-step">
+        <li class="eb-path-step">
+            <button type="button" class="eb-path-link" data-eb-path-step></button>
+            <span class="eb-path-separator" aria-hidden="true">&#8250;</span>
+        </li>
     </template>
 
     @* One value of a condition. It has a box for most properties and a list for choices (an enum, yes/no): the

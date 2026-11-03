@@ -16,9 +16,20 @@ public sealed class FilterBuilderLabels
     public string Group { get; set; } = "Group";
 
     /// <summary>
-    /// Heading of a group that filters a collection. <c>{0}</c> is the name of the collection.
+    /// Heading of a group that filters a collection, after the choice of <see cref="GroupMatchAny"/> or
+    /// <see cref="GroupMatchAll"/>. <c>{0}</c> is the name of the collection, with the relationships that lead to
+    /// it (<c>Customer › Orders</c>).
     /// </summary>
-    public string CollectionGroup { get; set; } = "Any {0} where";
+    public string CollectionGroup { get; set; } = "of {0} where";
+
+    /// <summary>Label of the choice between any item and every item of a collection.</summary>
+    public string GroupMatch { get; set; } = "How many of the items";
+
+    /// <summary>Choice for a collection group: it is enough for one item to match.</summary>
+    public string GroupMatchAny { get; set; } = "Any item";
+
+    /// <summary>Choice for a collection group: every item must match (an empty collection does).</summary>
+    public string GroupMatchAll { get; set; } = "Every item";
 
     /// <summary>Shown in an empty group.</summary>
     public string EmptyGroup { get; set; } = "Add a condition to this group.";
@@ -29,8 +40,26 @@ public sealed class FilterBuilderLabels
     /// <summary>Button that adds a group.</summary>
     public string AddGroup { get; set; } = "Add group";
 
-    /// <summary>Heading of the collections in the list of properties.</summary>
-    public string Collections { get; set; } = "Collections (any item where…)";
+    /// <summary>Heading of the properties in the list of choices.</summary>
+    public string Properties { get; set; } = "Properties";
+
+    /// <summary>Heading of the collections in the list of choices.</summary>
+    public string Collections { get; set; } = "Collections";
+
+    /// <summary>
+    /// Heading of the relationships (a related object, such as an order's customer) in the list of choices.
+    /// </summary>
+    public string Relationships { get; set; } = "Relationships";
+
+    /// <summary>
+    /// The choice of a relationship itself, to ask whether it is set. <c>{0}</c> is the relationship.
+    /// </summary>
+    public string RelationshipItself { get; set; } = "{0} itself";
+
+    /// <summary>
+    /// Button of a step in the path to a property, which goes back to that step. <c>{0}</c> is the step.
+    /// </summary>
+    public string PathBack { get; set; } = "Back to {0}";
 
     /// <summary>Button that removes a condition.</summary>
     public string RemoveCondition { get; set; } = "Remove condition";

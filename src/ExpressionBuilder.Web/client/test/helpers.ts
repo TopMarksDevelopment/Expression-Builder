@@ -162,7 +162,12 @@ export function addCondition(page: Page): HTMLElement {
 
 /** Chooses a property, then (optionally) an operation, then types or chooses the values. */
 export function fill(row: HTMLElement, field: string, operation?: string, ...values: string[]): void {
-    choose(one(row, "[data-eb-field]"), field);
+    // A property behind relationships (Home.Country.Name) is reached one relationship at a time
+    const names = field.split(".");
+
+    for (const name of names.slice(0, -1)) choose(one(row, "[data-eb-field]"), `relationship:${name}`);
+
+    choose(one(row, "[data-eb-field]"), names.at(-1)!);
 
     if (operation) choose(one(row, "[data-eb-operation]"), operation);
 

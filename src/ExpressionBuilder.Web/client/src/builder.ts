@@ -23,6 +23,12 @@ import type {
 /** Prefix of the value of a field choice that adds a collection group instead of choosing a property. */
 const COLLECTION_PREFIX = "collection:";
 
+/** Prefix of the value of a field choice that follows a relationship instead of choosing a property. */
+const RELATIONSHIP_PREFIX = "relationship:";
+
+/** The value of the choice of the relationship the path has followed to, to ask whether it is set. */
+const ITSELF = "@itself";
+
 const CHANGE_EVENT = "eb:change";
 
 /** What an incomplete condition gets, unless the view says otherwise with data-eb-invalid-class. */
@@ -31,6 +37,7 @@ const DEFAULT_INVALID_CLASS = "eb-invalid";
 /** What each template must contain, besides what the script needs to find in the view itself. */
 const REQUIRED_PARTS: Record<string, string[]> = {
     value: ['[data-eb-control="input"]', '[data-eb-control="select"]', "[data-eb-remove-value]"],
+    "path-step": ["[data-eb-path-step]"],
     "manipulator-group": ["[data-eb-manipulator-group-title]", "[data-eb-manipulator-group-items]"],
     manipulator: ["[data-eb-manipulator]", "[data-eb-manipulator-label]", "[data-eb-manipulator-args]"],
 };
@@ -41,6 +48,7 @@ interface Templates {
     condition: HTMLTemplateElement;
     value: HTMLTemplateElement;
     connector: HTMLTemplateElement;
+    pathStep: HTMLTemplateElement;
     manipulatorGroup: HTMLTemplateElement;
     manipulator: HTMLTemplateElement;
     manipulatorArg: HTMLTemplateElement;
@@ -66,6 +74,8 @@ export class FilterBuilder {
     readonly #templates: Templates;
     /** Whether the options panel of a condition is open. This is only about the display, so it is not posted. */
     readonly #optionsOpen = new WeakSet<ConditionNode>();
+    /** The relationships a condition's property is being looked for through. It is not posted until a property is chosen. */
+    readonly #paths = new WeakMap<ConditionNode, string>();
     readonly #elements = new Map<FilterNode, HTMLElement>();
     #showErrors = false;
     /** Where focus goes when the next render is done: this item, or failing that the add button of this group. */
@@ -86,6 +96,7 @@ export class FilterBuilder {
             condition: template(root, "condition"),
             value: template(root, "value"),
             connector: template(root, "connector"),
+            pathStep: template(root, "path-step"),
             manipulatorGroup: template(root, "manipulator-group"),
             manipulator: template(root, "manipulator"),
             manipulatorArg: template(root, "manipulator-arg"),
@@ -194,6 +205,7 @@ export class FilterBuilder {
         // Find this group's own parts before its items are added: an item can be a group too, with
         // parts of its own that would otherwise be found first.
         const title = query(element, "[data-eb-title]");
+        const groupMatch = query<HTMLSelectElement>(element, "[data-eb-group-match]");
         const remove = query<HTMLButtonElement>(element, "[data-eb-remove-group]");
         const items = query(element, "[data-eb-items]");
         const empty = query(element, "[data-eb-empty]");
@@ -215,6 +227,18 @@ export class FilterBuilder {
             : group.collection
               ? labels.collectionGroup.replace("{0}", collection?.label ?? group.collection)
               : labels.group;
+
+        // Whether any item or every item of a collection has to satisfy the group
+        groupMatch.hidden = !group.collection;
+        groupMatch.options[0]!.text = labels.groupMatchAny;
+        groupMatch.options[1]!.text = labels.groupMatchAll;
+        groupMatch.value = group.match ?? "Any";
+        groupMatch.addEventListener("change", () => {
+            if (groupMatch.value === "All") group.match = "All";
+            else delete group.match;
+
+            this.#changed();
+        });
 
         remove.hidden = !parent;
         remove.addEventListener("click", () => {
@@ -292,7 +316,7 @@ export class FilterBuilder {
 
         this.#elements.set(node, element);
 
-        this.#fillFields(fieldSelect, typeId, node);
+        this.#fillFields(element, typeId, node);
 
         // The items of a collection of plain values have nothing to choose between: the "property" is
         // the item itself, so there is nothing to ask
@@ -308,10 +332,11 @@ export class FilterBuilder {
         fieldSelect.setAttribute("aria-label", `${labels.field} ${number}`);
         fieldSelect.addEventListener("change", () => {
             const value = fieldSelect.value;
+            const prefix = this.#paths.get(node) ?? "";
 
             if (value.startsWith(COLLECTION_PREFIX)) {
                 // A collection is filtered in a group of its own, so this condition becomes one
-                const group = M.newGroup(value.slice(COLLECTION_PREFIX.length));
+                const group = M.newGroup(M.joinPath(prefix, value.slice(COLLECTION_PREFIX.length)));
                 const first = M.newCondition();
 
                 group.connector = node.connector ?? "And";
@@ -319,8 +344,13 @@ export class FilterBuilder {
                 parent.items[parent.items.indexOf(node)] = group;
                 this.#focusAfterRender = first;
                 this.#render();
+            } else if (value.startsWith(RELATIONSHIP_PREFIX)) {
+                // Follow the relationship: it moves into the path above, and the list now offers what it leads to
+                this.#followTo(element, node, typeId, M.joinPath(prefix, value.slice(RELATIONSHIP_PREFIX.length)));
             } else {
-                M.chooseField(this.schema, typeId, node, M.findField(this.schema, typeId, value));
+                const path = value === ITSELF ? prefix : M.joinPath(prefix, value);
+
+                M.chooseField(this.schema, typeId, node, value === "" ? undefined : M.findField(this.schema, typeId, path));
                 this.#fillCondition(element, node, typeId);
             }
 
@@ -368,28 +398,114 @@ export class FilterBuilder {
         return element;
     }
 
-    #fillFields(select: HTMLSelectElement, typeId: string, node: ConditionNode): void {
+    /**
+     * Fills in the choice of property, and the path of relationships above it that leads to the class the choice is
+     * about. The relationships already followed are in the path, so the list only ever shows one class.
+     */
+    #fillFields(element: HTMLElement, typeId: string, node: ConditionNode): void {
         const labels = this.schema.labels;
-        const fields = M.typeOf(this.schema, typeId).fields;
+        const select = query<HTMLSelectElement>(element, "[data-eb-field]");
+        const path = query(element, "[data-eb-path]");
+        const prefix = this.#paths.get(node) ?? M.pathOf(this.schema, typeId, node.field);
+        const steps = M.followRelationships(this.schema, typeId, prefix)?.steps ?? [];
+
+        this.#paths.set(node, prefix);
+
+        // The path: where the list is looking, each step a way back
+        path.replaceChildren();
+        path.hidden = steps.length === 0;
+
+        // The class being filtered comes first, so there is a way back to its own properties
+        const crumbs =
+            steps.length === 0
+                ? []
+                : [
+                      { label: M.typeOf(this.schema, typeId).label, to: "" },
+                      ...steps.map((step, index) => ({
+                          label: step.label,
+                          to: steps
+                              .slice(0, index + 1)
+                              .map((s) => s.path)
+                              .join("."),
+                      })),
+                  ];
+
+        crumbs.forEach((crumb, index) => {
+            const item = clone(this.#templates.pathStep);
+            const button = query<HTMLButtonElement>(item, "[data-eb-path-step]");
+            const current = index === crumbs.length - 1;
+
+            button.textContent = crumb.label;
+            button.disabled = current;
+
+            if (current) button.setAttribute("aria-current", "step");
+            else button.setAttribute("aria-label", labels.pathBack.replace("{0}", crumb.label));
+
+            button.addEventListener("click", () => {
+                this.#followTo(element, node, typeId, crumb.to);
+                this.#changed();
+            });
+
+            path.append(item);
+        });
+
+        // What can be chosen here
+        const choices = M.choicesAt(this.schema, typeId, prefix);
+        const properties: HTMLOptionElement[] = [];
+
+        if (choices?.itself)
+            properties.push(option(ITSELF, labels.relationshipItself.replace("{0}", steps.at(-1)?.label ?? "")));
+
+        for (const field of choices?.properties ?? []) properties.push(option(field.path, field.label));
+
+        const groups: [string, HTMLOptionElement[]][] = [
+            [labels.properties, properties],
+            [
+                labels.collections,
+                (choices?.collections ?? []).map((f) => option(COLLECTION_PREFIX + f.path, f.label)),
+            ],
+            [
+                labels.relationships,
+                (choices?.relationships ?? []).map((f) => option(RELATIONSHIP_PREFIX + f.path, f.label)),
+            ],
+        ];
+        const offered = groups.filter(([, options]) => options.length > 0);
 
         select.replaceChildren(option("", labels.fieldPlaceholder));
 
-        for (const field of fields.filter((f) => f.kind !== "collection" && f.operations.length > 0))
-            select.append(option(field.path, field.label));
+        for (const [heading, options] of offered) {
+            // A class with nothing but properties has no need of a heading
+            if (offered.length === 1) {
+                select.append(...options);
 
-        const collections = fields.filter((f) => f.kind === "collection" && f.itemType);
+                continue;
+            }
 
-        if (collections.length > 0) {
             const group = document.createElement("optgroup");
 
-            group.label = labels.collections;
-
-            for (const field of collections) group.append(option(COLLECTION_PREFIX + field.path, field.label));
-
+            group.label = heading;
+            group.append(...options);
             select.append(group);
         }
 
-        select.value = M.findField(this.schema, typeId, node.field) ? node.field : "";
+        const chosen = M.findField(this.schema, typeId, node.field);
+        const value =
+            chosen && M.pathOf(this.schema, typeId, node.field) === prefix
+                ? chosen.kind === "object"
+                    ? ITSELF
+                    : (M.splitPath(node.field).at(-1) ?? "")
+                : "";
+
+        select.value = [...select.options].some((o) => o.value === value) ? value : "";
+    }
+
+    /** Moves the path to a relationship (or back up it), which leaves no property chosen. */
+    #followTo(element: HTMLElement, node: ConditionNode, typeId: string, path: string): void {
+        this.#paths.set(node, path);
+        M.chooseField(this.schema, typeId, node, undefined);
+        this.#fillFields(element, typeId, node);
+        this.#fillCondition(element, node, typeId);
+        query<HTMLSelectElement>(element, "[data-eb-field]").focus();
     }
 
     /** Brings the operation, values and options of a condition in line with its property and operation. */

@@ -87,6 +87,10 @@ function readNode(value: unknown, schema: Schema | undefined): FilterNode | null
         const group = newGroup(asString(value.collection) || undefined);
 
         group.connector = readConnector(value.connector);
+
+        // Any is what a group on a collection means without one, so only All is kept
+        if (group.collection && value.match === "All") group.match = "All";
+
         group.items = (Array.isArray(value.items) ? value.items : [])
             .map((item) => readNode(item, schema))
             .filter((n): n is FilterNode => n !== null);
@@ -145,8 +149,99 @@ export function typeOf(schema: Schema, typeId: string): TypeSchema {
     return type;
 }
 
+const LABEL_SEPARATOR = " › ";
+
+/** The names in a path: `Home.Country.Name` is three. */
+export function splitPath(path: string): string[] {
+    return path === "" ? [] : path.split(".");
+}
+
+export function joinPath(prefix: string, name: string): string {
+    return prefix === "" ? name : `${prefix}.${name}`;
+}
+
+/**
+ * Follows a path of relationships from a type. Only relationships the schema offers are followed, as on the
+ * server.
+ * @returns the type it leads to and the relationships on the way, or undefined if the schema doesn't offer it
+ */
+export function followRelationships(
+    schema: Schema,
+    typeId: string,
+    path: string,
+): { typeId: string; steps: FieldSchema[] } | undefined {
+    const steps: FieldSchema[] = [];
+    let current = typeId;
+
+    for (const name of splitPath(path)) {
+        const step = schema.types[current]?.fields.find((f) => f.path === name);
+
+        if (step?.kind !== "object" || !step.itemType) return undefined;
+
+        steps.push(step);
+        current = step.itemType;
+    }
+
+    return { typeId: current, steps };
+}
+
+/**
+ * Finds a property, relationship or collection by its path from a type (`Name`, `Birth.Country`). A path
+ * through relationships comes back with the whole path and a label that shows the way.
+ */
 export function findField(schema: Schema, typeId: string, path: string): FieldSchema | undefined {
-    return schema.types[typeId]?.fields.find((f) => f.path === path);
+    if (path === "") return schema.types[typeId]?.fields.find((f) => f.path === "");
+
+    const names = splitPath(path);
+
+    if (names.length > schema.maxNavigationDepth || names.includes("")) return undefined;
+
+    const lead = followRelationships(schema, typeId, names.slice(0, -1).join("."));
+    const field = lead && schema.types[lead.typeId]?.fields.find((f) => f.path === names.at(-1));
+
+    if (!lead || !field) return undefined;
+
+    return names.length === 1
+        ? field
+        : { ...field, path, label: [...lead.steps.map((s) => s.label), field.label].join(LABEL_SEPARATOR) };
+}
+
+/** What can be chosen at one step of a path. */
+export interface FieldChoices {
+    /** A relationship that has been followed, to ask whether it is set */
+    itself?: FieldSchema;
+    properties: FieldSchema[];
+    collections: FieldSchema[];
+    relationships: FieldSchema[];
+}
+
+/**
+ * What to offer after the relationships in `prefix` (empty for the type itself): its own properties, its
+ * collections, and the relationships that lead on - as far as the schema's limit allows.
+ */
+export function choicesAt(schema: Schema, typeId: string, prefix: string): FieldChoices | undefined {
+    const lead = followRelationships(schema, typeId, prefix);
+
+    if (!lead) return undefined;
+
+    const itself = prefix === "" ? undefined : findField(schema, typeId, prefix);
+    const room = splitPath(prefix).length < schema.maxNavigationDepth;
+    const fields = room ? (schema.types[lead.typeId]?.fields ?? []) : [];
+
+    return {
+        itself: itself && itself.operations.length > 0 ? itself : undefined,
+        properties: fields.filter((f) => f.kind !== "collection" && f.kind !== "object" && f.operations.length > 0),
+        collections: fields.filter((f) => f.kind === "collection" && f.itemType),
+        relationships: fields.filter((f) => f.kind === "object" && f.itemType),
+    };
+}
+
+/** The relationships a condition's property is reached through (empty if it is a property of the type itself). */
+export function pathOf(schema: Schema, typeId: string, field: string): string {
+    const found = field === "" ? undefined : findField(schema, typeId, field);
+
+    // A relationship that is being asked about is the step the picker is at
+    return found?.kind === "object" ? field : splitPath(field).slice(0, -1).join(".");
 }
 
 export function findOperation(schema: Schema, name: string): OperationSchema | undefined {
@@ -171,7 +266,7 @@ export function operationsFor(schema: Schema, field: FieldSchema | undefined): O
     return schema.operations.filter((o) => field.operations.includes(o.name));
 }
 
-/** The type that a collection group filters, or the type it is inside if it is not for a collection. */
+/** The type that a collection group filters (the collection can be behind relationships), or the type it is inside if it is not for a collection. */
 export function typeIdOf(schema: Schema, parentTypeId: string, group: GroupNode): string {
     if (!group.collection) return parentTypeId;
 
@@ -361,7 +456,9 @@ function describeGroup(schema: Schema, group: GroupNode, typeId: string): string
     if (!group.collection) return `(${inner})`;
 
     const field = findField(schema, typeId, group.collection);
-    const heading = schema.labels.collectionGroup.replace("{0}", field?.label ?? group.collection);
+    const labels = schema.labels;
+    const which = group.match === "All" ? labels.groupMatchAll : labels.groupMatchAny;
+    const heading = `${which} ${labels.collectionGroup.replace("{0}", field?.label ?? group.collection)}`;
 
     return `${heading.toLowerCase()} (${inner})`;
 }

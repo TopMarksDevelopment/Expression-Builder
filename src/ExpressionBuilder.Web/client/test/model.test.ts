@@ -317,7 +317,7 @@ suite("describing a filter", () => {
             { type: "group", collection: "Contacts", items: [condition("Type", "Equal", ["Email"])] },
         ]);
 
-        assert.equal(text, '(Active equals "Yes") and any contacts where (Type equals "Email")');
+        assert.equal(text, '(Active equals "Yes") and any item of contacts where (Type equals "Email")');
     });
 
     it("skips what is unfinished, and doesn't leave a dangling connector", () => {

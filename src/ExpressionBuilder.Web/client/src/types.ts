@@ -30,7 +30,10 @@ export interface EnumOption {
 }
 
 export interface FieldSchema {
-    /** `Name`, `Birth.Country`; empty for the item of a collection of plain values */
+    /**
+     * The name of the property (`Name`); empty for the item of a collection of plain values. A path through
+     * relationships (`Birth.Country`) is made of these, and is what a condition posts.
+     */
     path: string;
     label: string;
     kind: FieldKind;
@@ -39,7 +42,7 @@ export interface FieldSchema {
     input: string;
     step?: string;
     options?: EnumOption[];
-    /** For collections, the id of the type of the items */
+    /** For a collection, the id of the type of its items; for a relationship (`object`), the type it leads to */
     itemType?: string;
     /** The names of the operations that suit the field */
     operations: string[];
@@ -82,10 +85,17 @@ export interface Labels {
     conditions: string;
     group: string;
     collectionGroup: string;
+    groupMatch: string;
+    groupMatchAny: string;
+    groupMatchAll: string;
     emptyGroup: string;
     addCondition: string;
     addGroup: string;
+    properties: string;
     collections: string;
+    relationships: string;
+    relationshipItself: string;
+    pathBack: string;
     removeCondition: string;
     removeGroup: string;
     and: string;
@@ -122,6 +132,8 @@ export interface Labels {
 
 export interface Schema {
     root: string;
+    /** How many names a path can have when it follows relationships */
+    maxNavigationDepth: number;
     types: Record<string, TypeSchema>;
     operations: OperationSchema[];
     manipulators: ManipulatorSchema[];
@@ -147,8 +159,10 @@ export interface ConditionNode {
 export interface GroupNode {
     type: "group";
     connector?: Connector;
-    /** The collection whose items the group filters, if it filters one */
+    /** The collection whose items the group filters, if it filters one: a name, or a path such as `Customer.Orders` */
     collection?: string;
+    /** For a collection: whether `Any` (the default) or `All` of the items must satisfy the group */
+    match?: Matches;
     items: FilterNode[];
 }
 

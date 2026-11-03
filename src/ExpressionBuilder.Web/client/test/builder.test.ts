@@ -66,9 +66,9 @@ describe("starting", () => {
         assert.equal(all(page.root, "[data-eb-group]").length, 3);
         assert.deepEqual(
             all(page.root, "[data-eb-title]").map((t) => t.textContent),
-            ["Conditions", "Group", "Any Contacts where"],
+            ["Conditions", "Group", "of Contacts where"],
         );
-        assert.equal(one(page.root, "[data-eb-summary]").textContent, 'Name contains "bike" or (Age is between "20" and "30") and any contacts where (Value starts with "0")');
+        assert.equal(one(page.root, "[data-eb-summary]").textContent, 'Name contains "bike" or (Age is between "20" and "30") and any item of contacts where (Value starts with "0")');
         assert.deepEqual(
             posted(page),
             doc(
@@ -87,18 +87,31 @@ describe("starting", () => {
 });
 
 describe("choosing a property, a condition and a value", () => {
-    it("offers the properties, and the collections in a group of their own", () => {
+    it("offers the properties, the collections and the relationships in groups of their own", () => {
         const page = render();
         const select = one(addCondition(page), "[data-eb-field]");
         const texts = optionTexts(select);
+        const groups = [...select.querySelectorAll("optgroup")].map((g) => g.label);
 
         assert.equal(texts[0], schema.labels.fieldPlaceholder);
-        assert.ok(texts.includes("Name"));
-        assert.ok(texts.includes("Home address › Postcode"));
-        assert.ok(!select.querySelector(":scope > option[value='collection:Contacts']"), "collections are not among the plain properties");
+        assert.deepEqual(groups, [schema.labels.properties, schema.labels.collections, schema.labels.relationships]);
+        assert.ok(select.querySelector("optgroup > option[value='Name']"));
         assert.ok(select.querySelector("optgroup > option[value='collection:Contacts']"));
-        assert.equal(select.querySelector("optgroup")?.label, schema.labels.collections);
+        assert.ok(select.querySelector("optgroup > option[value='relationship:Home']"));
+        assert.ok(!select.querySelector(":scope > option[value='Name']"), "properties are in their group");
+        assert.ok(!texts.includes("Home address › Postcode"), "what a relationship leads to is not mixed in");
+        assert.ok(!texts.includes("Postcode"));
         assert.ok(!texts.includes("Secret"));
+    });
+
+    it("has no headings when a class has nothing but properties", () => {
+        const page = render();
+
+        choose(one(addCondition(page), "[data-eb-field]"), "collection:Tags");
+
+        const select = one(conditions(page)[0]!, "[data-eb-field]");
+
+        assert.equal(select.querySelectorAll("optgroup").length, 0);
     });
 
     it("selects the first suitable condition, so only a value is left to type", () => {
@@ -372,7 +385,7 @@ describe("joining, grouping and removing", () => {
         assert.equal(conditions(page).length, 1);
         assert.deepEqual(
             all(page.root, "[data-eb-title]").map((t) => t.textContent),
-            ["Conditions", "Any Contacts where"],
+            ["Conditions", "of Contacts where"],
         );
         assert.equal(posted(page).root.items[0].collection, "Contacts");
 
@@ -385,7 +398,7 @@ describe("joining, grouping and removing", () => {
         fill(conditions(page)[0]!, "Type", "Equal", "Email");
 
         assert.deepEqual(posted(page).root.items[0].items, [condition("Type", "Equal", ["Email"])]);
-        assert.equal(one(page.root, "[data-eb-summary]").textContent, 'any contacts where (Type equals "Email")');
+        assert.equal(one(page.root, "[data-eb-summary]").textContent, 'any item of contacts where (Type equals "Email")');
     });
 
     it("keeps the connector when a condition becomes a collection group", () => {
@@ -425,7 +438,9 @@ describe("joining, grouping and removing", () => {
         const page = render();
 
         choose(one(addCondition(page), "[data-eb-field]"), "collection:Contacts");
-        choose(one(conditions(page)[0]!, "[data-eb-field]"), "collection:Owner.Contacts");
+        // The collection of another object: the object is followed first, and the group is on the way to it
+        choose(one(conditions(page)[0]!, "[data-eb-field]"), "relationship:Owner");
+        choose(one(conditions(page)[0]!, "[data-eb-field]"), "collection:Contacts");
 
         const [outer, inner] = posted(page).root.items[0].items;
 
@@ -434,7 +449,7 @@ describe("joining, grouping and removing", () => {
         assert.equal(inner, undefined);
         assert.deepEqual(
             all(page.root, "[data-eb-title]").map((t) => t.textContent),
-            ["Conditions", "Any Contacts where", "Any Owner › Contacts where"],
+            ["Conditions", "of Contacts where", "of Owner › Contacts where"],
         );
     });
 });

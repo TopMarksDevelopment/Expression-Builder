@@ -47,6 +47,7 @@ function readNode(value, schema) {
   if (value.type === "group") {
     const group = newGroup(asString(value.collection) || void 0);
     group.connector = readConnector(value.connector);
+    if (group.collection && value.match === "All") group.match = "All";
     group.items = (Array.isArray(value.items) ? value.items : []).map((item) => readNode(item, schema)).filter((n) => n !== null);
     return group;
   }
@@ -79,8 +80,49 @@ function typeOf(schema, typeId) {
   if (!type) throw new Error(`The schema has no type "${typeId}"`);
   return type;
 }
+var LABEL_SEPARATOR = " \u203A ";
+function splitPath(path) {
+  return path === "" ? [] : path.split(".");
+}
+function joinPath(prefix, name) {
+  return prefix === "" ? name : `${prefix}.${name}`;
+}
+function followRelationships(schema, typeId, path) {
+  const steps = [];
+  let current = typeId;
+  for (const name of splitPath(path)) {
+    const step = schema.types[current]?.fields.find((f) => f.path === name);
+    if (step?.kind !== "object" || !step.itemType) return void 0;
+    steps.push(step);
+    current = step.itemType;
+  }
+  return { typeId: current, steps };
+}
 function findField(schema, typeId, path) {
-  return schema.types[typeId]?.fields.find((f) => f.path === path);
+  if (path === "") return schema.types[typeId]?.fields.find((f) => f.path === "");
+  const names = splitPath(path);
+  if (names.length > schema.maxNavigationDepth || names.includes("")) return void 0;
+  const lead = followRelationships(schema, typeId, names.slice(0, -1).join("."));
+  const field = lead && schema.types[lead.typeId]?.fields.find((f) => f.path === names.at(-1));
+  if (!lead || !field) return void 0;
+  return names.length === 1 ? field : { ...field, path, label: [...lead.steps.map((s) => s.label), field.label].join(LABEL_SEPARATOR) };
+}
+function choicesAt(schema, typeId, prefix) {
+  const lead = followRelationships(schema, typeId, prefix);
+  if (!lead) return void 0;
+  const itself = prefix === "" ? void 0 : findField(schema, typeId, prefix);
+  const room = splitPath(prefix).length < schema.maxNavigationDepth;
+  const fields = room ? schema.types[lead.typeId]?.fields ?? [] : [];
+  return {
+    itself: itself && itself.operations.length > 0 ? itself : void 0,
+    properties: fields.filter((f) => f.kind !== "collection" && f.kind !== "object" && f.operations.length > 0),
+    collections: fields.filter((f) => f.kind === "collection" && f.itemType),
+    relationships: fields.filter((f) => f.kind === "object" && f.itemType)
+  };
+}
+function pathOf(schema, typeId, field) {
+  const found = field === "" ? void 0 : findField(schema, typeId, field);
+  return found?.kind === "object" ? field : splitPath(field).slice(0, -1).join(".");
 }
 function findOperation(schema, name) {
   return schema.operations.find((o) => o.name === name);
@@ -216,7 +258,9 @@ function describeGroup(schema, group, typeId) {
   if (!inner) return "";
   if (!group.collection) return `(${inner})`;
   const field = findField(schema, typeId, group.collection);
-  const heading = schema.labels.collectionGroup.replace("{0}", field?.label ?? group.collection);
+  const labels = schema.labels;
+  const which = group.match === "All" ? labels.groupMatchAll : labels.groupMatchAny;
+  const heading = `${which} ${labels.collectionGroup.replace("{0}", field?.label ?? group.collection)}`;
   return `${heading.toLowerCase()} (${inner})`;
 }
 function describeCondition(schema, condition, typeId) {
@@ -241,10 +285,13 @@ function countConditions(group) {
 
 // src/builder.ts
 var COLLECTION_PREFIX = "collection:";
+var RELATIONSHIP_PREFIX = "relationship:";
+var ITSELF = "@itself";
 var CHANGE_EVENT = "eb:change";
 var DEFAULT_INVALID_CLASS = "eb-invalid";
 var REQUIRED_PARTS = {
   value: ['[data-eb-control="input"]', '[data-eb-control="select"]', "[data-eb-remove-value]"],
+  "path-step": ["[data-eb-path-step]"],
   "manipulator-group": ["[data-eb-manipulator-group-title]", "[data-eb-manipulator-group-items]"],
   manipulator: ["[data-eb-manipulator]", "[data-eb-manipulator-label]", "[data-eb-manipulator-args]"]
 };
@@ -260,6 +307,8 @@ var FilterBuilder = class _FilterBuilder {
   #templates;
   /** Whether the options panel of a condition is open. This is only about the display, so it is not posted. */
   #optionsOpen = /* @__PURE__ */ new WeakSet();
+  /** The relationships a condition's property is being looked for through. It is not posted until a property is chosen. */
+  #paths = /* @__PURE__ */ new WeakMap();
   #elements = /* @__PURE__ */ new Map();
   #showErrors = false;
   /** Where focus goes when the next render is done: this item, or failing that the add button of this group. */
@@ -279,6 +328,7 @@ var FilterBuilder = class _FilterBuilder {
       condition: template(root, "condition"),
       value: template(root, "value"),
       connector: template(root, "connector"),
+      pathStep: template(root, "path-step"),
       manipulatorGroup: template(root, "manipulator-group"),
       manipulator: template(root, "manipulator"),
       manipulatorArg: template(root, "manipulator-arg")
@@ -361,6 +411,7 @@ var FilterBuilder = class _FilterBuilder {
     const labels = this.schema.labels;
     const element = clone(this.#templates.group);
     const title = query(element, "[data-eb-title]");
+    const groupMatch = query(element, "[data-eb-group-match]");
     const remove = query(element, "[data-eb-remove-group]");
     const items = query(element, "[data-eb-items]");
     const empty = query(element, "[data-eb-empty]");
@@ -372,6 +423,15 @@ var FilterBuilder = class _FilterBuilder {
     element.setAttribute("aria-labelledby", title.id);
     const collection = parent && group.collection ? findField(this.schema, parent.typeId, group.collection) : void 0;
     title.textContent = !parent ? labels.conditions : group.collection ? labels.collectionGroup.replace("{0}", collection?.label ?? group.collection) : labels.group;
+    groupMatch.hidden = !group.collection;
+    groupMatch.options[0].text = labels.groupMatchAny;
+    groupMatch.options[1].text = labels.groupMatchAll;
+    groupMatch.value = group.match ?? "Any";
+    groupMatch.addEventListener("change", () => {
+      if (groupMatch.value === "All") group.match = "All";
+      else delete group.match;
+      this.#changed();
+    });
     remove.hidden = !parent;
     remove.addEventListener("click", () => {
       if (!parent) return;
@@ -427,7 +487,7 @@ var FilterBuilder = class _FilterBuilder {
     const labels = this.schema.labels;
     const number = (parent.items.indexOf(node) + 1).toString();
     this.#elements.set(node, element);
-    this.#fillFields(fieldSelect, typeId, node);
+    this.#fillFields(element, typeId, node);
     const fields = typeOf(this.schema, typeId).fields;
     const implicitField = fields.length === 1 && fields[0].path === "" ? fields[0] : void 0;
     if (implicitField) {
@@ -437,16 +497,20 @@ var FilterBuilder = class _FilterBuilder {
     fieldSelect.setAttribute("aria-label", `${labels.field} ${number}`);
     fieldSelect.addEventListener("change", () => {
       const value = fieldSelect.value;
+      const prefix = this.#paths.get(node) ?? "";
       if (value.startsWith(COLLECTION_PREFIX)) {
-        const group = newGroup(value.slice(COLLECTION_PREFIX.length));
+        const group = newGroup(joinPath(prefix, value.slice(COLLECTION_PREFIX.length)));
         const first = newCondition();
         group.connector = node.connector ?? "And";
         group.items.push(first);
         parent.items[parent.items.indexOf(node)] = group;
         this.#focusAfterRender = first;
         this.#render();
+      } else if (value.startsWith(RELATIONSHIP_PREFIX)) {
+        this.#followTo(element, node, typeId, joinPath(prefix, value.slice(RELATIONSHIP_PREFIX.length)));
       } else {
-        chooseField(this.schema, typeId, node, findField(this.schema, typeId, value));
+        const path = value === ITSELF ? prefix : joinPath(prefix, value);
+        chooseField(this.schema, typeId, node, value === "" ? void 0 : findField(this.schema, typeId, path));
         this.#fillCondition(element, node, typeId);
       }
       this.#changed();
@@ -484,20 +548,79 @@ var FilterBuilder = class _FilterBuilder {
     this.#fillCondition(element, node, typeId);
     return element;
   }
-  #fillFields(select, typeId, node) {
+  /**
+   * Fills in the choice of property, and the path of relationships above it that leads to the class the choice is
+   * about. The relationships already followed are in the path, so the list only ever shows one class.
+   */
+  #fillFields(element, typeId, node) {
     const labels = this.schema.labels;
-    const fields = typeOf(this.schema, typeId).fields;
+    const select = query(element, "[data-eb-field]");
+    const path = query(element, "[data-eb-path]");
+    const prefix = this.#paths.get(node) ?? pathOf(this.schema, typeId, node.field);
+    const steps = followRelationships(this.schema, typeId, prefix)?.steps ?? [];
+    this.#paths.set(node, prefix);
+    path.replaceChildren();
+    path.hidden = steps.length === 0;
+    const crumbs = steps.length === 0 ? [] : [
+      { label: typeOf(this.schema, typeId).label, to: "" },
+      ...steps.map((step, index) => ({
+        label: step.label,
+        to: steps.slice(0, index + 1).map((s) => s.path).join(".")
+      }))
+    ];
+    crumbs.forEach((crumb, index) => {
+      const item = clone(this.#templates.pathStep);
+      const button = query(item, "[data-eb-path-step]");
+      const current = index === crumbs.length - 1;
+      button.textContent = crumb.label;
+      button.disabled = current;
+      if (current) button.setAttribute("aria-current", "step");
+      else button.setAttribute("aria-label", labels.pathBack.replace("{0}", crumb.label));
+      button.addEventListener("click", () => {
+        this.#followTo(element, node, typeId, crumb.to);
+        this.#changed();
+      });
+      path.append(item);
+    });
+    const choices = choicesAt(this.schema, typeId, prefix);
+    const properties = [];
+    if (choices?.itself)
+      properties.push(option(ITSELF, labels.relationshipItself.replace("{0}", steps.at(-1)?.label ?? "")));
+    for (const field of choices?.properties ?? []) properties.push(option(field.path, field.label));
+    const groups = [
+      [labels.properties, properties],
+      [
+        labels.collections,
+        (choices?.collections ?? []).map((f) => option(COLLECTION_PREFIX + f.path, f.label))
+      ],
+      [
+        labels.relationships,
+        (choices?.relationships ?? []).map((f) => option(RELATIONSHIP_PREFIX + f.path, f.label))
+      ]
+    ];
+    const offered = groups.filter(([, options]) => options.length > 0);
     select.replaceChildren(option("", labels.fieldPlaceholder));
-    for (const field of fields.filter((f) => f.kind !== "collection" && f.operations.length > 0))
-      select.append(option(field.path, field.label));
-    const collections = fields.filter((f) => f.kind === "collection" && f.itemType);
-    if (collections.length > 0) {
+    for (const [heading, options] of offered) {
+      if (offered.length === 1) {
+        select.append(...options);
+        continue;
+      }
       const group = document.createElement("optgroup");
-      group.label = labels.collections;
-      for (const field of collections) group.append(option(COLLECTION_PREFIX + field.path, field.label));
+      group.label = heading;
+      group.append(...options);
       select.append(group);
     }
-    select.value = findField(this.schema, typeId, node.field) ? node.field : "";
+    const chosen = findField(this.schema, typeId, node.field);
+    const value = chosen && pathOf(this.schema, typeId, node.field) === prefix ? chosen.kind === "object" ? ITSELF : splitPath(node.field).at(-1) ?? "" : "";
+    select.value = [...select.options].some((o) => o.value === value) ? value : "";
+  }
+  /** Moves the path to a relationship (or back up it), which leaves no property chosen. */
+  #followTo(element, node, typeId, path) {
+    this.#paths.set(node, path);
+    chooseField(this.schema, typeId, node, void 0);
+    this.#fillFields(element, typeId, node);
+    this.#fillCondition(element, node, typeId);
+    query(element, "[data-eb-field]").focus();
   }
   /** Brings the operation, values and options of a condition in line with its property and operation. */
   #fillCondition(element, node, typeId) {
@@ -813,6 +936,7 @@ if (typeof document !== "undefined") {
 export {
   FilterBuilder,
   VERSION,
+  choicesAt,
   chooseField,
   chooseOperation,
   countConditions,
@@ -823,16 +947,20 @@ export {
   findManipulator,
   findOperation,
   fitValues,
+  followRelationships,
   hasAdvancedOptions,
   hasManipulator,
   initialise,
+  joinPath,
   manipulatorsFor,
   minimumValues,
   newCondition,
   newGroup,
   operationsFor,
   parseDocument,
+  pathOf,
   serialise,
+  splitPath,
   toggleManipulator,
   typeIdOf,
   typeOf
