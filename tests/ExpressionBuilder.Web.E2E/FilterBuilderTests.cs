@@ -270,6 +270,106 @@ public class FilterBuilderTests(SampleApp app)
     }
 
     [Theory(
+        DisplayName = "A very long property name stays inside its cell instead of covering the condition list"
+    )]
+    [MemberData(nameof(Browsers))]
+    public async Task LongPropertyNameDoesNotOverflow(string engine)
+    {
+        foreach (var width in new[] { 1100, 390 })
+        {
+            var page = await app.OpenAsync(
+                engine,
+                "/Products",
+                viewport: new ViewportSize { Width = width, Height = 800 }
+            );
+            var row = await new Builder(page).AddConditionAsync();
+
+            // A select is as wide as its longest option, so one long name is all it takes
+            await row.Locator("[data-eb-field]")
+                .EvaluateAsync(
+                    "s => s.add(new Option('A really quite long property name that goes on and on and on (Total of all things)', 'long'))"
+                );
+
+            var field = await row.Locator("[data-eb-field]").BoundingBoxAsync();
+            var picker = await row.Locator("[data-eb-picker]")
+                .BoundingBoxAsync();
+            var operation = await row.Locator("[data-eb-operation]")
+                .BoundingBoxAsync();
+
+            Assert.NotNull(field);
+            Assert.NotNull(picker);
+            Assert.NotNull(operation);
+            Assert.True(
+                field.Width <= picker.Width + 0.5,
+                $"{engine} at {width}px: the property list is {field.Width}px wide in a cell {picker.Width}px wide"
+            );
+
+            // Side by side, the property list must end before the condition list starts
+            if (Math.Abs(field.Y - operation.Y) < field.Height)
+                Assert.True(
+                    field.X + field.Width <= operation.X + 0.5,
+                    $"{engine} at {width}px: the property list covers the condition list"
+                );
+
+            Assert.False(
+                await page.EvaluateAsync<bool>(
+                    "() => document.documentElement.scrollWidth > window.innerWidth"
+                ),
+                $"{engine} at {width}px: the page scrolls sideways"
+            );
+        }
+    }
+
+    [Theory(
+        DisplayName = "At phone and tablet widths every control stays inside the builder"
+    )]
+    [MemberData(nameof(Browsers))]
+    public async Task FitsNarrowScreens(string engine)
+    {
+        foreach (var width in new[] { 390, 768 })
+        {
+            var page = await app.OpenAsync(
+                engine,
+                "/Products?preset=true",
+                viewport: new ViewportSize { Width = width, Height = 800 }
+            );
+            await Expect(page.Locator("[data-eb-condition]").First)
+                .ToBeVisibleAsync();
+
+            // A list sized to its longest option, as in a real app with long names
+            await page.Locator("[data-eb-operation]")
+                .First.EvaluateAsync(
+                    "s => s.add(new Option('A really quite long condition name that goes on and on', 'long'))"
+                );
+
+            var outside = await page.EvaluateAsync<string[]>(
+                """
+                () => {
+                    const box = document.querySelector('.eb').getBoundingClientRect();
+                    return [...document.querySelectorAll('.eb select, .eb input, .eb button')]
+                        .filter(e => {
+                            const r = e.getBoundingClientRect();
+                            return r.width > 0 && (r.right > box.right + 1 || r.left < box.left - 1);
+                        })
+                        .map(e => e.className);
+                }
+                """
+            );
+
+            Assert.True(
+                outside.Length == 0,
+                $"{engine} at {width}px: {string.Join(", ", outside)} stick out of the builder"
+            );
+            Assert.False(
+                await page.EvaluateAsync<bool>(
+                    "() => document.documentElement.scrollWidth > window.innerWidth"
+                ),
+                $"{engine} at {width}px: the page scrolls sideways"
+            );
+        }
+    }
+
+    [Theory(
         DisplayName = "An incomplete filter is not posted, and says what is missing"
     )]
     [MemberData(nameof(Browsers))]
