@@ -449,7 +449,36 @@ describe("joining, grouping and removing", () => {
         assert.equal(inner, undefined);
         assert.deepEqual(
             all(page.root, "[data-eb-title]").map((t) => t.textContent),
-            ["Conditions", "of Contacts where", "of Owner › Contacts where"],
+            ["Conditions", "of Contacts where", "of Contacts › Owner › Contacts where"],
+        );
+    });
+
+    it("keeps the way to a collection in a plain group inside another collection", () => {
+        const page = render(
+            doc({
+                type: "group",
+                connector: "And",
+                collection: "Contacts",
+                items: [
+                    {
+                        type: "group",
+                        connector: "And",
+                        items: [
+                            {
+                                type: "group",
+                                connector: "And",
+                                collection: "Owner.Contacts",
+                                items: [condition("Value", "StartsWith", ["0"])],
+                            },
+                        ],
+                    },
+                ],
+            }),
+        );
+
+        assert.deepEqual(
+            all(page.root, "[data-eb-title]").map((t) => t.textContent),
+            ["Conditions", "of Contacts where", "Group", "of Contacts › Owner › Contacts where"],
         );
     });
 });

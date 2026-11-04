@@ -57,6 +57,8 @@ interface Templates {
 interface Parent {
     group: GroupNode;
     typeId: string;
+    /** The collections the group is inside, outermost first, as a label (`Contacts › Owner › Contacts`); empty if it is in none */
+    trail: string;
 }
 
 const instances = new WeakMap<HTMLElement, FilterBuilder>();
@@ -219,13 +221,18 @@ export class FilterBuilder {
         title.id = this.#id("title");
         element.setAttribute("aria-labelledby", title.id);
 
+        // A group on a collection says which one, with the collections and relationships that lead to it, so a
+        // collection inside a collection reads as part of the one around it. A plain group is still about the same items.
         const collection =
             parent && group.collection ? M.findField(this.schema, parent.typeId, group.collection) : undefined;
+        const trail = group.collection
+            ? [parent?.trail, collection?.label ?? group.collection].filter(Boolean).join(M.LABEL_SEPARATOR)
+            : (parent?.trail ?? "");
 
         title.textContent = !parent
             ? labels.conditions
             : group.collection
-              ? labels.collectionGroup.replace("{0}", collection?.label ?? group.collection)
+              ? labels.collectionGroup.replace("{0}", trail)
               : labels.group;
 
         // Whether any item or every item of a collection has to satisfy the group
@@ -257,7 +264,7 @@ export class FilterBuilder {
 
             li.append(
                 item.type === "group"
-                    ? this.#renderGroup(item, M.typeIdOf(this.schema, typeId, item), { group, typeId })
+                    ? this.#renderGroup(item, M.typeIdOf(this.schema, typeId, item), { group, typeId, trail })
                     : this.#renderCondition(item, typeId, group),
             );
 

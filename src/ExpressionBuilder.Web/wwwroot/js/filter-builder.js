@@ -422,7 +422,8 @@ var FilterBuilder = class _FilterBuilder {
     title.id = this.#id("title");
     element.setAttribute("aria-labelledby", title.id);
     const collection = parent && group.collection ? findField(this.schema, parent.typeId, group.collection) : void 0;
-    title.textContent = !parent ? labels.conditions : group.collection ? labels.collectionGroup.replace("{0}", collection?.label ?? group.collection) : labels.group;
+    const trail = group.collection ? [parent?.trail, collection?.label ?? group.collection].filter(Boolean).join(LABEL_SEPARATOR) : parent?.trail ?? "";
+    title.textContent = !parent ? labels.conditions : group.collection ? labels.collectionGroup.replace("{0}", trail) : labels.group;
     groupMatch.hidden = !group.collection;
     groupMatch.options[0].text = labels.groupMatchAny;
     groupMatch.options[1].text = labels.groupMatchAll;
@@ -444,7 +445,7 @@ var FilterBuilder = class _FilterBuilder {
     group.items.forEach((item, index) => {
       const li = clone(this.#templates.item);
       li.append(
-        item.type === "group" ? this.#renderGroup(item, typeIdOf(this.schema, typeId, item), { group, typeId }) : this.#renderCondition(item, typeId, group)
+        item.type === "group" ? this.#renderGroup(item, typeIdOf(this.schema, typeId, item), { group, typeId, trail }) : this.#renderCondition(item, typeId, group)
       );
       if (index < group.items.length - 1) li.append(this.#renderConnector(item));
       items.append(li);
@@ -935,6 +936,7 @@ if (typeof document !== "undefined") {
 }
 export {
   FilterBuilder,
+  LABEL_SEPARATOR,
   VERSION,
   choicesAt,
   chooseField,

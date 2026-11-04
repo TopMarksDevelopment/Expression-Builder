@@ -149,7 +149,8 @@ export function typeOf(schema: Schema, typeId: string): TypeSchema {
     return type;
 }
 
-const LABEL_SEPARATOR = " › ";
+/** What goes between the steps of a path in a label (`Customer › Orders`). */
+export const LABEL_SEPARATOR = " › ";
 
 /** The names in a path: `Home.Country.Name` is three. */
 export function splitPath(path: string): string[] {

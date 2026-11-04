@@ -136,7 +136,7 @@ var result = search.Filter.Build<Product>(options.Value);
   list (`Order › Customer ›`) and the list then offers what a customer has, so a chain of related objects reads as one
   choice. Each earlier step of the path takes you back to it, and "Customer itself" asks whether the relationship is set.
 - **Pick a collection** to turn the row into a group that filters the *items* of that collection ("Any item of Reviews
-  where…"). A collection reached through relationships shows the way (`Customer › Orders`). The group's switch says whether
+  where…"). A collection reached through relationships shows the way (`Customer › Orders`), and one inside another collection's group shows the whole chain (`Orders › Lines`), so a nested group says what it is about. The group's switch says whether
   *any* item has to satisfy it or *every* item does; *every* is also true of a collection with no items, as in LINQ.
 - **Pick a condition** that suits the property: text offers *contains*, *starts with*, *is blank*…; numbers and dates
   offer *greater than*, *between*…; booleans and enums offer *equals*; anything that can be missing offers *is set*.

@@ -18,7 +18,8 @@ public sealed class FilterBuilderLabels
     /// <summary>
     /// Heading of a group that filters a collection, after the choice of <see cref="GroupMatchAny"/> or
     /// <see cref="GroupMatchAll"/>. <c>{0}</c> is the name of the collection, with the relationships that lead to
-    /// it (<c>Customer › Orders</c>).
+    /// it (<c>Customer › Orders</c>) and, for a collection inside another collection's group, the collections it is
+    /// inside (<c>Contacts › Owner › Contacts</c>).
     /// </summary>
     public string CollectionGroup { get; set; } = "of {0} where";
 
